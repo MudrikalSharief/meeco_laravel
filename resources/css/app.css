@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.filter-blue{
+    filter: brightness(0) saturate(100%) invert(12%) sepia(88%) saturate(6253%) hue-rotate(220deg) brightness(72%) contrast(116%);
+}
+
+.filter-red{
+    filter: brightness(0) saturate(100%) invert(14%) sepia(83%) saturate(6133%) hue-rotate(345deg) brightness(95%) contrast(114%);
+}
+
+.blue_text{
+    color:#002BAD;
+}
+
+.red_text{
+    color:#ff0026;
+}
