@@ -28,4 +28,40 @@ class AUTHcontroller extends Controller
         //Redirect
         return redirect()->route('loggedin');
     }
+
+    //login user
+    public function login_user(Request $request){
+        //Validate
+        $field = $request->validate([
+            'email' => ['required', 'max:255','email'],
+            'password' => ['required']
+        ]);
+
+        //Try login
+        if(Auth::attempt($field,$request->remember)){
+            return redirect()->route('capture');
+            
+        }else{
+            return back()->withErrors([
+                'failed' => 'Account Doesnt Exist.'
+            ]);
+        }
+        
+    }
+
+    //logout user
+    public function logout_user(Request $request){
+       //logout the user
+        Auth::logout();
+
+        //invalidate the session
+       $request->session()->invalidate();
+
+       //regenerates the token
+        $request->session()->regenerateToken();
+
+        //redirect the users
+
+        return redirect('login');
+    }
 }

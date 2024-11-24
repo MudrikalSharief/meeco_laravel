@@ -14,10 +14,12 @@
             <div id="burger" class="burger_holder w-7 cursor-pointer md:hidden">
                 <img src="{{ asset('logo_icons/menu-burger.svg') }}" alt="Menu">
             </div>
-            <a href=" {{route('register')}} ">Sign in</a>
-            <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
-                <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
-            </div>
+            <a href=" {{route('profile')}}" class="flex items-center">
+                <p class="name mr-1">{{ auth()->user()->name }}</p>
+                <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
+                    <img class="w-full h-full object-contain " src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
+                </div>
+            </a>
         </div>
     
         {{-- Sidebar --}}
@@ -29,31 +31,43 @@
                 </div>
 
                 <ul id="menu" class="mt-7 flex flex-col items-center space-y-1 w-full cursor-pointer">
-                    <li class="menu-item flex justify-start items-center     gap-3 w-full p-2 bg-blue-100 rounded-lg">
-                        <div class="w-7"><img class="filter-blue max-w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
-                        <p class="md:block nav_text blue_text font-medium hidden">Convert New</p>
-                    </li>
-                    <li class="menu-item flex justify-start items-center gap-3 w-full p-2 rounded-lg">
-                        <div class="w-7"><img class="filter-blue max-w-7" src="{{ asset('logo_icons/books.svg') }}" alt="Icon"></div>
-                        <p class="md:block nav_text blue_text font-medium hidden">Subjects</p>
-                    </li>
-                    <li class="menu-item flex justify-start items-center gap-3 w-full p-2 rounded-lg">
-                        <div class="w-7"><img class="filter-blue max-w-7" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
-                        <p class="md:block nav_text blue_text font-medium hidden">Deleted</p>
-                    </li>
-                    <li class="menu-item flex justify-start items-center gap-3 w-full p-2 rounded-lg">
-                        <div class="w-7"><img class="filter-blue max-w-7" src="{{ asset('logo_icons/up.svg') }}" alt="Icon"></div>
-                        <p class="md:block nav_text blue_text font-medium hidden">Upgrade</p>
-                    </li>
+                    <a href=" {{ route('capture')  }}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}">
+                        <li class=" flex justify-start items-center gap-3 p-2  ">
+                            <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
+                            <p class="md:block nav_text blue_text font-medium hidden">Convert New</p>
+                        </li>
+                    </a>
+                    <a href="{{ route('subject')}}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('subject') ? 'bg-blue-100' : '' }}">
+                        <li class=" flex justify-start items-center gap-3  p-2 ">
+                            <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/books.svg') }}" alt="Icon"></div>
+                            <p class="md:block nav_text blue_text font-medium hidden">Subjects</p>
+                        </li>
+                    </a>
+                    <a href="{{ route('deleted')}}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
+                        <li class=" flex justify-start items-center gap-3 p-2 ">
+                            <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
+                            <p class="md:block nav_text blue_text font-medium hidden">Deleted</p>
+                        </li>
+                    </a>
+                    <a href="{{ route('upgrade')}}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('upgrade') ? 'bg-blue-100' : '' }}">
+                        <li class=" flex justify-start items-center gap-3 p-2 ">
+                            <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/up.svg') }}" alt="Icon"></div>
+                            <p class="md:block nav_text blue_text font-medium hidden">Upgrade</p>
+                        </li>
+                    </a>
                 </ul>
             </div>
-            <div id="sidebar-signout" class="signoup flex justify-start items-center gap-3 w-full p-2 cursor-pointer">
-                <img class="filter-red max-w-6" src="{{ asset('logo_icons/sign-out-alt.svg') }}" alt="Sign out">
-                <p class="md:block nav_text red_text font-medium hidden">Logout</p>
-            </div>
+
+            <form action=" {{ route('logout') }}" method="POST" class="w-full">
+                @csrf
+                <button id="sidebar-signout" class=" flex justify-start items-center gap-3 w-full p-2 cursor-pointer">
+                    <img class="filter-red max-w-6" src="{{ asset('logo_icons/sign-out-alt.svg') }}" alt="Sign out">
+                    <p class="md:block nav_text red_text font-medium hidden">Logout</p>
+                </button>
+            </form>
         </nav>
         
-        <div class="md:pl-52 pl-14 pt-12 content here bg-red-300 w-full h-full ">
+        <div class="md:pl-52 pl-14 pt-12 content here  w-full h-full">
             {{ $slot }}
         </div>
 

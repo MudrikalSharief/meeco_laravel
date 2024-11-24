@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('date_created')->useCurrent();
             $table->timestamp('last_login')->nullable();
             $table->timestamps();
+            $table->rememberToken();
         });
 
         // Create Promos table
