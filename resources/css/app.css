@@ -17,3 +17,7 @@
 .red_text{
     color:#ff0026;
 }
+
+.error{
+    @apply text-red-500 text-xs;
+}

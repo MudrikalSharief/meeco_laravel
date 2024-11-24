@@ -79,6 +79,7 @@ return new class extends Migration
             $table->unsignedBigInteger('topic_id');
             $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
             $table->text('question_text');
+            $table->text('answer');
             $table->timestamps();
         });
     }

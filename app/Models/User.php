@@ -13,6 +13,27 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'user_id'; // Define the primary key as 'user_id'
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = true; // Make sure this matches your database
+
+    /**
+     * The data type of the primary key.
+     *
+     * @var string
+     */
+    protected $keyType = 'int'; // 'user_id' is an integer
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
