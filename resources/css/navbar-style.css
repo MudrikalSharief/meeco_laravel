@@ -1,0 +1,38 @@
+/* Navbar */
+.navbar {
+    position: sticky; /* Makes the navbar stick to the top of the viewport when scrolling */
+    top: 0; /* Positions the navbar at the top of the viewport */
+    background: white; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow below the navbar for depth */
+    z-index: 1000; /* Ensures the navbar appears above other elements when overlapping */
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    
+}
+
+.login-btn {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logo img {
+    height: auto;
+    width: 200px;
+}

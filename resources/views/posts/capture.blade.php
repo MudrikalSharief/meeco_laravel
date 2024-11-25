@@ -3,7 +3,7 @@
     <h1 class="py-3 px-2 text-xl font-bold">Convert Image</h1>
 
     <button id="openModal" type="button" class=" bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
-        <img class="w-8 filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
+        <img class=" z-10 w-8 filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
         <p>Add Image</p>
     </button>
 

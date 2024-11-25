@@ -41,62 +41,72 @@ const closeModal = document.getElementById('closeModal');
 const uploadModal = document.getElementById('uploadModal');
 const cancelUpload = document.getElementById('cancelUpload');
 
-openModal.addEventListener('click', () => uploadModal.classList.remove('hidden'));
-closeModal.addEventListener('click', () => uploadModal.classList.add('hidden'));
-cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
+if(openModal){
+    openModal.addEventListener('click', () => uploadModal.classList.remove('hidden'));
+}
+if(closeModal){
+    closeModal.addEventListener('click', () => uploadModal.classList.add('hidden'));
+}
+if(cancelUpload){
+    cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
+}
 
 //This is for the upload image from modal
-document.getElementById('uploadButton').addEventListener('click', function () {
-    let form = document.getElementById('uploadForm');
-    const fileInput = document.getElementById('imageInput'); 
+const uploaded = document.getElementById('uploadButton');
 
-    let formData = new FormData(form);
-
-    fetch('/capture/upload', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Images uploaded successfully!');
-                // Handle success (e.g., refresh image list or close modal)
-                document.querySelector('#uploadModal').classList.add('hidden')
-                fileInput.value = ''; // Reset the file input value
-                
-                fetch('/capture/images')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.images && data.images.length > 0) {
-                        // Clear the container first (optional, in case of reloads)
-                        imageContainer.innerHTML = '';
-
-                        data.images.forEach(url => {
-                            // Create an image element for each URL
-                            const img = document.createElement('img');
-                            img.src = url;
-                            img.alt = 'Uploaded Image';
-                            img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
-                            imageContainer.appendChild(img); // Append to the container
-                        });
-                    }
-                    });
-            } else {
-                alert('Failed to upload images.');
-            }
+if(uploaded){
+    uploaded.addEventListener('click', function () {
+        let form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('imageInput'); 
+    
+        let formData = new FormData(form);
+    
+        fetch('/capture/upload', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: formData
         })
-        .catch(error => console.error('Error:', error));
-});
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Images uploaded successfully!');
+                    // Handle success (e.g., refresh image list or close modal)
+                    document.querySelector('#uploadModal').classList.add('hidden')
+                    fileInput.value = ''; // Reset the file input value
+                    
+                    fetch('/capture/images')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.images && data.images.length > 0) {
+                            // Clear the container first (optional, in case of reloads)
+                            imageContainer.innerHTML = '';
+    
+                            data.images.forEach(url => {
+                                // Create an image element for each URL
+                                const img = document.createElement('img');
+                                img.src = url;
+                                img.alt = 'Uploaded Image';
+                                img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
+                                imageContainer.appendChild(img); // Append to the container
+                            });
+                        }
+                        });
+                } else {
+                    alert('Failed to upload images.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+}
 
 //this is for the Showing the image
 // Fetch and display previously uploaded images
 document.addEventListener('DOMContentLoaded', function () {
     const imageContainer = document.getElementById('imageContainer');
-
-    fetch('/capture/images')
+    if(imageContainer){
+        fetch('/capture/images')
         .then(response => response.json())
         .then(data => {
             if (data.images && data.images.length > 0) {
@@ -120,5 +130,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .catch(error => console.error('Error fetching uploaded images:', error));
+    }
+
 });
-    
+
+//THis is for FAQ in WEBSITE
+document.addEventListener('DOMContentLoaded', function () {
+    const accordion_header = document.querySelectorAll('.accordion-header');
+    if(accordion_header){
+        accordion_header.forEach(button => {
+            button.addEventListener('click', () => {
+                const accordionItem = button.parentElement;
+                const isActive = accordionItem.classList.contains('active');
+                
+                // Close all accordion items
+                document.querySelectorAll('.accordion-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // If the clicked item wasn't active, open it
+                if (!isActive) {
+                    accordionItem.classList.add('active');
+                }
+            });
+        });
+    }
+});

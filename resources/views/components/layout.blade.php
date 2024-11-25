@@ -24,7 +24,7 @@
         </div>
     
         {{-- Sidebar --}}
-        <nav id="sidebar" class="md:w-52 bg-white fixed w-14  h-screen pb-2 px-2 flex flex-col justify-between items-center border-r shadow-[-3px_0_10px_1px_rgba(50,50,50,0.15)]">
+        <nav id="sidebar" class=" z-50 md:w-52 bg-white fixed w-14  h-screen pb-2 px-2 flex flex-col justify-between items-center border-r shadow-[-3px_0_10px_1px_rgba(50,50,50,0.15)]">
             <div class="logo_holder flex-col justify-between items-center w-full">
                 <div id="sidebar-logo" class="logo_holder flex justify-start items-center gap-3 w-full">
                     <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
