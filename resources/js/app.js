@@ -1,24 +1,5 @@
 import './bootstrap';
 
-// This code is for the background color of the navigation when clicked
-// document.addEventListener('DOMContentLoaded', () => {
-//     const menuItems = document.querySelectorAll('.menu-item');
-
-//     if(menuItems){
-//         menuItems.forEach((item) => {
-//             item.addEventListener('click', function () {
-//                 // Remove the background from all items
-//                 menuItems.forEach(item => {item.classList.remove('bg-blue-100')});
-//                 // Add the background to the clicked item
-//                 this.classList.add('bg-blue-100');
-//             }); 
-//         });
-//     }
-// });
-
-// code is for the collapse and expand of the burger
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.getElementById('burger');
     const sidebar = document.getElementById('sidebar');
@@ -51,5 +32,93 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+});
+
+//This is for upload image modal logic
+// Modal logic
+const openModal = document.getElementById('openModal');
+const closeModal = document.getElementById('closeModal');
+const uploadModal = document.getElementById('uploadModal');
+const cancelUpload = document.getElementById('cancelUpload');
+
+openModal.addEventListener('click', () => uploadModal.classList.remove('hidden'));
+closeModal.addEventListener('click', () => uploadModal.classList.add('hidden'));
+cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
+
+//This is for the upload image from modal
+document.getElementById('uploadButton').addEventListener('click', function () {
+    let form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('imageInput'); 
+
+    let formData = new FormData(form);
+
+    fetch('/capture/upload', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Images uploaded successfully!');
+                // Handle success (e.g., refresh image list or close modal)
+                document.querySelector('#uploadModal').classList.add('hidden')
+                fileInput.value = ''; // Reset the file input value
+                
+                fetch('/capture/images')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.images && data.images.length > 0) {
+                        // Clear the container first (optional, in case of reloads)
+                        imageContainer.innerHTML = '';
+
+                        data.images.forEach(url => {
+                            // Create an image element for each URL
+                            const img = document.createElement('img');
+                            img.src = url;
+                            img.alt = 'Uploaded Image';
+                            img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
+                            imageContainer.appendChild(img); // Append to the container
+                        });
+                    }
+                    });
+            } else {
+                alert('Failed to upload images.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+//this is for the Showing the image
+// Fetch and display previously uploaded images
+document.addEventListener('DOMContentLoaded', function () {
+    const imageContainer = document.getElementById('imageContainer');
+
+    fetch('/capture/images')
+        .then(response => response.json())
+        .then(data => {
+            if (data.images && data.images.length > 0) {
+                // Clear the container first (optional, in case of reloads)
+                imageContainer.innerHTML = '';
+
+                data.images.forEach(url => {
+                    // Create an image element for each URL
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Uploaded Image';
+                    img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
+                    imageContainer.appendChild(img); // Append to the container
+                });
+            } else {
+                // Show a message if no images are available
+                const message = document.createElement('p');
+                message.textContent = 'No images uploaded yet.';
+                message.className = 'text-gray-500 mt-2';
+                imageContainer.appendChild(message);
+            }
+        })
+        .catch(error => console.error('Error fetching uploaded images:', error));
 });
     
