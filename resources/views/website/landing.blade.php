@@ -1,4 +1,4 @@
-<x-web-layout>
+<x-web_layout>
     
     <main>
         <section class="hero">
@@ -11,7 +11,7 @@
                         <h1>Elevate your study game, effortlessly</h1>
                         <div class="cta-buttons">
                             <button class="btn-primary">Get Started</button>
-                            <a href="#" class="account-link">I ALREADY HAVE AN ACCOUNT</a>
+                            <a href="{{route('login')}}" class="account-link">I ALREADY HAVE AN ACCOUNT</a>
                         </div>
                     </div>
                 </div>
@@ -23,9 +23,9 @@
                 <h2 class="text-how-it-works"><img src="{{asset('logo_icons/pictures/sparkling.png')}}" alt="sparkle" class="sparkle"></span>How it <span class="highlight-blue">works?</span><img src="{{asset('logo_icons/pictures/sparkling.png')}}" alt="sparkle" class="sparkle"></span></h2>
                 <p class="section-desc" style="margin-bottom: 32px;">Effortlessly capture and organize your study materials from start to finish.</p>
                 <div class="features-grid">
-                <a href="convert-image.php" style="text-decoration: none;"><button class="feature-btn">Convert Image</button></a>
-                <a href="quiz-maker.php" style="text-decoration: none;"><button class="feature-btn">Quiz maker</button></a>
-                <a href="summarizer-and-reviewer.php" style="text-decoration: none;"><button class="feature-btn">Summarizer & reviewer</button></a>
+                <a href="{{route('convert_image')}}" style="text-decoration: none;"><button class="feature-btn">Convert Image</button></a>
+                <a href="{{ route('quiz_maker')}}" style="text-decoration: none;"><button class="feature-btn">Quiz maker</button></a>
+                <a href="{{route('summarizer_and_reviewer')}}" style="text-decoration: none;"><button class="feature-btn">Summarizer & reviewer</button></a>
                 </div>
             </div>
         </section>
@@ -132,4 +132,4 @@
         </footer>
     </main>
 
-</x-web-layout>
+</x-web_layout>

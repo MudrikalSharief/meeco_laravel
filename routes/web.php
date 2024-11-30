@@ -4,7 +4,7 @@ use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\IMAGEcontroller;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/','posts.index')->name('loggedin');
+
 
 Route::middleware('guest')->group(function (){
 
@@ -16,10 +16,15 @@ Route::middleware('guest')->group(function (){
 
     Route::view('/website', 'website.landing')->name('landing');
     Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
+    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
+    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
 
 });
 
 Route::middleware('auth')->group(function (){
+    Route::view('/','posts.index')->name('loggedin');
+    
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
     Route::view('/capture', 'posts.capture')->name('capture');
@@ -27,6 +32,9 @@ Route::middleware('auth')->group(function (){
     Route::get('/capture/images', [ImageController::class, 'getUploadedImages'])->name('capture.images');
 
     Route::view('/subject', 'posts.subject')->name('subject');
+    Route::view('/topics', 'posts.topics')->name('topics');
+
+
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
     Route::view('/profile', 'posts.profile')->name('profile');

@@ -26,7 +26,7 @@ class AUTHcontroller extends Controller
         Auth::login($user);
 
         //Redirect
-        return redirect()->route('loggedin');
+        return redirect()->route('capture');
     }
 
     //login user
