@@ -61,6 +61,7 @@ return new class extends Migration
         // Create Subjects table
         Schema::create('subjects', function (Blueprint $table) {
             $table->id('subject_id');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->string('name')->unique();
             $table->timestamps();
         });
