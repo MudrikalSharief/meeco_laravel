@@ -4,7 +4,7 @@
     top: 0; /* Positions the navbar at the top of the viewport */
     background: white; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow below the navbar for depth */
-    z-index: 1000; /* Ensures the navbar appears above other elements when overlapping */
+    z-index: 1000; /* Ensures the navbar appears above other elements when overlapping */ padding: 20px, 0, 0 20px;
 }
 
 .navbar .container {
@@ -12,12 +12,46 @@
     justify-content: space-between;
     align-items: center;
     height: 80px;
+    padding: 0 20px; /* Add padding to the container */
+}
+
+.navbar .menu-icon {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.navbar .menu {
+    display: flex;
+    gap: 24px;
+}
+
+@media (max-width: 850px) {
+    .navbar .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 80px;
+        right: 0;
+        background: white;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 0 20px; /* Add padding to the menu */
+    }
+
+    .navbar .menu-icon {
+        display: block;
+    }
+
+    .navbar .menu.active {
+        display: flex;
+    }
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 20px, 0 20px;
     
 }
 

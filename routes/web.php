@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function (){
 });
 
 Route::middleware('auth')->group(function (){
-    Route::view('/','posts.index')->name('loggedin');
+    Route::view('/','posts.capture')->name('loggedin');
     
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 

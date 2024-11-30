@@ -4,6 +4,7 @@
     color: white;
     padding-top: 100px;
     position: relative;
+    padding-left: 80px;
 }
 
 .subtitle{
@@ -45,17 +46,17 @@
 .footer-section ul li a:hover {
     color: white;
 }
-.present-png {
-    transform: rotateY(180deg); /* Flip the image horizontally to face right */
-    max-width: 100%; /* Makes the image responsive */
-    
-    
-}
-.laptop-img{
-    transform: rotateY(180deg); /* Flip the image horizontally to face right */
-    max-width: 100%; /* Makes the image responsive */
-}
-.head-scratch-png{
-    max-width: 100%; /* Makes the image responsive */
-    
+
+@media (max-width: 850px) {
+    .footer{
+        padding-left: 50px;
+    }
+    .footer-grid {
+        flex-direction: column; /* Stack footer sections vertically */
+        text-align: left; /* Align text to the left */
+    }
+
+    .footer-section {
+        margin-bottom: 24px; /* Add spacing between sections */
+    }
 }

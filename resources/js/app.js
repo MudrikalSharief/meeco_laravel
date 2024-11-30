@@ -1,6 +1,7 @@
 import './bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
+
     const burger = document.getElementById('burger');
     const sidebar = document.getElementById('sidebar');
     const upper_nav=document.getElementById('upper_nav');

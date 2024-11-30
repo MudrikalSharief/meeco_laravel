@@ -1,14 +1,16 @@
 <x-layout>
     <div class=" p-3 w-full h-fullx ">
-        <h1 class="py-3 px-2 text-xl font-bold">Convert Image</h1>
+        <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Convert Image</h1>
 
         <button id="openModal" type="button" class=" bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
             <img class=" z-10 w-8 filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
             <p>Add Image</p>
         </button>
 
+        <hr class=" my-3">
+
         <!-- Container for Uploaded Images -->
-        <h2 class=" mt-6 py2 px-2 text-base font-medium ">Image uploaded</h2>
+        <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
 
         <!-- Modal -->

@@ -1,7 +1,7 @@
 <x-layout>
 
     <div class=" p-3 w-full h-full">
-        <h1 class="py-3 px-2 text-xl font-bold">Subjects</h1>
+        <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects</h1>
 
         <?php
             $count = 5;
