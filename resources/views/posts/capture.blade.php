@@ -13,6 +13,8 @@
         <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
+        <button id="extractTextButton" type="button" class=" ml- bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Extract Text</button>
+        
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
             <div class="bg-white rounded-lg shadow-lg   ">
@@ -35,7 +37,6 @@
                 </div>
         </div>
     </div>
-
 
 
 </x-layout>

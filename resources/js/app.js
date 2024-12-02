@@ -33,10 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const fileInput = document.getElementById('imageInput');
+    const uploadButton = document.getElementById('uploadButton');
+
+    if (fileInput && uploadButton) {
+        // Disable the upload button initially
+        uploadButton.disabled = true;
+
+        // Enable the upload button only if a file is selected
+        fileInput.addEventListener('change', () => {
+            uploadButton.disabled = fileInput.files.length === 0;
+        });
+    }
 });
 
 //This is for upload image modal logic
-// Modal logic
 const openModal = document.getElementById('openModal');
 const closeModal = document.getElementById('closeModal');
 const uploadModal = document.getElementById('uploadModal');
@@ -57,6 +69,9 @@ const uploaded = document.getElementById('uploadButton');
 
 if(uploaded){
     uploaded.addEventListener('click', function () {
+        // Disable the upload button to prevent spamming
+        uploaded.disabled = true;
+
         let form = document.getElementById('uploadForm');
         const fileInput = document.getElementById('imageInput'); 
     
@@ -93,12 +108,18 @@ if(uploaded){
                                 imageContainer.appendChild(img); // Append to the container
                             });
                         }
+                        
                         });
+                        
                 } else {
                     alert('Failed to upload images.');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                // Re-enable the upload button after the request is complete
+                uploaded.disabled = false;
+            });
     });
 }
 
@@ -106,6 +127,19 @@ if(uploaded){
 // Fetch and display previously uploaded images
 document.addEventListener('DOMContentLoaded', function () {
     const imageContainer = document.getElementById('imageContainer');
+    const extractTextButton = document.getElementById('extractTextButton');
+
+    function toggleExtractButton() {
+        if (imageContainer.children.length > 0) {
+            extractTextButton.classList.remove('hidden');
+        } else {
+            extractTextButton.classList.add('hidden');
+        }
+    }
+
+    // Initial check
+    toggleExtractButton();
+
     if(imageContainer){
         fetch('/capture/images')
         .then(response => response.json())
@@ -122,17 +156,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
                     imageContainer.appendChild(img); // Append to the container
                 });
+                toggleExtractButton();
             } else {
                 // Show a message if no images are available
                 const message = document.createElement('p');
                 message.textContent = 'No images uploaded yet.';
                 message.className = 'text-gray-500 mt-2';
                 imageContainer.appendChild(message);
+                
             }
         })
         .catch(error => console.error('Error fetching uploaded images:', error));
     }
 
+    // Example event listener for image upload (you need to implement the actual logic)
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        // Simulate image upload
+        setTimeout(function () {
+            const img = document.createElement('img');
+            img.src = 'path/to/image.jpg'; // Replace with actual image path
+            imageContainer.appendChild(img);
+            toggleExtractButton();
+        }, 1000);
+    });
+
+    // Example event listener for image removal (you need to implement the actual logic)
+    imageContainer.addEventListener('click', function (event) {
+        if (event.target.tagName === 'IMG') {
+            imageContainer.removeChild(event.target);
+            toggleExtractButton();
+        }
+    });
 });
 
 //THis is for FAQ in WEBSITE
