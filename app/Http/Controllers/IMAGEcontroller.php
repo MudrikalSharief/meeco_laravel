@@ -40,3 +40,4 @@ class IMAGEcontroller extends Controller
     return response()->json(['images' => $images]);
 }
 }
+

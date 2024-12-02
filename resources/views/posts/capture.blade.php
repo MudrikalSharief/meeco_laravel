@@ -12,7 +12,7 @@
         <!-- Container for Uploaded Images -->
         <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
-
+        
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
             <div class="bg-white rounded-lg shadow-lg   ">

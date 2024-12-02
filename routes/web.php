@@ -4,7 +4,7 @@ use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\IMAGEcontroller;
 use Illuminate\Support\Facades\Route;
 
-
+Route::view('/testing', 'posts.testing')->name('testing');
 
 Route::middleware('guest')->group(function (){
 

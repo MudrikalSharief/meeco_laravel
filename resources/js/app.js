@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.images && data.images.length > 0) {
                 // Clear the container first (optional, in case of reloads)
                 imageContainer.innerHTML = '';
-
+                console.log(data.images);
                 data.images.forEach(url => {
                     // Create an image element for each URL
                     const img = document.createElement('img');
