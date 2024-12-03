@@ -46,7 +46,4 @@
             <img id="zoomedImage" src="" alt="Zoomed Image" class="max-w-full max-h-full">
         </div>
     </div>
-
-   
-
 </x-layout>

@@ -34,6 +34,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const imageContainer = document.getElementById('imageContainer');
+    const extractTextButton = document.getElementById('extractTextButton');
+
+    function toggleExtractButton() {
+        if (imageContainer.children.length > 0) {
+            extractTextButton.classList.remove('hidden');
+        } else {
+            extractTextButton.classList.add('hidden');
+        }
+    }
+
+    if(extractTextButton){
+        toggleExtractButton();
+    }
+
     const fileInput = document.getElementById('imageInput');
     const uploadButton = document.getElementById('uploadButton');
     const errorMessage = document.createElement('p');
@@ -88,10 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const imageContainer = document.getElementById('imageContainer');
     const zoomModal = document.getElementById('zoomModal');
     const zoomedImage = document.getElementById('zoomedImage');
-
 
     if (imageContainer) {
         imageContainer.addEventListener('click', (event) => {
@@ -101,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
 
     if (zoomModal) {
         zoomModal.addEventListener('click', (event) => {
@@ -266,6 +278,20 @@ if(cancelUpload){
     cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
 }
 
+const imageContainer = document.getElementById('imageContainer');
+    const imageNamesContainer = document.getElementById('imageNamesContainer');
+    const extractTextButton = document.getElementById('extractTextButton');
+
+    function toggleExtractButton() {
+        if(imageContainer){
+
+                if (imageContainer.children.length > 0) {
+                    extractTextButton.classList.remove('hidden');
+                } else {
+                    extractTextButton.classList.add('hidden');
+                }
+        }
+    }
 //This is for the upload image from modal
 const uploaded = document.getElementById('uploadButton');
 
@@ -301,21 +327,28 @@ if(uploaded){
                             imageContainer.innerHTML = '';
                             data.images.forEach((url, index) => {
                                 const imgWrapper = document.createElement('div');
-                                imgWrapper.className = 'm-2';
+                                imgWrapper.className = 'm-2 img-wrapper relative';
 
                                 const img = document.createElement('img');
                                 img.src = url;
                                 img.alt = 'Uploaded Image';
-                                img.className = 'w-28 h-32 object-cover border border-gray-300 rounded';
+                                img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                                img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
+
+                                const deleteIcon = document.createElement('span');
+                                deleteIcon.className = 'delete-icon absolute p-2 top-0 right-0 bg-red-500 text-white rounded-full cursor-pointer';
+                                deleteIcon.textContent = '×';
 
                                 const name = document.createElement('p');
                                 name.textContent = `Image ${index + 1}`;
                                 name.className = 'text-center';
 
                                 imgWrapper.appendChild(img);
+                                imgWrapper.appendChild(deleteIcon);
                                 imgWrapper.appendChild(name);
                                 imageContainer.appendChild(imgWrapper);
                             });
+                            toggleExtractButton();
                         }
                     })
                     .catch(error => console.error('Error:', error))
@@ -364,18 +397,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 imageContainer.innerHTML = '';
                 data.images.forEach((url, index) => {
                     const imgWrapper = document.createElement('div');
-                    imgWrapper.className = 'm-2';
+                    imgWrapper.className = 'm-2 img-wrapper relative';
 
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = 'Uploaded Image';
-                    img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                    img.className = 'IMG w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                    img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
+
+                    const deleteIcon = document.createElement('span');
+                    deleteIcon.className = 'delete-icon absolute p-2  top-0 right-0 bg-red-500 text-white rounded-full cursor-pointer';
+                    deleteIcon.textContent = '×';
 
                     const name = document.createElement('p');
                     name.textContent = `Image ${index + 1}`;
                     name.className = 'text-center';
 
                     imgWrapper.appendChild(img);
+                    imgWrapper.appendChild(deleteIcon);
                     imgWrapper.appendChild(name);
                     imageContainer.appendChild(imgWrapper);
                 });
@@ -392,24 +431,34 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => console.error('Error fetching uploaded images:', error));
     }
 
-    // // Example event listener for image upload (you need to implement the actual logic)
-    // document.getElementById('uploadButton').addEventListener('click', function () {
-    //     // Simulate image upload
-    //     setTimeout(function () {
-    //         const img = document.createElement('img');
-    //         img.src = 'path/to/image.jpg'; // Replace with actual image path
-    //         imageContainer.appendChild(img);
-    //         toggleExtractButton();
-    //     }, 1000);
-    // });
+    imageContainer.addEventListener('click', function (event) {
+        if (event.target.classList.contains('delete-icon')) {
+            const imgWrapper = event.target.closest('.img-wrapper');
+            const filePath = imgWrapper.querySelector('img').getAttribute('data-file-path');
 
-    // Example event listener for image removal (you need to implement the actual logic)
-    // imageContainer.addEventListener('click', function (event) {
-    //     if (event.target.tagName === 'IMG') {
-    //         imageContainer.removeChild(event.target);
-    //         toggleExtractButton();
-    //     }
-    // });
+            fetch('/capture/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ filePath: 'uploads/' + filePath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    imageContainer.removeChild(imgWrapper);
+                    toggleExtractButton();
+                    location.reload(); // Refresh the page
+                } else {
+                    alert('Failed to delete image.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    toggleExtractButton();
 
 });
 

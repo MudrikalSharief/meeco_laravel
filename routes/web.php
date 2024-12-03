@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/capture', 'posts.capture')->name('capture');
     Route::post('/capture/upload', [ImageController::class, 'upload'])->name('capture.upload');
     Route::get('/capture/images', [ImageController::class, 'getUploadedImages'])->name('capture.images');
+    Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
 
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
