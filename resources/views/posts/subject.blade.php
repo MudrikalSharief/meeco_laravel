@@ -1,29 +1,22 @@
 <x-layout>
-
     <div class=" p-3 w-full h-full">
         <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects</h1>
+        <button id="addSubjectButton" class=" mb-3 bg-blue-500 text-white py-2 px-4 rounded">Add Subject</button>
         <div id="subjectsContainer" class="w-full max-w-2xl"></div>
         <p id="noSubjectsMessage" class="text-gray-500 mt-2 hidden">No Subjects to Show</p>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            fetch('{{ route('subjects.list') }}')
-                .then(response => response.json())
-                .then(data => {
-                    const subjectsContainer = document.getElementById('subjectsContainer');
-                    const noSubjectsMessage = document.getElementById('noSubjectsMessage');
-                    if (data.subjects && data.subjects.length > 0) {
-                        data.subjects.forEach((subject, index) => {
-                            const subjectButton = document.createElement('a');
-                            subjectButton.href = `/subjects/${subject.name}`;
-                            subjectButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md"> ${subject.name}</button>`;
-                            subjectsContainer.appendChild(subjectButton);
-                        });
-                    } else {
-                        noSubjectsMessage.classList.remove('hidden');
-                    }
-                })
-                .catch(error => console.error('Error fetching subjects:', error));
-        });
-    </script>
+
+    <!-- Modal -->
+    <div id="addSubjectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-xl font-bold mb-4">Add New Subject</h2>
+            <input type="text" id="newSubjectName" class="border p-2 w-full mb-4" placeholder="Subject Name">
+            <div class="flex justify-end">
+                <button id="cancelButton" class="bg-gray-500 text-white py-2 px-4 rounded mr-2">Cancel</button>
+                <button id="saveButton" class="bg-blue-500 text-white py-2 px-4 rounded">Save</button>
+            </div>
+        </div>
+    </div>
+
+    
 </x-layout>

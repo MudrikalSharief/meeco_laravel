@@ -111,8 +111,79 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    
+    //This is for the add Subject
+    const addSubjectButton = document.getElementById('addSubjectButton');
+    const addSubjectModal = document.getElementById('addSubjectModal');
+    const cancelButton = document.getElementById('cancelButton');
+    const saveButton = document.getElementById('saveButton');
+    const newSubjectName = document.getElementById('newSubjectName');
+    const subjectsContainer = document.getElementById('subjectsContainer');
+    const noSubjectsMessage = document.getElementById('noSubjectsMessage');
 
+    if(addSubjectButton){
+        addSubjectButton.addEventListener('click', function () {
+            addSubjectModal.classList.remove('hidden');
+        });
+
+    }
+
+    if(cancelButton){
+
+        cancelButton.addEventListener('click', function () {
+            addSubjectModal.classList.add('hidden');
+            newSubjectName.value = '';
+        });
+    }
+
+    if(saveButton){
+
+        saveButton.addEventListener('click', function () {
+            const subjectName = newSubjectName.value.trim();
+            if (subjectName) {
+                fetch('/subjects/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: subjectName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const subjectButton = document.createElement('a');
+                        subjectButton.href = `/subjects/${subjectName}`;
+                        subjectButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md"> ${subjectName}</button>`;
+                        subjectsContainer.appendChild(subjectButton);
+                        noSubjectsMessage.classList.add('hidden');
+                        addSubjectModal.classList.add('hidden');
+                        newSubjectName.value = '';
+                    } else {
+                        alert('Error adding subject: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error adding subject:', error));
+            }
+        });
+    }
+
+    fetch('/subjects')
+        .then(response => response.json())
+        .then(data => {
+            if (data.subjects && data.subjects.length > 0) {
+                data.subjects.forEach((subject, index) => {
+                    const subjectButton = document.createElement('a');
+                    subjectButton.href = `/subjects/${subject.name}`;
+                    subjectButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md"> ${subject.name}</button>`;
+                    if(subjectsContainer){
+                        subjectsContainer.appendChild(subjectButton);
+                    }
+                });
+            } else {
+                noSubjectsMessage.classList.remove('hidden');
+            }
+        })
+        .catch(error => console.error('Error fetching subjects:', error));
   
 });
 

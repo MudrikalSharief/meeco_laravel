@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
     Route::get('/subjects/{subjectName}', [TOPICcontroller::class, 'getTopicsBySubjectName'])->name('subjects');
+    Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
 
