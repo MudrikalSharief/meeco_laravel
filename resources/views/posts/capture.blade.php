@@ -12,8 +12,11 @@
         <!-- Container for Uploaded Images -->
         <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
+        <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
-        <button id="extractTextButton" type="button" class=" ml- bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Extract Text</button>
+        <form action="{{ route('extracted') }}" method="GET">
+            <button id="extractTextButton" type="submit" class=" ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Extract Text</button>
+        </form>
         
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
@@ -38,5 +41,12 @@
         </div>
     </div>
 
+    <!-- Modal for Zoomed Image -->
+    <div id="zoomModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <img id="zoomedImage" src="" alt="Zoomed Image" class="max-w-full max-h-full">
+           
+        </div>
+    </div>
 
 </x-layout>

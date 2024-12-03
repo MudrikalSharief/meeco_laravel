@@ -4,7 +4,7 @@ use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\IMAGEcontroller;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/testing', 'posts.testing')->name('testing');
+
 
 Route::middleware('guest')->group(function (){
 
@@ -38,4 +38,6 @@ Route::middleware('auth')->group(function (){
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
     Route::view('/profile', 'posts.profile')->name('profile');
+
+    Route::view('/extracted', 'posts.extracted')->name('extracted');
 });

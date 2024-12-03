@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fileInput = document.getElementById('imageInput');
     const uploadButton = document.getElementById('uploadButton');
+    const errorMessage = document.createElement('p');
+    errorMessage.textContent = 'Please select an image.';
+    errorMessage.className = 'text-red-500 mt-2 hidden';
+    document.querySelector('.p-4').appendChild(errorMessage);
 
     if (fileInput && uploadButton) {
         // Disable the upload button initially
@@ -44,6 +48,67 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable the upload button only if a file is selected
         fileInput.addEventListener('change', () => {
             uploadButton.disabled = fileInput.files.length === 0;
+            errorMessage.classList.add('hidden');
+        });
+
+        uploadButton.addEventListener('click', (event) => {
+            if (fileInput.files.length === 0) {
+                event.preventDefault();
+                errorMessage.classList.remove('hidden');
+            }
+        });
+    }
+
+    if (fileInput && uploadButton) {
+        // Disable the upload button initially
+        uploadButton.disabled = true;
+
+        // Enable the upload button only if a file is selected
+        fileInput.addEventListener('change', () => {
+            uploadButton.disabled = fileInput.files.length === 0;
+        });
+    }
+
+    // Modal logic for displaying images
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+
+    window.openModal = function(imageSrc) {
+        modalImage.src = imageSrc;
+        imageModal.classList.remove('hidden');
+    };
+
+    window.closeModal = function(event) {
+        if (event.target === imageModal) {
+            imageModal.classList.add('hidden');
+        }
+    };
+
+    const imageContainer = document.getElementById('imageContainer');
+    const zoomModal = document.getElementById('zoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomModal = document.getElementById('closeZoomModal');
+
+    if (imageContainer) {
+        imageContainer.addEventListener('click', (event) => {
+            if (event.target.tagName === 'IMG') {
+                zoomedImage.src = event.target.src;
+                zoomModal.classList.remove('hidden');
+            }
+        });
+    }
+
+    if (closeZoomModal) {
+        closeZoomModal.addEventListener('click', () => {
+            zoomModal.classList.add('hidden');
+        });
+    }
+
+    if (zoomModal) {
+        zoomModal.addEventListener('click', (event) => {
+            if (event.target === zoomModal) {
+                zoomModal.classList.add('hidden');
+            }
         });
     }
 });
@@ -96,20 +161,30 @@ if(uploaded){
                     .then(response => response.json())
                     .then(data => {
                         if (data.images && data.images.length > 0) {
-                            // Clear the container first (optional, in case of reloads)
                             imageContainer.innerHTML = '';
-    
-                            data.images.forEach(url => {
-                                // Create an image element for each URL
+                            data.images.forEach((url, index) => {
+                                const imgWrapper = document.createElement('div');
+                                imgWrapper.className = 'm-2';
+
                                 const img = document.createElement('img');
                                 img.src = url;
                                 img.alt = 'Uploaded Image';
-                                img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
-                                imageContainer.appendChild(img); // Append to the container
+                                img.className = 'w-28 h-32 object-cover border border-gray-300 rounded';
+
+                                const name = document.createElement('p');
+                                name.textContent = `Image ${index + 1}`;
+                                name.className = 'text-center';
+
+                                imgWrapper.appendChild(img);
+                                imgWrapper.appendChild(name);
+                                imageContainer.appendChild(imgWrapper);
                             });
                         }
-                        
-                        });
+                    })
+                    .catch(error => console.error('Error:', error))
+                    .finally(() => {
+                        uploaded.disabled = false;
+                    });
                         
                 } else {
                     alert('Failed to upload images.');
@@ -127,13 +202,17 @@ if(uploaded){
 // Fetch and display previously uploaded images
 document.addEventListener('DOMContentLoaded', function () {
     const imageContainer = document.getElementById('imageContainer');
+    const imageNamesContainer = document.getElementById('imageNamesContainer');
     const extractTextButton = document.getElementById('extractTextButton');
 
     function toggleExtractButton() {
-        if (imageContainer.children.length > 0) {
-            extractTextButton.classList.remove('hidden');
-        } else {
-            extractTextButton.classList.add('hidden');
+        if(imageContainer){
+
+                if (imageContainer.children.length > 0) {
+                    extractTextButton.classList.remove('hidden');
+                } else {
+                    extractTextButton.classList.add('hidden');
+                }
         }
     }
 
@@ -145,16 +224,23 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.images && data.images.length > 0) {
-                // Clear the container first (optional, in case of reloads)
                 imageContainer.innerHTML = '';
-                console.log(data.images);
-                data.images.forEach(url => {
-                    // Create an image element for each URL
+                data.images.forEach((url, index) => {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'm-2';
+
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = 'Uploaded Image';
-                    img.className = ' w-28 h-32 object-cover m-2 border border-gray-300 rounded';
-                    imageContainer.appendChild(img); // Append to the container
+                    img.className = 'w-28 h-32 object-cover border border-gray-300 rounded';
+
+                    const name = document.createElement('p');
+                    name.textContent = `Image ${index + 1}`;
+                    name.className = 'text-center';
+
+                    imgWrapper.appendChild(img);
+                    imgWrapper.appendChild(name);
+                    imageContainer.appendChild(imgWrapper);
                 });
                 toggleExtractButton();
             } else {
@@ -169,24 +255,25 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => console.error('Error fetching uploaded images:', error));
     }
 
-    // Example event listener for image upload (you need to implement the actual logic)
-    document.getElementById('uploadButton').addEventListener('click', function () {
-        // Simulate image upload
-        setTimeout(function () {
-            const img = document.createElement('img');
-            img.src = 'path/to/image.jpg'; // Replace with actual image path
-            imageContainer.appendChild(img);
-            toggleExtractButton();
-        }, 1000);
-    });
+    // // Example event listener for image upload (you need to implement the actual logic)
+    // document.getElementById('uploadButton').addEventListener('click', function () {
+    //     // Simulate image upload
+    //     setTimeout(function () {
+    //         const img = document.createElement('img');
+    //         img.src = 'path/to/image.jpg'; // Replace with actual image path
+    //         imageContainer.appendChild(img);
+    //         toggleExtractButton();
+    //     }, 1000);
+    // });
 
     // Example event listener for image removal (you need to implement the actual logic)
-    imageContainer.addEventListener('click', function (event) {
-        if (event.target.tagName === 'IMG') {
-            imageContainer.removeChild(event.target);
-            toggleExtractButton();
-        }
-    });
+    // imageContainer.addEventListener('click', function (event) {
+    //     if (event.target.tagName === 'IMG') {
+    //         imageContainer.removeChild(event.target);
+    //         toggleExtractButton();
+    //     }
+    // });
+
 });
 
 //THis is for FAQ in WEBSITE
