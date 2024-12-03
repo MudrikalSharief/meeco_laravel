@@ -76,6 +76,24 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Create Raw TExt table
+        Schema::create('raw', function (Blueprint $table) {
+            $table->id('raw_id');
+            $table->unsignedBigInteger('topic_id');
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
+            $table->string('raw_text');
+            $table->timestamps();
+        });
+
+        // Create Reviewer TExt table
+        Schema::create('reviewer', function (Blueprint $table) {
+            $table->id('reviewer_id');
+            $table->unsignedBigInteger('topic_id');
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
+            $table->string('reviewer_text');
+            $table->timestamps();
+        });
+
         // Create Questions table
         Schema::create('questions', function (Blueprint $table) {
             $table->id('question_id');

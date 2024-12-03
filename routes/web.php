@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,6 +35,8 @@ Route::middleware('auth')->group(function (){
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::view('/topics', 'posts.topics')->name('topics');
 
+    Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects');
+    Route::post('/subjects/create', [SubjectController::class, 'createSubject'])->name('subjects.create');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');

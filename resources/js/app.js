@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageContainer = document.getElementById('imageContainer');
     const zoomModal = document.getElementById('zoomModal');
     const zoomedImage = document.getElementById('zoomedImage');
-    const closeZoomModal = document.getElementById('closeZoomModal');
+
 
     if (imageContainer) {
         imageContainer.addEventListener('click', (event) => {
@@ -98,16 +98,116 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (closeZoomModal) {
-        closeZoomModal.addEventListener('click', () => {
-            zoomModal.classList.add('hidden');
-        });
-    }
 
     if (zoomModal) {
         zoomModal.addEventListener('click', (event) => {
             if (event.target === zoomModal) {
                 zoomModal.classList.add('hidden');
+            }
+        });
+    }
+
+    const extractTextButton = document.getElementById('extractTextButton');
+    const extractTextModal = document.getElementById('extractTextModal');
+    const extractTextModalContent = document.getElementById('extractTextModalContent');
+    const subjectSelect = document.getElementById('subjectSelect');
+    const createSubjectButton = document.getElementById('createSubjectButton');
+    const cancelExtract = document.getElementById('cancelExtract');
+    const newSubjectContainer = document.getElementById('newSubjectContainer');
+    const newSubject = document.getElementById('newSubject');
+
+    if (extractTextButton) {
+        extractTextButton.addEventListener('click', () => {
+            fetch('/subjects')
+                .then(response => response.json())
+                .then(data => {
+                    subjectSelect.innerHTML = '';
+                    data.subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.id;
+                        option.textContent = subject.name;
+                        subjectSelect.appendChild(option);
+                    });
+                    const createNewOption = document.createElement('option');
+                    createNewOption.value = 'create_new';
+                    createNewOption.textContent = 'Create New Subject';
+                    subjectSelect.appendChild(createNewOption);
+                    extractTextModal.classList.remove('hidden');
+                })
+                .catch(error => console.error('Error fetching subjects:', error));
+        });
+    }
+
+    if (extractTextModal) {
+        extractTextModal.addEventListener('click', (event) => {
+            if (!extractTextModalContent.contains(event.target)) {
+                extractTextModal.classList.add('hidden');
+            }
+        });
+    }
+
+    if (cancelExtract) {
+        cancelExtract.addEventListener('click', () => {
+            extractTextModal.classList.add('hidden');
+        });
+    }
+
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', () => {
+            if (subjectSelect.value === 'create_new') {
+                newSubjectContainer.classList.remove('hidden');
+            } else {
+                newSubjectContainer.classList.add('hidden');
+            }
+        });
+    }
+
+    document.getElementById('subjectForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if(subjectSelect){
+            if (subjectSelect.value === 'create_new' && newSubject.value.trim() !== '') {
+                fetch('/subjects/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: newSubject.value.trim() })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('New subject created successfully!');
+                        extractTextModal.classList.add('hidden');
+                    } else {
+                        alert('Failed to create new subject.');
+                    }
+                })
+                .catch(error => console.error('Error creating new subject:', error));
+            } else {
+                // Handle the case where an existing subject is selected
+                // ...
+            }
+        }
+    });
+
+    if (createSubjectButton) {
+        createSubjectButton.addEventListener('click', () => {
+            const newSubjectName = prompt('Enter new subject name:');
+            if (newSubjectName) {
+                // Logic to create a new subject (e.g., send a request to the server)
+                // For now, just add it to the dropdown
+                const newOption = document.createElement('option');
+                newOption.value = newSubjectName;
+                newOption.textContent = newSubjectName;
+                subjectSelect.appendChild(newOption);
+                subjectSelect.value = newSubjectName;
             }
         });
     }
@@ -198,7 +298,7 @@ if(uploaded){
     });
 }
 
-//this is for the Showing the image
+//this is for the Showing the image in capture
 // Fetch and display previously uploaded images
 document.addEventListener('DOMContentLoaded', function () {
     const imageContainer = document.getElementById('imageContainer');
@@ -232,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = 'Uploaded Image';
-                    img.className = 'w-28 h-32 object-cover border border-gray-300 rounded';
+                    img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
 
                     const name = document.createElement('p');
                     name.textContent = `Image ${index + 1}`;
