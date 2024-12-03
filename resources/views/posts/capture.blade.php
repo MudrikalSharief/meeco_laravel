@@ -47,28 +47,6 @@
         </div>
     </div>
 
-    <!-- Modal for Extract Text -->
-    <div id="extractTextModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
-        <div id="extractTextModalContent" class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
-            <h2 class="text-lg font-semibold mb-4">Select or Create Subject</h2>
-            <form id="subjectForm">
-                <div class="mb-4">
-                    <label for="subjectSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Subject</label>
-                    <select id="subjectSelect" name="subject" class=" p-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <!-- Options will be populated dynamically -->
-                        <option value="create_new">Create New Subject</option>
-                    </select>
-                </div>
-                <div id="newSubjectContainer" class="mb-4 hidden">
-                    <label for="newSubject" class="block text-sm font-medium text-gray-700 mb-1">New Subject Name</label>
-                    <input id="newSubject" type="text" name="new_subject" class="py-1 px-3 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600" id="cancelExtract">Cancel</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
+   
 
 </x-layout>
