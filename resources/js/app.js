@@ -185,6 +185,69 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching subjects:', error));
   
+    // This is for the add Topic
+    const addTopicButton = document.getElementById('addTopicButton');
+    const addTopicModal = document.getElementById('addTopicModal');
+    const cancelTopicButton = document.getElementById('cancelTopicButton');
+    const saveTopicButton = document.getElementById('saveTopicButton');
+    const newTopicName = document.getElementById('newTopicName');
+    const subjectId = document.querySelector('.p-3').dataset.subjectId;
+
+    if(addTopicButton){
+        addTopicButton.addEventListener('click', function () {
+            addTopicModal.classList.remove('hidden');
+        });
+    }
+
+    if(cancelTopicButton){
+        cancelTopicButton.addEventListener('click', function () {
+            addTopicModal.classList.add('hidden');
+            newTopicName.value = '';
+        });
+    }
+
+    if(saveTopicButton){
+        saveTopicButton.addEventListener('click', function () {
+            const topicName = newTopicName.value.trim();
+            if (topicName) {
+                fetch('/topics/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: topicName, subject_id: subjectId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const topicButton = document.createElement('a');
+                        topicButton.href = `/topics/${topicName}`;
+                        topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md"> ${topicName}</button>`;
+                        const topicsContainer = document.querySelector('.topics-container');
+                        if(topicsContainer){
+                            topicsContainer.appendChild(topicButton);
+                        } else {
+                            // If no topics are present, replace the "No Topics to Show" message
+                            const noTopicsMessage = document.querySelector('.text-gray-500');
+                            if(noTopicsMessage){
+                                noTopicsMessage.remove();
+                            }
+                            const newContainer = document.createElement('div');
+                            newContainer.className = 'topics-container';
+                            newContainer.appendChild(topicButton);
+                            document.querySelector('.p-3').appendChild(newContainer);
+                        }
+                        addTopicModal.classList.add('hidden');
+                        newTopicName.value = '';
+                    } else {
+                        alert('Error adding topic: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error adding topic:', error));
+            }
+        });
+    }
 });
 
 //This is for upload image modal logic

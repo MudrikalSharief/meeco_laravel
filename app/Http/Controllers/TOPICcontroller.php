@@ -25,6 +25,21 @@ class TOPICcontroller extends Controller
     {
         $subject = Subject::where('name', $subjectName)->firstOrFail();
         $topics = Topic::where('subject_id', $subject->subject_id)->get();
-        return view('posts.topics', compact('topics'));
+        return view('posts.topics', compact('topics', 'subject'));
+    }
+
+    public function createTopic(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'subject_id' => 'required|integer|exists:subjects,subject_id',
+        ]);
+
+        $topic = new Topic();
+        $topic->name = $request->name;
+        $topic->subject_id = $request->subject_id;
+        $topic->save();
+
+        return response()->json(['success' => true, 'message' => 'Topic added successfully']);
     }
 }

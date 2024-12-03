@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
+    Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');

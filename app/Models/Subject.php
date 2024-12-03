@@ -27,7 +27,6 @@ class Subject extends Model
         'name'
     ];
 
-
     // Define the relationship with the User model
     public function user()
     {
