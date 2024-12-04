@@ -36,6 +36,24 @@ Route::middleware('auth')->group(function (){
 
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
+<<<<<<< Updated upstream
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
     Route::view('/profile', 'posts.profile')->name('profile');
 });
+=======
+    Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
+    Route::view('/profile', 'components.profile')->name('profile');
+
+  
+    Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
+});
+
+Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
+    Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subcriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcriptionFolder.authentication')->name('upgrade.authentication');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+    Route::view('/', 'components.layout')->name('home');
+>>>>>>> Stashed changes

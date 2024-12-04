@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -71,9 +71,8 @@
         </nav>
         
         <div class="md:pl-52 pl-14 pt-12 content here  w-full h-full">
-            {{ $slot }}
+            {{ $slot ?? '' }}
         </div>
 
 </body>
 </html>
-      
