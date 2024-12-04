@@ -19,7 +19,7 @@ class SubjectController extends Controller
     {   
         try {
             $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+                'name' => 'required|string|max:255|unique:subjects,name',
             ]);
 
             $subject = new Subject();
@@ -33,5 +33,11 @@ class SubjectController extends Controller
             Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Error creating subject'], 500);
         }
+    }
+
+    public function getSubjectsForDropdown()
+    {
+        $subjects = Subject::all(['id', 'name']);
+        return response()->json(['subjects' => $subjects]);
     }
 }
