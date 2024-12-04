@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function (){
 
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
-<<<<<<< Updated upstream
+
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
     Route::view('/profile', 'posts.profile')->name('profile');
 });
