@@ -10,7 +10,8 @@
     <div id="addSubjectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded shadow-md">
             <h2 class="text-xl font-bold mb-4">Add New Subject</h2>
-            <input type="text" id="newSubjectName" class="border p-2 w-full mb-4" placeholder="Subject Name">
+            <input type="text" id="newSubjectName" class="border p-2 w-full mb-1" placeholder="Subject Name">
+            <p class="error NewSubjectError mb-3 hidden">Subject Already Exist</p>
             <div class="flex justify-end">
                 <button id="cancelButton" class="bg-gray-500 text-white py-2 px-4 rounded mr-2">Cancel</button>
                 <button id="saveButton" class="bg-blue-500 text-white py-2 px-4 rounded">Save</button>

@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AUTHcontroller;
+use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TOPICcontroller;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -30,7 +32,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
     Route::view('/capture', 'posts.capture')->name('capture');
-    Route::post('/capture/upload', [ImageController::class, 'upload'])->name('capture.upload');
+    Route::post('/capture/upload', [IMAGEcontroller::class, 'upload'])->name('capture.upload');
     Route::get('/capture/images', [ImageController::class, 'getUploadedImages'])->name('capture.images');
     Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
 
@@ -41,10 +43,12 @@ Route::middleware('auth')->group(function (){
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
+    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
     Route::view('/profile', 'posts.profile')->name('profile');
 
-    Route::view('/extracted', 'posts.extracted')->name('extracted');
+  
+    Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 });

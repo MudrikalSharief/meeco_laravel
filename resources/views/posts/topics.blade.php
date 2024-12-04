@@ -1,35 +1,55 @@
 <x-layout>
-    <div class=" p-3 w-full h-full" data-subject-id="{{ $subject->subject_id }}">
+    <div class="subject_id_in_topics p-3 w-full h-full" data-subject-id="{{ $subject->subject_id }}">
         <div class="flex items-center">
             <a href="{{ route('subject')}}"><h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects </h1></a>
             <h2 class=" font-semibold text-xl text-blue-500"> > Topics</h2>
         </div>
-        
-
+     
         <!-- Add Topic Button -->
         <button id="addTopicButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Topic</button>
+        <div id="topics-container" class="w-full max-w-2xl"></div>
+        <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden">No Subjects to Show</p>
+   
 
-        @if ($topics->count() > 0)
-            <div class="topics-container">
-                @foreach ($topics as $topic)
-                    <a href="#"><button class=" w-full max-w-2xl border text-start py-2 px-3 my-2 shadow-md rounded-md">{{ $topic->name }}</button></a>
-                @endforeach
-            </div>
-        @else
-            <p class="text-gray-500 mt-2">No Topics to Show</p>
-        @endif
 
         
-        <!-- Add Topic Modal -->
-        <div id="addTopicModal" class="fixed inset-0 mb-3 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-            <div class="bg-white p-6 rounded shadow-md">
-                <h2 class="text-xl mb-4">Add New Topic</h2>
-                <input type="text" id="newTopicName" class="border p-2 w-full mb-4" placeholder="Topic Name">
-                <div class="flex justify-end">
-                    <button id="cancelTopicButton" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">Cancel</button>
-                    <button id="saveTopicButton" class="px-4 py-2 bg-blue-500 text-white rounded">Save</button>
-                </div>
+         <!-- Modal for Adding Topic -->
+    <div id="addTopicModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4">Add Topic</h2>
+            <div class="mb-4">
+                <label for="newTopicName" class="block text-sm font-medium text-gray-700 mb-1">Topic Name</label>
+                <input id="newTopicName" type="text" class="p-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="cancelTopicButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+                <button id="saveTopicButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
             </div>
         </div>
+    </div>
+
+    <!-- Modal for Topic Creation Confirmation -->
+    <div id="topicConfirmModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4 text-green-500">Topic Created</h2>
+            <hr class="mb-2">
+            <p>Your topic has been created successfully.</p>
+            <div class="flex justify-end mt-4">
+                <button id="closeTopicConfirm" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Topic Exists -->
+    <div id="topicExistsModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4 text-red-500">Topic Exists</h2>
+            <hr class="mb-2">
+            <p>The topic name already exists. Please choose a different name.</p>
+            <div class="flex justify-end mt-4">
+                <button id="closeTopicExists" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">OK</button>
+            </div>
+        </div>
+    </div>
     </div>
 </x-layout>

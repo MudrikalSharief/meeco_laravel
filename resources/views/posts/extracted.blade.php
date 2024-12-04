@@ -4,7 +4,7 @@
 ?>
 <x-layout>
     <div class="p-6 h-full  md:overflow-hidden">
-        <h1 class="pb-3 text-xl font-bold text-blue-500">Extracting Text</h1>
+        <h1 class="pb-3 text-xl font-bold text-blue-500">Extracted Text for Topic: {{ request('topic_name') }}</h1>
         <div class="flex flex-col md:flex-row h-full">
             <div class="image-container  md:max-h-[80vh] md:w-1/3 w-full">
                 <h3 class=" mb-2 text-blue-400">Images Uploaded <hr></h3>
@@ -12,20 +12,21 @@
                         <?php
                     try {
                         $imageAnnotatorClient = new ImageAnnotatorClient();
-                        $image_paths = glob('storage/uploads/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+                        $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
                         $extractedText = '';
                         foreach ($image_paths as $index => $image_path) {
                             $imageContent = file_get_contents($image_path);
                             $response = $imageAnnotatorClient->textDetection($imageContent);
                             $text = $response->getTextAnnotations();
-                            $extractedText .=  '========== Image ' . ($index + 1) . "==========" .PHP_EOL;
+                            $extractedText .=  '=Image ' . ($index + 1) . "=" .PHP_EOL;
                             $extractedText .= $text[0]->getDescription() . PHP_EOL . PHP_EOL;
                             if ($error = $response->getError()) {
                                 $extractedText .= 'API Error: ' . $error->getMessage() . PHP_EOL;
                             }
+                            $publicImagePath = str_replace(storage_path('app/public'), 'storage', $image_path);
                             ?>
-                            <div class="mb-4 flex flex-col items-center min-w-32">
-                                <img src="<?php echo $image_path; ?>" alt="Image" class="w-32 h-32 object-cover cursor-pointer" onclick="openModal('<?php echo $image_path; ?>')">
+                            <div class="mb-4 mt-2 flex flex-col items-center min-w-32">
+                                <img src="<?php echo asset($publicImagePath); ?>" alt="Image" class="w-32 h-32 object-cover cursor-pointer" onclick="openModal('<?php echo asset($publicImagePath); ?>')">
                                 <p class="text-center">Image <?php echo $index + 1; ?></p>
                             </div>
                             <?php
@@ -39,7 +40,7 @@
             </div>
             <div class="text-container  w-full md:w-2/3 md:pl-4 pt-4 md:pt-0">
                 <h3 class=" pb-2 text-blue-400">Extracted Text <hr></h3>
-                <textarea class="w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($extractedText); ?></textarea>
+                <textarea class="extractedTA w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($extractedText); ?></textarea>
                 <button id="generateReviewer" class="mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
             </div>
         </div>
