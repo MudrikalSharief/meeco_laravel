@@ -38,14 +38,13 @@ Route::middleware('auth')->group(function (){
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
     Route::view('/profile', 'components.profile')->name('profile');
+    Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
+
 });
 
     
 
   
-    Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
-
-
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
     Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subcriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
