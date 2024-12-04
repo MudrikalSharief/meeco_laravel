@@ -1,8 +1,12 @@
 <?php
 
 use App\Http\Controllers\AUTHcontroller;
+use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TOPICcontroller;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -23,17 +27,23 @@ Route::middleware('guest')->group(function (){
 });
 
 Route::middleware('auth')->group(function (){
-    Route::view('/','posts.index')->name('loggedin');
+    Route::view('/','posts.capture')->name('loggedin');
     
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
     Route::view('/capture', 'posts.capture')->name('capture');
-    Route::post('/capture/upload', [ImageController::class, 'upload'])->name('capture.upload');
+    Route::post('/capture/upload', [IMAGEcontroller::class, 'upload'])->name('capture.upload');
     Route::get('/capture/images', [ImageController::class, 'getUploadedImages'])->name('capture.images');
+    Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
 
     Route::view('/subject', 'posts.subject')->name('subject');
-    Route::view('/topics', 'posts.topics')->name('topics');
-
+    Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
+    Route::get('/subjects/{subjectName}', [TOPICcontroller::class, 'getTopicsBySubjectName'])->name('subjects');
+    Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
+    
+    Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
+    Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
+    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');

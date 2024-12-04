@@ -34,19 +34,19 @@
                 </div>
 
                 <ul id="menu" class="mt-7 flex flex-col items-center space-y-1 w-full cursor-pointer">
-                    <a href=" {{ route('capture')  }}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}">
+                    <a href=" {{ route('capture')  }}" class="sidebar_nav block w-full menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extacted') ? 'bg-blue-100' : '' }}">
                         <li class=" flex justify-start items-center gap-3 p-2  ">
                             <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
                             <p class="md:block nav_text blue_text font-normal hidden">Convert New</p>
                         </li>
                     </a>
-                    <a href="{{ route('subject')}}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('subject') ? 'bg-blue-100' : '' }}">
+                    <a href="{{ route('subject')}}" class="sidebar_nav block w-full menu-item rounded-lg {{ Request::routeIs('subjects') ? 'bg-blue-100' : '' }}{{ Request::routeIs('subject') ? 'bg-blue-100' : '' }}">
                         <li class=" flex justify-start items-center gap-3  p-2 ">
                             <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/books.svg') }}" alt="Icon"></div>
                             <p class="md:block nav_text blue_text font-normal hidden">Subjects</p>
                         </li>
                     </a>
-                    <a href="{{ route('deleted')}}" class=" block w-full menu-item rounded-lg {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
+                    <a href="{{ route('deleted')}}" class="sidebar_nav block w-full menu-item rounded-lg {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
                         <li class=" flex justify-start items-center gap-3 p-2 ">
                             <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
                             <p class="md:block nav_text blue_text font-normal hidden">Deleted</p>

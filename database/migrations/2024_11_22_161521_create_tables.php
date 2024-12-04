@@ -61,6 +61,8 @@ return new class extends Migration
         // Create Subjects table
         Schema::create('subjects', function (Blueprint $table) {
             $table->id('subject_id');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->string('name')->unique();
             $table->timestamps();
         });
@@ -71,6 +73,24 @@ return new class extends Migration
             $table->unsignedBigInteger('subject_id');
             $table->foreign('subject_id')->references('subject_id')->on('subjects')->onDelete('cascade');
             $table->string('name');
+            $table->timestamps();
+        });
+
+        // Create Raw TExt table
+        Schema::create('raw', function (Blueprint $table) {
+            $table->id('raw_id');
+            $table->unsignedBigInteger('topic_id');
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
+            $table->string('raw_text');
+            $table->timestamps();
+        });
+
+        // Create Reviewer TExt table
+        Schema::create('reviewer', function (Blueprint $table) {
+            $table->id('reviewer_id');
+            $table->unsignedBigInteger('topic_id');
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
+            $table->string('reviewer_text');
             $table->timestamps();
         });
 

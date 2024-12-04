@@ -21,3 +21,16 @@
 .error{
     @apply text-red-500 text-xs;
 }
+
+.scrollable {
+    overflow: auto;
+}
+@media (min-width: 768px) {
+    .image_holder {
+        overflow-y: auto;
+        max-height: 80vh;
+    }
+    .scrollable {
+        overflow: hidden;
+    }
+}
