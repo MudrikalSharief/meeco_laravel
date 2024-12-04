@@ -121,8 +121,8 @@
             <button id="addTopicButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">Add Topic</button>
             <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden">This subject has no topics yet.</p>
             <p id="subjectReminder" class="text-red-500 mt-2 hidden">Please select a subject.</p>
+            <p id="topicReminder" class="text-red-500 mt-2 hidden">Please select a topic.</p>
             <div class="flex justify-end mt-4">
-                <button id="closeExtractTextModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
                 <button id="confirmExtractText" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600">Extract</button>
             </div>
         </div>

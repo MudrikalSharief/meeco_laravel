@@ -838,17 +838,24 @@ if (closeCaptureConfirm) {
         confirmExtractText.addEventListener('click', () => {
             if (!subjectDropdown.value) {
                 subjectReminder.classList.remove('hidden');
+                noTopicsMessage.classList.add('hidden');
+            } else if (!topicDropdown.value) {
+                subjectReminder.classList.add('hidden');
+                noTopicsMessage.classList.remove('hidden');
             } else {
                 subjectReminder.classList.add('hidden');
+                noTopicsMessage.classList.add('hidden');
                 extractTextModal.classList.add('hidden');
 
                 const topicId = topicDropdown.value;
+                const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/capture/extract';
                 form.innerHTML = `
                     <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
                     <input type="hidden" name="topic_id" value="${topicId}">
+                    <input type="hidden" name="topic_name" value="${topicName}">
                 `;
                 document.body.appendChild(form);
                 form.submit();
