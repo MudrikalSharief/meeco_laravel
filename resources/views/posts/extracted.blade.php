@@ -49,8 +49,8 @@
     <!-- Success Modal -->
     <div id="successModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-4 rounded" style="width: 80%; min-width: 270px;">
-            <p>Update successful!</p>
-            <button onclick="closeSuccessModal()" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Close</button>
+            <p>Reviewer Generated!</p>
+            <a href="{{route('reviewer')}}"><button class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Okay</button></a>
         </div>
     </div>
 
