@@ -10,7 +10,7 @@
                     <p class="text-gray-600">Joined August 2024</p>
                 </div>
             </div>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Logout</button>
+           
         </div>
         <div class="mt-6 bg-white shadow-md rounded-lg p-6">
             <h3 class="text-xl font-semibold text-blue-600 mb-4">Subscription Status</h3>
