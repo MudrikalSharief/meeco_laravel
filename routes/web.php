@@ -49,16 +49,10 @@ Route::middleware('auth')->group(function (){
     Route::post('/topics/delete', [TOPICcontroller::class, 'deleteTopic'])->name('topics.delete');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
-    Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
-    Route::view('/profile', 'posts.profile')->name('profile');
+    Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
+    Route::view('/profile', 'components.profile')->name('profile');
 
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
   
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
-    Route::post('/store-extracted-text', [RawController::class, 'storeExtractedText'])->name('store.extracted.text');
-    Route::post('/get-raw-text', [RawController::class, 'getRawText'])->name('get.raw.text');
-    Route::post('/extract-text', [RawController::class, 'extractText'])->name('extract.text');
-
-    Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
-    Route::get('/review/{topicId}', [RawController::class, 'showReviewPage'])->name('review.page');
 });
