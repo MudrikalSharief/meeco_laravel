@@ -41,10 +41,12 @@ Route::middleware('auth')->group(function (){
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
     Route::get('/subjects/{subjectName}', [TOPICcontroller::class, 'getTopicsBySubjectName'])->name('subjects');
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
+    Route::post('/subjects/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
     Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
+    Route::post('/topics/delete', [TOPICcontroller::class, 'deleteTopic'])->name('topics.delete');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'posts.upgrade')->name('upgrade');
@@ -58,4 +60,5 @@ Route::middleware('auth')->group(function (){
     Route::post('/extract-text', [RawController::class, 'extractText'])->name('extract.text');
 
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
+    Route::get('/review/{topicId}', [RawController::class, 'showReviewPage'])->name('review.page');
 });

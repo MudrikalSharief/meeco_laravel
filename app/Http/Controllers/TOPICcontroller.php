@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Models\Topic;
+use Illuminate\Support\Facades\Log;
 
 class TOPICcontroller extends Controller
 {
@@ -31,16 +32,34 @@ class TOPICcontroller extends Controller
 
     public function createTopic(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:topics,name,NULL,id,subject_id,' . $request->subject_id,
-            'subject_id' => 'required|integer|exists:subjects,subject_id',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255|unique:topics,name,NULL,id,subject_id,' . $request->subject_id,
+                'subject_id' => 'required|integer|exists:subjects,subject_id',
+            ]);
 
-        $topic = new Topic();
-        $topic->name = $request->name;
-        $topic->subject_id = $request->subject_id;
-        $topic->save();
+            $topic = new Topic();
+            $topic->name = $request->name;
+            $topic->subject_id = $request->subject_id;
+            $topic->save();
 
-        return response()->json(['success' => true, 'topic' => $topic]);
+            return response()->json(['success' => true, 'topic' => $topic]);
+        } catch (\Exception $e) {
+            Log::error('Error creating topic: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error creating topic'], 500);
+        }
+    }
+
+    public function deleteTopic(Request $request)
+    {
+        try {
+            $topic = Topic::findOrFail($request->id); // Ensure the correct key is used
+            $topic->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting topic: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(['success' => false, 'message' => 'Error deleting topic'], 500);
+        }
     }
 }

@@ -18,7 +18,7 @@
         <!-- Content Header -->
         <hr class="my-3">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="TITLE text-xl font-bold text-gray-800">Grammar</h1>
+            <h1 class="TITLE text-xl font-bold text-gray-800">{{ $topic->name }}</h1>
             <button id="toggleButton" class="text-blue-500 text-sm font-medium rounded-lg hover:underline">Raw text</button>
         </div>
 
@@ -56,8 +56,20 @@
         </div>
 
         <div class="Rawtext hidden border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
-            <h1>Rawtext here</h1>
+            <h1>Raw Text</h1>
+            <p>{{ $rawText }}</p>
          </div>
+    </div>
+
+    <div id="extractTextModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4">Extract Text</h2>
+            <!-- Modal content here -->
+            <div class="flex justify-end mt-4">
+                <button id="cancelExtractTextModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+                <button id="confirmExtractText" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Extract</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -75,7 +87,7 @@
                 TITLE.textContent="Raw Text"
             } else {
                 button.textContent = 'Raw text';
-                TITLE.textContent="Grammar"
+                TITLE.textContent="{{ $topic->name }}"
             }
         });
     </script>

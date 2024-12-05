@@ -6,7 +6,7 @@
         <p id="noSubjectsMessage" class="text-gray-500 mt-2 hidden">No Subjects to Show</p>
     </div>
 
-    <!-- Modal -->
+    <!-- Add Subject Modal -->
     <div id="addSubjectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
         <div class="bg-white p-6 rounded shadow-md">
             <h2 class="text-xl font-bold mb-4">Add New Subject</h2>
@@ -19,5 +19,15 @@
         </div>
     </div>
 
-    
+    <!-- Delete Subject Confirmation Modal -->
+    <div id="deleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-xl font-bold mb-4">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this subject?</p>
+            <div class="flex justify-end mt-4">
+                <button id="cancelDelete" class="bg-gray-500 text-white py-2 px-4 rounded mr-2">Cancel</button>
+                <button id="confirmDelete" class="bg-red-500 text-white py-2 px-4 rounded">Delete</button>
+            </div>
+        </div>
+    </div>
 </x-layout>

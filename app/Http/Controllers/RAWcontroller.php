@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Raw;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
@@ -72,5 +73,12 @@ class RawController extends Controller
         } else {
             return response()->json(['success' => true, 'raw_text' => $rawText]);
         }
+    }
+
+    public function showReviewPage($topicId)
+    {
+        $topic = Topic::findOrFail($topicId);
+        $rawText = Raw::where('topic_id', $topicId)->first()->raw_text ?? '';
+        return view('posts.reviewer', compact('topic', 'rawText'));
     }
 }
