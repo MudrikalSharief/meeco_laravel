@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .filter-blue{
     filter: brightness(0) saturate(100%) invert(12%) sepia(88%) saturate(6253%) hue-rotate(220deg) brightness(72%) contrast(116%);
 }

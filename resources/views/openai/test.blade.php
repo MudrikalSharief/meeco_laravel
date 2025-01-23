@@ -1,43 +1,38 @@
-<x-layout>
-    <div class="mt-2 ml-3">Chat the Chatgpt?</div>
-    <form action="">
-        <input type="text" id="message" name="message" class="border">
-        <button type="submit">Send</button>
-    </form>
-    
-    <script>
-        $("document").ready(function() {
-            $('form').submit(function(event) {
-                event.preventDefault();
-                $("form #message")..prop('disabled', true);
-                $("form button").prop('disabled', true);
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>{{ env('APP_NAME') }}</title>
+        @vite(['resources/css/app.css'])
+    </head>
+    <body class="h-screen w-full">
+    <div class="chat">
+        {{-- Chat --}}
+        <div class="messages">
+            <div class="left message">
+                <p>Start Chatting</p>
+            </div>
+        </div>
+        {{-- End Chat --}}
 
-                $.ajax({
-                    url:"/openai.test",
-                    method::"POST",
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    data:{
-                        "content": $("form #message").val();
-                    }
-                }) .done(function(res)){
-                    //populate sending image
-                    $(".message > .message").last().after('<div class="right message">') + 
-                        '<p>' + $("form #message").val() + '</p>' + </div>
+        {{-- Footer --}}
+        <div class="bottom">
+            <form>
+                @csrf   
+                <input type="text" id="message" name="message" placeholder="Type a message" autocomplete="off">
+                <button type="submit" ></button>
+            </form>
+        </div>
+        {{-- End Footer --}}
 
-                    $(".messages > .images").last().after('<div class="left images">') + 
-                      '<p>'  + res.choices[0].message.content + '<p>' </div>
+    </div>
 
-                    //clean up
-                    $("form #message").val('');
-                    $(document).scrollTop($(document).height());
+    <script src="{{ route('openai.js') }}"></script>
 
-                    $("form #message")..prop('disabled', false);
-                    $("form button").prop('disabled', false);
-                }
+    {{-- INCORRECT API KEY --}}
+</body>
+</html>
 
-            });
-        });
-    </script>
-</x-layout>
