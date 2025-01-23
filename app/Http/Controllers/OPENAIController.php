@@ -27,7 +27,26 @@ class OPENAIController extends Controller
                 "messages" => [
                     [
                         "role" => "user",
-                        "content" => $request->post('content')
+                        "content" => "
+                            You are an AI that helps generate organized study reviewers. A user has uploaded notes, and your task is to analyze the content, identify the subjects, and divide the information accordingly. 
+
+                            Here are the rules for processing:
+                            1. Identify the main subjects/topics in the notes (e.g., Math, Science, English).
+                            2. For each subject, break the content into smaller, logically grouped pieces that fit on individual cards.
+                            3. Each piece should focus on a single concept or subtopic, with no piece being longer than 100 words.
+                            4. If the notes are unclear, use your best judgment to organize the content logically while keeping it concise and easy to understand.
+                            5. Use simple and clear language suitable for a reviewer.
+
+                            Example format for the output:
+                            ---
+                            **Subject:** [Subject Name]
+                            **Card 1:** [Content for Card 1]
+                            **Card 2:** [Content for Card 2]
+                            ...
+
+                            ---
+
+                            Input notes: " . $request->post('content')
                     ]
                 ],
                 "temperature" => 0,

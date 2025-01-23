@@ -29,12 +29,12 @@
             <h1 class="reviewer_holder">Reviewer : {{ $reviewerText }}</h1>
         </div>
 
-        <div class="Rawtext  border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Rawtext  border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
             {{-- Raw text in here --}}
             <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
 
-         <div class="Questions border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+         <div class="Questions border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
     
          </div>
      
@@ -52,6 +52,34 @@
     </div>
 
     <script>
-        // JavaScript code to handle the toggle button and other functionalities
+        document.addEventListener('DOMContentLoaded', function(){
+            const toggleButton = document.getElementById('toggleButton');
+            const reviewer = document.querySelector('.Reviewer');
+            const rawtext = document.querySelector('.Rawtext');
+            const questions = document.querySelector('.Questions');
+            const extractTextModal = document.getElementById('extractTextModal');
+            const cancelExtractTextModal = document.getElementById('cancelExtractTextModal');
+            const confirmExtractText = document.getElementById('confirmExtractText');
+
+            toggleButton.addEventListener('click', function(){
+                reviewer.classList.toggle('hidden');
+                toggleButton.innerText = reviewer.classList.contains('hidden') ? 'Reviewer' : 'Raw Text';
+                rawtext.classList.toggle('hidden');
+                toggleButton.innerText = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
+            });
+
+            confirmExtractText.addEventListener('click', function(){
+                extractTextModal.classList.add('hidden');
+            });
+
+            cancelExtractTextModal.addEventListener('click', function(){
+                extractTextModal.classList.add('hidden');
+            });
+
+            reviewer.addEventListener('click', function(){
+                extractTextModal.classList.remove('hidden');
+            });
+
+        });
     </script>
 </x-layout>
