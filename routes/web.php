@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/storeReviewer', [ReviewerController::class, 'storeReviewer'])->name('storeReviewer');
   
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
+    Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
 });
 

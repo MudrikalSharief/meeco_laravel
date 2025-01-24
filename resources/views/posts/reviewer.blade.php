@@ -8,7 +8,7 @@
         </a>
     </div>
 
-    <div class="max-w-3xl mx-auto my-10 p-6 bg-white  rounded-lg ">
+    <div class="max-w-3xl mx-auto p-6 bg-white  rounded-lg ">
         <!-- Buttons -->
         <div class="flex gap-2 space-x-4 mb-6">
             <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
@@ -26,7 +26,7 @@
         <div class="Reviewer border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
             {{-- Reviewer  in here --}}
             <h1>Reviewer for Topic: {{ $topic->name }}</h1>
-            <h1 class="reviewer_holder">Reviewer : {{ $reviewerText }}</h1>
+            <h1 class="reviewer_holder"></h1>
         </div>
 
         <div class="Rawtext  border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
@@ -52,34 +52,51 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
+        document.addEventListener('DOMContentLoaded', function() {
+            const topicName = @json($topic->name);
+            const reviewerText = @json($reviewerText);
+            const rawText = @json($rawText);
+
+            fetch('/disect_reviewer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    reviewerText: reviewerText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                
+                let content = '';
+
+                data.forEach((subjectData) => {
+                    content += `<h2>Subject: ${subjectData.subject}</h2>`;
+                    subjectData.cards.forEach((card, index) => {
+                        content += `<p>Card ${index + 1}: ${card}</p>`;
+                    });
+                });
+
+                document.querySelector('.reviewer_holder').innerHTML = content;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+            // Handle switching between raw text and reviewer text
             const toggleButton = document.getElementById('toggleButton');
             const reviewer = document.querySelector('.Reviewer');
             const rawtext = document.querySelector('.Rawtext');
-            const questions = document.querySelector('.Questions');
-            const extractTextModal = document.getElementById('extractTextModal');
-            const cancelExtractTextModal = document.getElementById('cancelExtractTextModal');
-            const confirmExtractText = document.getElementById('confirmExtractText');
 
-            toggleButton.addEventListener('click', function(){
+            toggleButton.addEventListener('click', function() {
                 reviewer.classList.toggle('hidden');
-                toggleButton.innerText = reviewer.classList.contains('hidden') ? 'Reviewer' : 'Raw Text';
+                toggleButton.textContent = reviewer.classList.contains('hidden') ? 'Reviewer' : 'Raw Text';
                 rawtext.classList.toggle('hidden');
-                toggleButton.innerText = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
+                toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
             });
-
-            confirmExtractText.addEventListener('click', function(){
-                extractTextModal.classList.add('hidden');
-            });
-
-            cancelExtractTextModal.addEventListener('click', function(){
-                extractTextModal.classList.add('hidden');
-            });
-
-            reviewer.addEventListener('click', function(){
-                extractTextModal.classList.remove('hidden');
-            });
-
         });
     </script>
 </x-layout>
