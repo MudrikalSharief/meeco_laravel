@@ -77,7 +77,6 @@ class ReviewerController extends Controller
             }
     
             $data[] = [
-                'reviewer' => $request->reviewerText,
                 'subject' => $subject,
                 'cards' => $cards,
             ];

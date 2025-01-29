@@ -75,8 +75,12 @@
 
                 data.forEach((subjectData) => {
                     content += `<h2>Subject: ${subjectData.subject}</h2>`;
-                    subjectData.cards.forEach((card, index) => {
-                        content += `<p>Card ${index + 1}: ${card}</p>`;
+                    //This code below will show the name of the card
+                    // subjectData.cards.forEach((card, index) => {
+                    //     content += `<p>Card ${index + 1}: ${card}</p>`;
+                    // });
+                    subjectData.cards.forEach((card) => {
+                        content += `<p><br>- ${card}</p>`;
                     });
                 });
 

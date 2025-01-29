@@ -49,7 +49,7 @@ class OPENAIController extends Controller
                             Input notes: " . $request->post('content')
                     ]
                 ],
-                "temperature" => 0,
+                "temperature" => 0.5,
                 "max_tokens" => 2048
             ]);
     
