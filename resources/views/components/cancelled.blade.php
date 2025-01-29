@@ -10,6 +10,7 @@
                     <p class="text-gray-600">Joined August 2024</p>
                 </div>
             </div>
+            
            
         </div>
         <div class="mt-6 bg-white shadow-md rounded-lg p-6">
