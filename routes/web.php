@@ -64,3 +64,9 @@ Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.paym
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
     Route::view('/', 'components.layout')->name('home');
 
+    //admin
+
+    Route::get('/admin', function (){
+        return view('admin.admin_view');
+    });
+
