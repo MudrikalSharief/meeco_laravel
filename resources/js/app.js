@@ -527,6 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
                     if (data.success) {
                         // Show the upload confirmation modal
                         uploadConfirmModal.classList.remove('hidden');

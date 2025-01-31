@@ -12,7 +12,7 @@
         <!-- Buttons -->
         <div class="flex gap-2 space-x-4 mb-6">
             <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
-            <button class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Quizzes</button>
+            <button id="quiz" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Quizzes</button>
         </div>
 
         <!-- Content Header -->
