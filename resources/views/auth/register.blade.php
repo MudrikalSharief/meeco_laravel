@@ -20,12 +20,21 @@
         <form action="{{ route('register') }}" class="space-y-4" method="POST">
             @csrf
 
-          <!-- Name Field -->
+          <!-- Firstname Field -->
           <div>
-            <label for="name" class="block text-xs font-medium text-gray-700">Name</label>
-            <input type="text" name="name" id="name" placeholder="Enter your name" value="{{ old('name')}}" 
+            <label for="firstname" class="block text-xs font-medium text-gray-700">Firstname</label>
+            <input type="text" name="firstname" id="firstname" placeholder="Enter your firstname" value="{{ old('firstname')}}" 
             class="text-sm mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
-            @error('name')
+            @error('firstname')
+                <p class="error">{{ $message }}</p>
+            @enderror
+          </div>
+          <!-- Lastname Field -->
+          <div>
+            <label for="lastname" class="block text-xs font-medium text-gray-700">Lastname</label>
+            <input type="text" name="lastname" id="lastname" placeholder="Enter your lastname" value="{{ old('lastname')}}" 
+            class="text-sm mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            @error('lastname')
                 <p class="error">{{ $message }}</p>
             @enderror
           </div>
