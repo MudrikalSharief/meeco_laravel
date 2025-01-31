@@ -5,6 +5,8 @@ use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TOPICcontroller;
+use App\Http\Controllers\RawController;
+use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 
 
