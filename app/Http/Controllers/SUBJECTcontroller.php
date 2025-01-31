@@ -40,4 +40,16 @@ class SubjectController extends Controller
         $subjects = Subject::all(['id', 'name']);
         return response()->json(['subjects' => $subjects]);
     }
+
+    public function deleteSubject(Request $request)
+    {
+        try {
+            $subject = Subject::findOrFail($request->id); // Ensure the correct key is used
+            $subject->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting subject: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error deleting subject'], 500);
+        }
+    }
 }

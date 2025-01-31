@@ -112,7 +112,7 @@
                 </select>
                 <button id="addSubjectButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Subject</button>
             </div>
-            <div id="topicsContainer" class="mb-4 hidden">
+            <div id="topicsDropdownContainer" class="mb-4 hidden">
                 <label for="topicDropdown" class="block text-sm font-medium text-gray-700 mb-1">Select Topic</label>
                 <select id="topicDropdown" class="p-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <!-- Options will be populated dynamically -->
@@ -121,9 +121,10 @@
             <button id="addTopicButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">Add Topic</button>
             <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden">This subject has no topics yet.</p>
             <p id="subjectReminder" class="text-red-500 mt-2 hidden">Please select a subject.</p>
+            <p id="topicReminder" class="text-red-500 mt-2 hidden">Please select a topic.</p>
             <div class="flex justify-end mt-4">
-                <button id="closeExtractTextModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
-                <button id="confirmExtractText" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600">Extract</button>
+                <button id="cancelExtractTextModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+                <button id="confirmExtractText" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Extract</button>
             </div>
         </div>
     </div>
@@ -193,4 +194,5 @@
             </div>
         </div>
     </div>
+
 </x-layout>

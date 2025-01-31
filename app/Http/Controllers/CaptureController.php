@@ -34,7 +34,6 @@ class CaptureController extends Controller
     {
         $request->validate([
             'topic_id' => 'required|integer|exists:topics,topic_id', // Update 'id' to the actual primary key column name
-            
         ]);
 
         $topicId = $request->input('topic_id');

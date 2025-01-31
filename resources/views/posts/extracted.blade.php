@@ -1,6 +1,10 @@
 <?php
      require_once base_path('vendor/autoload.php');
      use Google\Cloud\Vision\V1\ImageAnnotatorClient;
+     use App\Models\Raw;
+     use App\Http\Controllers\RawController;
+
+     $rawText = Raw::where('topic_id', request('topic_id'))->first()->raw_text ?? '';
 ?>
 <x-layout>
     <div class="p-6 h-full  md:overflow-hidden">
@@ -9,43 +13,31 @@
             <div class="image-container  md:max-h-[80vh] md:w-1/3 w-full">
                 <h3 class=" mb-2 text-blue-400">Images Uploaded <hr></h3>
                 <div class="image_holder flex gap-3 md:flex-col overflow-x-auto md:overflow-y-auto scrollable">
+                    <?php
+                    $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
+                    foreach ($image_paths as $index => $image_path) {
+                        $publicImagePath = str_replace(storage_path('app/public'), 'storage', $image_path);
+                        ?>
+                        <div class="mb-4 mt-2 flex flex-col items-center min-w-32">
+                            <img src="<?php echo asset($publicImagePath); ?>" alt="Image" class="w-32 h-32 object-cover cursor-pointer" onclick="openModal('<?php echo asset($publicImagePath); ?>')">
+                            <p class="text-center">Image <?php echo $index + 1; ?></p>
+                        </div>
                         <?php
-                    try {
-                        $imageAnnotatorClient = new ImageAnnotatorClient();
-                        $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
-                        $extractedText = '';
-                        foreach ($image_paths as $index => $image_path) {
-                            $imageContent = file_get_contents($image_path);
-                            $response = $imageAnnotatorClient->textDetection($imageContent);
-                            $text = $response->getTextAnnotations();
-                            $extractedText .=  '=Image ' . ($index + 1) . "=" .PHP_EOL;
-                            $extractedText .= $text[0]->getDescription() . PHP_EOL . PHP_EOL;
-                            if ($error = $response->getError()) {
-                                $extractedText .= 'API Error: ' . $error->getMessage() . PHP_EOL;
-                            }
-                            $publicImagePath = str_replace(storage_path('app/public'), 'storage', $image_path);
-                            ?>
-                            <div class="mb-4 mt-2 flex flex-col items-center min-w-32">
-                                <img src="<?php echo asset($publicImagePath); ?>" alt="Image" class="w-32 h-32 object-cover cursor-pointer" onclick="openModal('<?php echo asset($publicImagePath); ?>')">
-                                <p class="text-center">Image <?php echo $index + 1; ?></p>
-                            </div>
-                            <?php
-                        }
-                        $imageAnnotatorClient->close();
-                    } catch(Exception $e) {
-                        $extractedText .= $e->getMessage();
                     }
-                ?>
+                    ?>
                 </div>
             </div>
             <div class="text-container  w-full md:w-2/3 md:pl-4 pt-4 md:pt-0">
                 <h3 class=" pb-2 text-blue-400">Extracted Text <hr></h3>
-                <textarea class="extractedTA w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($extractedText); ?></textarea>
-                <button id="generateReviewer" class="mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
+                <form id="extractedTextForm" class="w-full h-full" method="POST" action="/store-extracted-text">
+                    @csrf
+                    <input type="hidden" name="topic_id" value="{{ request('topic_id') }}">
+                    <textarea name="raw_text" class="extractedTA w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($rawText); ?></textarea>
+                    <button type="submit" id="genereate_reviewer_button" class="generate_reviewer mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
+                </form>
             </div>
         </div>
     </div>
-
 
     <!-- Modal -->
     <div id="imageModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeModal(event)">
@@ -54,5 +46,156 @@
         </div>
     </div>
 
-    
+    <!-- Success Modal -->
+    <div id="successModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-4 rounded" style="width: 80%; min-width: 270px;">
+            <p>Reviewer Generated!</p>
+                
+                <button id="ReviewerGeneratedButton" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Okay</button>
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const extractedTextForm = document.getElementById('extractedTextForm');
+            const extractedTextArea = extractedTextForm.querySelector('textarea[name="raw_text"]');
+            const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
+
+            fetch('/get-raw-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ topic_id: topicId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.raw_text.trim() !== '') {
+                    extractedTextArea.value = data.raw_text;
+                } else {
+                    fetch('/extract-text', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ topic_id: topicId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            return response.json();
+                        } else {
+                            throw new Error('Response is not JSON');
+                        }
+                    })
+                    .then(data => {
+                        console.log('Success:', data);
+                        // Display the returned raw_text in the textarea
+                        extractedTextArea.value = data.raw_text;
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+            //======= the reviewer genereate button is clicked here ==================================================================
+            extractedTextForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetch('/UpdateAndGet_RawText', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ topic_id: topicId, raw_text:extractedTextArea.value})
+                })
+                .then(response => response.json())
+                .then(() => {
+                    fetch('/openai/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ content: extractedTextArea.value })
+                    })
+                    .then(response => {
+                        json = response.json();
+                        return json;
+                    })
+                    .then(data => {
+                        console.log('Success: OpenAi have Created the reviewer');
+                        //==
+                        const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
+                        // Insert the generated reviewer into the database
+                        fetch('/storeReviewer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                topic_id: topicId,
+                                reviewer_text: data.choices[0].message.content
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error('Failed to store reviewer: ' + (err.message || 'Unknown error'));
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(storeData => {
+                            if (storeData.success) {
+                                document.getElementById('successModal').classList.remove('hidden');
+                            } else {
+                                throw new Error(storeData.message || 'Unknown error');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('An error occurred cannot store data: ' + error.message);
+                        });
+                        //==
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred: ' + error.message);
+                    });
+                });
+            });
+
+            //======================================================================
+            //this is for the ReviewerGeneratedButton button clicked
+            const ReviewerGeneratedButton = document.getElementById('ReviewerGeneratedButton');
+            ReviewerGeneratedButton.addEventListener('click', function() {
+                document.getElementById('successModal').classList.add('hidden');
+                const topicId = document.querySelector('input[name="topic_id"]').value;
+                window.location.href = `/reviewer/${topicId}`;
+            });
+            
+            //=======================================================================================================
+            function closeModal(event) {
+                if (event.target.id === 'imageModal') {
+                    document.getElementById('imageModal').classList.add('hidden');
+                }
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+            }
+        });
+    </script>
 </x-layout>
