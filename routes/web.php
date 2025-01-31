@@ -64,8 +64,7 @@ Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.paym
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
     Route::view('/', 'components.layout')->name('home');
 
-    //admin
-
+    //admin routes
     Route::get('/admin', function (){
         return view('admin.admin_view');
     });
@@ -80,6 +79,9 @@ Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.paym
     });
     Route::get('/admin/subscription', function (){
         return view('admin.admin_subscription');
+    });
+    Route::get('/admin/account', function (){
+        return view('admin.admin_account');
     });
 
 
