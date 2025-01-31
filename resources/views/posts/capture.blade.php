@@ -37,7 +37,7 @@
                         @csrf
                         <div class="mb-4">
                             <label for="images" class="block text-sm font-medium text-gray-700 mb-1">Choose Images</label>
-                            <input id="imageInput" type="file" name="images[]" id="images" class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" multiple>
+                            <input id="imageInput" type="file" name="images[]" class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" multiple>
                         </div>
                     </form>
                 </div>

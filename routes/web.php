@@ -50,11 +50,25 @@ Route::middleware('auth')->group(function (){
     Route::view('/profile', 'components.profile')->name('profile');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
+    
+    
+    Route::post('/get-raw-text', [RawController::class, 'getRawText']);
+    Route::post('/UpdateAndGet_RawText', [RawController::class, 'UpdateAndGet_RawText']);
+    Route::post('/extract-text', [RawController::class, 'extractText']);
+    Route::post('/store-extracted-text', [RawController::class, 'storeExtractedText']);
+    
+    Route::post('/generate-reviewer', [RawController::class, 'generateReviewer']);
+    Route::post('/storeReviewer', [ReviewerController::class, 'storeReviewer'])->name('storeReviewer');
+  
+    Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
+    Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
+    Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
+
+
+    //for quiz
+    Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
 });
 
-    
-
-  
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
     Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subcriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
