@@ -69,4 +69,8 @@ Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.paym
     Route::get('/admin', function (){
         return view('admin.admin_view');
     });
+    Route::get('/admin/users', function (){
+        return view('admin.admin_users');
+    });
+
 
