@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.topics && data.topics.length > 0 ) {
                 data.topics.forEach((topic, index) => {
                     const topicButton = document.createElement('a');
-                    topicButton.href = `/reviewer`;
+                    topicButton.href = `/review/${topic.topic_id}`;
                     topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${topic.name}</span>
                                                     <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>
@@ -1103,13 +1103,13 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error adding topic:', error);
-                    
+                    alert('Error adding topic: ' + error.message);
                 });
             }
 
@@ -1166,7 +1166,7 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
@@ -1255,15 +1255,13 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                          
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error adding topic:', error);
-                   
-                    
+                    alert('Error adding topic: ' + error.message);
                 });
             }
         });
@@ -1313,12 +1311,12 @@ if (closeCaptureConfirm) {
                             noTopicsMessage.classList.remove('hidden');
                         }
                     } else {
-                        console.error('Error adding topic:', error);
+                        alert('Failed to delete topic: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error deleting topic:', error);
-                    
+                    alert('Error deleting topic: ' + error.message);
                 })
                 .finally(() => {
                     deleteTopicConfirmModal.classList.add('hidden');
@@ -1336,7 +1334,7 @@ if (closeCaptureConfirm) {
                 topicsContainer.innerHTML = ''; // Clear existing topics
                 data.topics.forEach((topic, index) => {
                     const topicButton = document.createElement('a');
-                    topicButton.href = `/reviewer`;
+                    topicButton.href = `/review/${topic.topic_id}`;
                     topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${topic.name}</span>
                                                     <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>

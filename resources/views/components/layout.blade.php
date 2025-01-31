@@ -7,7 +7,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ env('APP_NAME') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        {{-- , 'resources/js/openai.js' --}}
     </head>
     <body class="h-screen w-full">
     
