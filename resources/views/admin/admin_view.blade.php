@@ -1,7 +1,7 @@
 <x-admin_layout>
     <main>
-
-    <h1>hi</h1>
+         <h1>
+            Im in dashboard
+        </h1>
     </main>
-
 </x-admin_layout>
