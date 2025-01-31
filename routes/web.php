@@ -86,6 +86,9 @@ Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.paym
     Route::get('/admin/support', function (){
         return view('admin.admin_support');
     });
+    Route::get('/admin/logs', function (){
+        return view('admin.admin_logs');
+    });
 
 
 
