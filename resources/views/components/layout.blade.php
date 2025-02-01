@@ -29,8 +29,8 @@
     </div>
 
     {{-- Bottom Navigation --}}
-    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-0 w-full h-16 flex flex-row justify-center items-center border-t shadow-[0_-3px_10px_1px_rgba(50,50,50,0.15)]">
-        <ul id="menu" class="flex flex-row items-center space-x-4 px-4">
+    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-0 w-full h-16 flex flex-row justify-between items-center border-t shadow-[0_-3px_10px_1px_rgba(50,50,50,0.15)]">
+        <ul id="menu" class="flex flex-row items-center space-x-4 px-4 mx-auto">
             <a href="{{ route('capture') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extacted') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start items-center gap-3 p-2">
                     <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
@@ -57,7 +57,7 @@
             </a>
         </ul>
 
-        <form action="{{ route('logout') }}" method="POST" class="px-4">
+        <form action="{{ route('logout') }}" method="POST" class="ml-auto px-4">
             @csrf
             <button id="sidebar-signout" class="flex justify-start items-center gap-3 p-2 cursor-pointer">
                 <img class="filter-red max-w-6" src="{{ asset('logo_icons/sign-out-alt.svg') }}" alt="Sign out">
