@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="px-4 py-6">
+    <div class="px-4 py-3">
         <!-- Header Section -->
         <div class="flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md rounded-lg px-6 py-4 mb-6">
             <div class="flex items-center gap-2">
@@ -14,9 +14,9 @@
         </div>
 
         <!-- Cards Section -->
-        <div class="grid gap-6 lg:grid-cols-3 sm:grid-cols-1">
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1">
             <!-- Casual Card -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full">
                 <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
                     <span class="font-semibold text-lg">Casual</span>
                 </div>
@@ -24,7 +24,6 @@
                     <p class="text-center font-bold text-gray-700">ONLY ₱27 for a week</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A week access to all features</li>
-                        
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">
@@ -35,7 +34,7 @@
             </div>
 
             <!-- Regular Card -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full">
                 <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
                     <span class="font-semibold text-lg">Regular</span>
                 </div>
@@ -43,7 +42,6 @@
                     <p class="text-center font-bold text-gray-700">ONLY ₱99 for a month</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A month access to all features</li>
-                        
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">
@@ -54,19 +52,18 @@
             </div>
 
             <!-- VIP Card -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full">
                 <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
-                    <span class="font-semibold text-lg">VIP</span>
+                    <span class="font-semibold text-lg">VIP<span>
                 </div>
                 <div class="p-4">
-                    <p class="text-center font-bold text-gray-700">ONLY ₱999 annually</p>
+                    <p class="text-center font-bold text-gray-700">ONLY ₱199 for a year</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A year access to all features</li>
-                        
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">
-                    <button id="open-vip-modal" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
+                    <button id="open-premium-modal" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
                         Subscribe to VIP
                     </button>
                 </div>
@@ -111,9 +108,9 @@
 
     <!-- VIP Modal -->
     <div id="vip-subscription-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white w-80 rounded-lg shadow-lg relative p-6 px-4">
+        <div class="bg-white w-80 rounded-lg shadow-lg relative p-6">
             <button id="close-vip-modal-btn" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-            <h3 class="text-xl font-semibold text-blue-500 mt-4">VIP</h3> <!-- Title color updated -->
+            <h3 class="text-xl font-semibold text-blue-500 mt-4">VIP</h3>
             <p class="text-gray-600 mt-2">Pay once in advance. Does not auto-renew.</p>
             <p class="text-gray-900 font-bold text-lg mt-4">₱ 999 annually</p>
             <div class="mt-4">
