@@ -13,7 +13,7 @@
 
     {{-- Upper Navigation --}}
     <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between">
-        <div class="logo_holder flex justify-start items-center gap-3">
+        <div class="logo_holder flex justify-start items-center gap-3 pl-4">
             <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
             <p class="nav_text blue_text text-xl font-bold">meeco</p>
         </div>
