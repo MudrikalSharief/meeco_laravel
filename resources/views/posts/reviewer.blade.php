@@ -102,7 +102,10 @@
                 toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
             });
 
-            const quizbutton
+            const quizbutton = document.getElementById('quiz');
+            
+
+
         });
     </script>
 </x-layout>

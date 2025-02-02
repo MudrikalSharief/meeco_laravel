@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2024 at 08:55 AM
+-- Generation Time: Jan 29, 2025 at 05:26 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,6 +91,48 @@ CREATE TABLE `questions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `raw`
+--
+
+CREATE TABLE `raw` (
+  `raw_id` bigint(20) UNSIGNED NOT NULL,
+  `topic_id` bigint(20) UNSIGNED NOT NULL,
+  `raw_text` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `raw`
+--
+
+INSERT INTO `raw` (`raw_id`, `topic_id`, `raw_text`, `created_at`, `updated_at`) VALUES
+(45, 126, '1. What is constitution?, an instrument\n> A. constitution is a set of fundamental vules that\ndetermine how a country of state is vun-\n2. What are the type / kinds of constitution?\n> 1; Written Constitution/\nis a formal, codified document that outlines\nthe fundamental lawas, principles, and structure\nof a country\'s government.\n> It typically a single document and serves as\nsupreme law of the land.\n2. Unwritten Constitution\nthe\n> An unwritten constitution consists of various sources,\nsuch as statutes, conventions, judicial decisions,\nand historical documents, that collectively define\ngovernance and structure of a country\n> It lacks a single, consolidated document-\n\"Conventional / Enacted Constitution /\n> was created through a constitutional convention;\nthis convention is called to be able to draft the\nconstitution.\n4. \"Cumulative / Evolve constitution\n> developed as a\npart of the history of a particular\nnation; it was not created through a national\nConvention.', '2025-01-28 20:07:02', '2025-01-28 20:08:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviewer`
+--
+
+CREATE TABLE `reviewer` (
+  `reviewer_id` bigint(20) UNSIGNED NOT NULL,
+  `topic_id` bigint(20) UNSIGNED NOT NULL,
+  `reviewer_text` longtext NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `reviewer`
+--
+
+INSERT INTO `reviewer` (`reviewer_id`, `topic_id`, `reviewer_text`, `created_at`, `updated_at`) VALUES
+(10, 126, '**Subject:** Civics\n\n**Card 1:** \nA constitution is a set of fundamental rules that determine how a country or state is run. It serves as the supreme law of the land and outlines the structure of the government.\n\n**Card 2:** \nThere are different types of constitutions. One type is the Written Constitution, which is a formal, codified document that outlines the fundamental laws, principles, and structure of a country\'s government.\n\n**Card 3:** \nThe Unwritten Constitution is another type. It consists of various sources, such as statutes, conventions, judicial decisions, and historical documents, that collectively define the governance and structure of a country.\n\n**Card 4:** \nThe Conventional or Enacted Constitution is created through a constitutional convention, which is called to draft the constitution.\n\n**Card 5:** \nThe Cumulative or Evolved Constitution is developed as a part of the history of a particular nation. It was not created through a national convention.', '2025-01-28 20:08:14', '2025-01-28 20:08:14');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sessions`
 --
 
@@ -108,8 +150,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('LDER7961KfD9StRQNdTPhKcAd8quFekRIrEToSFt', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUWF2M2g2TThJeTAxWGxObWN2bEd2S2pBS1Eybkl5azh1bUZLdmt6UyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXB0dXJlL2ltYWdlcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1733211736),
-('nrQcZQ1vZZx5FcFFBhggCIOiOcVIHXCw81eZBDqu', 1, '127.0.0.1', 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMHZqdUZtRG1zVXpXQlVyZnJUNEt1ek04eUlzbVh4YTltcmJtRnVCRSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2V4dHJhY3RlZCI7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM2OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvY2FwdHVyZS9pbWFnZXMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1733195464);
+('Ra5ezu59wcqggSbgehpUOyKhMqZjGyBGanmvgyaw', 6, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibWZRalY1MDlzemM1RlIwMGVpTkJhUm0yWnFqdXRFcm5TZTNObG1SeCI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NjtzOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czoyODoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3RvcGljcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1738124261);
 
 -- --------------------------------------------------------
 
@@ -124,6 +165,13 @@ CREATE TABLE `subjects` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `subjects`
+--
+
+INSERT INTO `subjects` (`subject_id`, `user_id`, `name`, `created_at`, `updated_at`) VALUES
+(104, 6, 'new subject', '2025-01-28 20:06:47', '2025-01-28 20:06:47');
 
 -- --------------------------------------------------------
 
@@ -156,6 +204,13 @@ CREATE TABLE `topics` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `topics`
+--
+
+INSERT INTO `topics` (`topic_id`, `subject_id`, `name`, `created_at`, `updated_at`) VALUES
+(126, 104, 'new topic', '2025-01-28 20:06:54', '2025-01-28 20:06:54');
+
 -- --------------------------------------------------------
 
 --
@@ -180,7 +235,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `date_created`, `last_login`, `created_at`, `updated_at`, `remember_token`) VALUES
-(1, 'Admin', 'admin@gmail.com', '$2y$12$bSVpnyZedZDPMm5u6hVL7e5qWRVu2Eh7BiHSHO9p3RORFxZiLr1ne', 'user', '2024-11-30 09:19:25', NULL, '2024-11-30 01:19:25', '2024-11-30 01:19:25', NULL);
+(1, 'Admin', 'admin@gmail.com', '$2y$12$Grzs6DV7RGl0IwGm2RHSpe96xHRxW/SDhFiZMd6k3MvkhW/t2SMn6', 'user', '2024-12-03 10:02:00', NULL, '2024-12-03 02:02:00', '2024-12-03 02:02:00', NULL),
+(2, 'Anthony Marc', 'anthony@gmail.com', '$2y$12$o.bPEfiHPdfcn5leXwz5oORhzbFTJA4PeZuDO/mk8AClVzDU95nFC', 'user', '2024-12-05 08:17:50', NULL, '2024-12-05 00:17:50', '2024-12-05 00:17:50', NULL),
+(3, 'Sir Jaydee', 'Jaydee@gmail.com', '$2y$12$poHfZI6Iy68pzlKOXgTw4uAB3uiQk8V6/f5dwMlGb3BV0xg/Y6CWi', 'user', '2024-12-05 09:52:04', NULL, '2024-12-05 01:52:04', '2024-12-05 01:52:04', NULL),
+(4, 'Admin', 'admin1@mail.com', '$2y$12$wUrDS7rdnqnRQglUWVgEceFwllvj6/QWuWpDC2bRQWZFrRVmTrGu.', 'user', '2024-12-11 07:57:09', NULL, '2024-12-10 23:57:09', '2024-12-10 23:57:09', NULL),
+(5, 'Admin', 'bombom@gmail.com', '$2y$12$iL6rfJ307TVLn90EJ8TBr.rNXv65FmazuUUBtoAvvZ7oFHa.DCe72', 'user', '2024-12-29 07:41:59', NULL, '2024-12-28 23:41:59', '2024-12-28 23:41:59', NULL),
+(6, 'Sharief Mudrikal', 'sharief@gmail.com', '$2y$12$vixK7qWEwPpOy1RHq27/7eR18ASTt0WEJCt1C4fbkBBD84PhSwcYO', 'user', '2025-01-16 11:43:51', NULL, '2025-01-16 03:43:51', '2025-01-16 03:43:51', 'TuObHf56pjVwCsswGbBvWgE4FLp5RBpBVDkM46acjCbIAjNhFTSHugL79VTg');
 
 --
 -- Indexes for dumped tables
@@ -211,6 +271,20 @@ ALTER TABLE `promos`
 ALTER TABLE `questions`
   ADD PRIMARY KEY (`question_id`),
   ADD KEY `questions_topic_id_foreign` (`topic_id`);
+
+--
+-- Indexes for table `raw`
+--
+ALTER TABLE `raw`
+  ADD PRIMARY KEY (`raw_id`),
+  ADD KEY `raw_topic_id_foreign` (`topic_id`);
+
+--
+-- Indexes for table `reviewer`
+--
+ALTER TABLE `reviewer`
+  ADD PRIMARY KEY (`reviewer_id`),
+  ADD KEY `reviewer_topic_id_foreign` (`topic_id`);
 
 --
 -- Indexes for table `sessions`
@@ -279,10 +353,22 @@ ALTER TABLE `questions`
   MODIFY `question_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `raw`
+--
+ALTER TABLE `raw`
+  MODIFY `raw_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+
+--
+-- AUTO_INCREMENT for table `reviewer`
+--
+ALTER TABLE `reviewer`
+  MODIFY `reviewer_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `subject_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `subject_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `subscriptions`
@@ -294,13 +380,13 @@ ALTER TABLE `subscriptions`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `topic_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `topic_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -317,6 +403,18 @@ ALTER TABLE `admin_actions`
 --
 ALTER TABLE `questions`
   ADD CONSTRAINT `questions_topic_id_foreign` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `raw`
+--
+ALTER TABLE `raw`
+  ADD CONSTRAINT `raw_topic_id_foreign` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `reviewer`
+--
+ALTER TABLE `reviewer`
+  ADD CONSTRAINT `reviewer_topic_id_foreign` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `subjects`
