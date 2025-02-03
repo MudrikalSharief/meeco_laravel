@@ -1,31 +1,33 @@
 <x-layout>
-    <div class="p-3 w-full h-full flex flex-col items-center">
-        <h1 class="py-3 px-2 text-xl font-bold text-blue-500 text-center">Convert Image</h1>
+    <div class=" p-3 w-full h-fullx ">
+        <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Convert Image</h1>
 
-        <div class="flex justify-center space-x-4">
-            <button id="openModal" type="button" class="bg-blue-50 p-2 rounded-md btn btn-primary w-24 mt-3 flex flex-col items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                <img class="z-10 w-8 filter-blue" src="{{ asset('logo_icons/add-image.svg') }}" alt="">
-                <p class="text-sm mt-2 text-center">Add Image</p>
+        <div class="flex">
+
+            <button id="openModal" type="button" class=" bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <img class=" z-10 w-8 filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
+                <p  class=" text-sm mt-2">Add Image</p>
             </button>
     
-            <button id="openCamera" type="button" class="bg-blue-50 p-2 rounded-md btn btn-primary w-24 mt-3 flex flex-col items-center">
+            <button id="openCamera" type="button" class="bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center">
                 <img class="z-10 w-8 filter-blue" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="">
-                <p class="text-sm mt-2 text-center">Camera</p>
+                <p class=" text-sm mt-2">Camera</p>
             </button>
         </div>
 
-        <hr class="my-3 w-full">
+        <hr class=" my-3">
 
         <!-- Container for Uploaded Images -->
-        <h2 class="py-2 px-2 text-base font-medium text-center">Image uploaded</h2>
-        <div id="imageContainer" class="mt-2 px-3 flex flex-wrap justify-center"></div>
-        <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap justify-center"></div>
+        <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
+        <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
+        <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
-        <button id="extractTextButton" type="button" class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600 mx-auto" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
-      
+        <button id="extractTextButton" type="button" class=" ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
+        
+        
         <!-- Modal -->
-        <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
-            <div class="bg-white rounded-lg shadow-lg">
+        <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
+            <div class="bg-white rounded-lg shadow-lg   ">
                 <div class="flex justify-between items-center border-b px-4 py-2">
                     <h5 class="text-lg font-semibold">Upload Images</h5>
                     <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
@@ -43,12 +45,27 @@
                     <button class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600" id="cancelUpload">Cancel</button>
                     <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" id="uploadButton">Upload</button>
                 </div>
+        </div>
+    </div>
+
+    <!-- Modal for Zoomed Image -->
+    <div id="zoomModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <img id="zoomedImage" src="" alt="Zoomed Image" class="max-w-full max-h-full">
+        </div>
+    </div>
+
+    <!-- Modal for Delete Confirmation -->
+    <div id="deleteConfirmModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this image?</p>
+            <div class="flex justify-end mt-4">
+                <button id="cancelDelete" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+                <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</button>
             </div>
         </div>
     </div>
-<<<<<<< Updated upstream
-</x-layout>
-=======
 
     <!-- Modal for Upload Confirmation -->
     <div id="uploadConfirmModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
@@ -179,4 +196,3 @@
     </div>
 
 </x-layout>
->>>>>>> Stashed changes
