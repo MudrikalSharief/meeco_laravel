@@ -97,30 +97,45 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payme
 
     
     //admin routes
-    Route::get('/admin', function (){
-        return view('admin.admin_view');
-    });
-    Route::get('/admin/users', function (){
-        return view('admin.admin_users');
-    });
-    Route::get('/admin/transactions', function (){
-        return view('admin.admin_transactions');
-    });
-    Route::get('/admin/statistics', function (){
-        return view('admin.admin_statistics');
-    });
-    Route::get('/admin/subscription', function (){
-        return view('admin.admin_subscription');
-    });
-    Route::get('/admin/account', function (){
-        return view('admin.admin_account');
-    });
-    Route::get('/admin/support', function (){
-        return view('admin.admin_support');
-    });
-    Route::get('/admin/logs', function (){
-        return view('admin.admin_logs');
-    });
+    Route::view('/admin', 'admin.admin_view')->name('admin.dashboard');
+    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
+    Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+    
+
+
+
+
+
+    
+    // Route::get('/admin', function (){
+    //     return view('admin.admin_view')->name('admin.dashboard');
+    // });
+    // Route::get('/admin/users', function (){
+    //     return view('admin.admin_users');
+    // });
+    // Route::get('/admin/transactions', function (){
+    //     return view('admin.admin_transactions');
+    // });
+    // Route::get('/admin/statistics', function (){
+    //     return view('admin.admin_statistics');
+    // });
+    // Route::get('/admin/subscription', function (){
+    //     return view('admin.admin_subscription');
+    // });
+    // Route::get('/admin/account', function (){
+    //     return view('admin.admin_account');
+    // });
+    // Route::get('/admin/support', function (){
+    //     return view('admin.admin_support');
+    // });
+    // Route::get('/admin/logs', function (){
+    //     return view('admin.admin_logs');
+    // });
 
 
 
