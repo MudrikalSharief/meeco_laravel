@@ -8,7 +8,7 @@
         </a>
     </div>
 
-    <div class="max-w-3xl mx-auto my-10 p-6 bg-white  rounded-lg ">
+    <div class="max-w-3xl mx-auto p-6 bg-white  rounded-lg ">
         <!-- Buttons -->
         <div class="flex gap-2 space-x-4 mb-6">
             <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
@@ -18,20 +18,26 @@
         <!-- Content Header -->
         <hr class="my-3">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="TITLE text-xl font-bold text-gray-800">{{ $topic->name }}</h1>
+            <h1 class="TITLE text-xl font-bold text-gray-800">Topic Name: {{ $topic->name }}</h1>
             <button id="toggleButton" class="text-blue-500 text-sm font-medium rounded-lg hover:underline">Raw text</button>
         </div>
 
         <!-- Scrollable Content Box -->
         <div class="Reviewer border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
-            {{-- // Reviewer content here======================= --}}
-            <h1>Rviewer goes here</h1>
+            {{-- Reviewer  in here --}}
+            <h1>Reviewer for Topic: {{ $topic->name }}</h1>
+            <h1 class="reviewer_holder"></h1>
         </div>
 
-        <div class="Rawtext hidden border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
-            <h1>Raw Text</h1>
-            <p>{{ $rawText }}</p>
+        <div class="Rawtext  border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+            {{-- Raw text in here --}}
+            <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
+
+         <div class="Questions border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+    
+         </div>
+     
     </div>
 
     <div id="extractTextModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
@@ -102,5 +108,4 @@
 
         });
     </script>
-
 </x-layout>
