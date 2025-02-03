@@ -24,7 +24,7 @@
                     <p class="text-center font-bold text-gray-700">ONLY ₱27 for a week</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A week access to all features</li>
-                        
+                        <li>Lorem ipsum</li>
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">
@@ -43,7 +43,7 @@
                     <p class="text-center font-bold text-gray-700">ONLY ₱99 for a month</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A month access to all features</li>
-                        
+                        <li>Lorem ipsum</li>
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">
@@ -62,7 +62,7 @@
                     <p class="text-center font-bold text-gray-700">ONLY ₱999 annually</p>
                     <ul class="mt-2 text-gray-600 list-disc list-inside">
                         <li>A year access to all features</li>
-                        
+                        <li>Lorem ipsum benefits</li>
                     </ul>
                 </div>
                 <div class="flex justify-center pb-4">

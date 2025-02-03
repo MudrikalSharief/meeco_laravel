@@ -33,7 +33,7 @@
                     @csrf
                     <input type="hidden" name="topic_id" value="{{ request('topic_id') }}">
                     <textarea name="raw_text" class="extractedTA w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($rawText); ?></textarea>
-                    <button type="submit" id="genereate_reviewer_button" class="generate_reviewer mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
+                    <button type="submit" class="generate_reviewer mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
                 </form>
             </div>
         </div>
@@ -49,10 +49,8 @@
     <!-- Success Modal -->
     <div id="successModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white p-4 rounded" style="width: 80%; min-width: 270px;">
-            <p>Reviewer Generated!</p>
-                
-                <button id="ReviewerGeneratedButton" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Okay</button>
-            
+            <p>Update successful!</p>
+            <button onclick="closeSuccessModal()" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Close</button>
         </div>
     </div>
 
@@ -68,7 +66,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({ topic_id: topicId})
+                body: JSON.stringify({ topic_id: topicId })
             })
             .then(response => response.json())
             .then(data => {
@@ -108,94 +106,38 @@
                 console.error('Error:', error);
             });
 
-            //======= the reviewer genereate button is clicked here ==================================================================
             extractedTextForm.addEventListener('submit', function(event) {
                 event.preventDefault();
-                fetch('/UpdateAndGet_RawText', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ topic_id: topicId, raw_text:extractedTextArea.value})
+                const formData = new FormData(extractedTextForm);
+                fetch(extractedTextForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
                 })
                 .then(response => response.json())
-                .then(() => {
-                    fetch('/openai/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({ content: extractedTextArea.value })
-                    })
-                    .then(response => {
-                        json = response.json();
-                        return json;
-                    })
-                    .then(data => {
-                        console.log('Success: OpenAi have Created the reviewer');
-                        //==
-                        const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
-                        // Insert the generated reviewer into the database
-                        fetch('/storeReviewer', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                topic_id: topicId,
-                                reviewer_text: data.choices[0].message.content
-                            })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error('Failed to store reviewer: ' + (err.message || 'Unknown error'));
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(storeData => {
-                            if (storeData.success) {
-                                document.getElementById('successModal').classList.remove('hidden');
-                            } else {
-                                throw new Error(storeData.message || 'Unknown error');
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('An error occurred cannot store data: ' + error.message);
-                        });
-                        //==
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                        alert('An error occurred: ' + error.message);
-                    });
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('successModal').classList.remove('hidden');
+                    } else {
+                        console.error('Error:', data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
                 });
             });
-
-            //======================================================================
-            //this is for the ReviewerGeneratedButton button clicked
-            const ReviewerGeneratedButton = document.getElementById('ReviewerGeneratedButton');
-            ReviewerGeneratedButton.addEventListener('click', function() {
-                document.getElementById('successModal').classList.add('hidden');
-                const topicId = document.querySelector('input[name="topic_id"]').value;
-                window.location.href = `/reviewer/${topicId}`;
-            });
-            
-            //=======================================================================================================
-            function closeModal(event) {
-                if (event.target.id === 'imageModal') {
-                    document.getElementById('imageModal').classList.add('hidden');
-                }
-            }
-
-            function closeSuccessModal() {
-                document.getElementById('successModal').classList.add('hidden');
-            }
         });
+
+        function closeModal(event) {
+            if (event.target.id === 'imageModal') {
+                document.getElementById('imageModal').classList.add('hidden');
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
     </script>
 </x-layout>

@@ -23,6 +23,15 @@ Route::get('/js/openai.js', function () {
     return response()->file(resource_path('js/openai.js'));
 })->name('openai.js');
 
+
+
+Route::view('/openai', 'openai.test')->name('test');
+Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
+
+Route::get('/js/openai.js', function () {
+    return response()->file(resource_path('js/openai.js'));
+})->name('openai.js');
+
 Route::middleware('guest')->group(function (){
     Route::view('/', 'auth.login')->name('login');
     Route::view('/register', 'auth.register')->name('register');
@@ -54,6 +63,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/subjects/{subjectName}', [TOPICcontroller::class, 'getTopicsBySubjectName'])->name('subjects');
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     Route::post('/subjects/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
+
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
@@ -95,3 +105,33 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcrip
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+
+    
+    //admin routes
+    Route::get('/admin', function (){
+        return view('admin.admin_view');
+    });
+    Route::get('/admin/users', function (){
+        return view('admin.admin_users');
+    });
+    Route::get('/admin/transactions', function (){
+        return view('admin.admin_transactions');
+    });
+    Route::get('/admin/statistics', function (){
+        return view('admin.admin_statistics');
+    });
+    Route::get('/admin/subscription', function (){
+        return view('admin.admin_subscription');
+    });
+    Route::get('/admin/account', function (){
+        return view('admin.admin_account');
+    });
+    Route::get('/admin/support', function (){
+        return view('admin.admin_support');
+    });
+    Route::get('/admin/logs', function (){
+        return view('admin.admin_logs');
+    });
+
+
+
