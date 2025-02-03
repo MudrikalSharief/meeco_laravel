@@ -11,19 +11,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 
 
-use App\Http\Controllers\ReviewController;
-
-
-
-
-Route::view('/openai', 'openai.test')->name('test');
-Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
-
-Route::get('/js/openai.js', function () {
-    return response()->file(resource_path('js/openai.js'));
-})->name('openai.js');
-
-
 
 Route::view('/openai', 'openai.test')->name('test');
 Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);

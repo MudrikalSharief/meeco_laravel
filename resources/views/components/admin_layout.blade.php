@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ env('APP_NAME') }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css',])
         @vite(['resources/css/admin-layout.css'])
     </head>
     <body class="h-screen w-full">
