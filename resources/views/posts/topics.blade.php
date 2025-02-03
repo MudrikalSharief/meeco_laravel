@@ -8,14 +8,7 @@
         <!-- Add Topic Button -->
         <button id="addTopicButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Topic</button>
         <div id="topics-container" class="w-full max-w-2xl">
-            @foreach ($topics as $topic)
-                <a href="{{ route('review.page', ['topicId' => $topic->topic_id]) }}">
-                    <button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
-                        <span>{{ $topic->name }}</span>
-                        <span class="delete-topic text-red-500 h-full" data-topic-id="{{ $topic->topic_id }}">Delete</span>
-                    </button>
-                </a>
-            @endforeach
+           {{-- topics to be added herre --}}
         </div>
         <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden"></p>
     </div>
@@ -70,4 +63,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const topicsContainer = document.getElementById('topics-container'); // Ensure this exists
+        if (topicsContainer) {
+            topicsContainer.addEventListener('click', function (event) {
+                console.log("the Container is clicked");
+                const topicButton = event.target.closest('.subject_topics'); // Check if the clicked element is a topic button
+                console.log(topicButton);
+                if (topicButton && topicButton.id) {
+                    window.location.href = `/reviewer/${topicButton.id}`;
+                }
+            });
+        }
+        });
+    </script>
 </x-layout>
