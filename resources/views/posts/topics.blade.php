@@ -1,5 +1,5 @@
 <x-layout>
-<<<<<<< HEAD
+
     <div class="subject_id_in_topics p-6 w-full h-full flex flex-col items-center" data-subject-id="{{ $subject->subject_id }}">
         <div class="w-full max-w-2xl">
             <div class="flex justify-between items-center">
@@ -9,13 +9,6 @@
                 </div>
                 <button id="addTopicButton" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Topic</button>
             </div> <div id="topics-container" class="w-full max-w-2xl">
-                
-=======
-    <div class="subject_id_in_topics p-3 w-full h-full" data-subject-id="{{ $subject->subject_id }}">
-        <div class="flex items-center">
-            <a href="{{ route('subject')}}"><h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects </h1></a>
-            <h2 class=" font-semibold text-xl text-blue-500"> > Topics</h2>
-        </div>
      
         <!-- Add Topic Button -->
         <button id="addTopicButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Topic</button>
