@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function (){
     Route::view('/convert_image', 'website.convert_image')->name('convert_image');
     Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
 
+    //footer
+
+    Route::view('/terms', 'website.footer.terms')->name('terms');
+
 });
 
 Route::middleware('auth')->group(function (){
