@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AUTHcontroller extends Controller
 {   
-    //Register User
+    //Register Usesr
     public function register_user(Request $request){
         //Validate
         $field = $request->validate([
-            'name' => ['required', 'max:255'],
+            'firstname' => ['required', 'max:255'],
+            'lastname' => ['required', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:3', 'confirmed']
         ]);
