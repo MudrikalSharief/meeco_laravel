@@ -80,11 +80,10 @@ Route::middleware('auth')->group(function (){
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
 
-});
-
 
     //for quiz
     Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
+});
 
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
 Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
