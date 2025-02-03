@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 
 
+use App\Http\Controllers\ReviewController;
 
 Route::view('/openai', 'openai.test')->name('test');
 Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
@@ -29,6 +30,7 @@ Route::middleware('guest')->group(function (){
 
     Route::view('/website', 'website.landing')->name('landing');
     Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/info', 'website.info_digest')->name('info_digest');
     Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
     Route::view('/convert_image', 'website.convert_image')->name('convert_image');
     Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
@@ -50,7 +52,6 @@ Route::middleware('auth')->group(function (){
     Route::get('/subjects/{subjectName}', [TOPICcontroller::class, 'getTopicsBySubjectName'])->name('subjects');
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     Route::post('/subjects/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
-
     
     Route::get('/topics', [TOPICcontroller::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TOPICcontroller::class, 'createTopic'])->name('topics.add');
@@ -92,7 +93,7 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcrip
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
-
+Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
     
     //admin routes
     Route::get('/admin', function (){
@@ -119,6 +120,7 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payme
     Route::get('/admin/logs', function (){
         return view('admin.admin_logs');
     });
+
 
 
 

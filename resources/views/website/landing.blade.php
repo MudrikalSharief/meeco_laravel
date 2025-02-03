@@ -39,7 +39,7 @@
                     <div class="text-content">
                         <h2>Quick. Convenient. Efficient.</h2>
                         <p style="margin-bottom: 32px;">Turn your photos of notes into text instantly for quick, and generate reviewers. Save time and boost productivity with just a snap!</p>
-                        <a href="convert-image.php" style="text-decoration: none;">
+                        <a href="{{route('convert_image')}}" style="text-decoration: none;">
                             <button class="btn-secondary">Learn more</button>
                         </a>
                     </div>
@@ -57,7 +57,7 @@
                     <div class="text-content">
                         <h2>Your Info Digest</h2>
                         <p style="margin-bottom: 32px;">After gathering all the text, it condenses the information into a clear and concise summary, helping you grasp the key points quickly</p>
-                        <a href="summarizer-and-reviewer.php" style="text-decoration: none;">
+                        <a href="{{route('info_digest')}}" style="text-decoration: none;">
                             <button class="btn-secondary">Learn more</button>
                         </a>
                     </div>
@@ -74,7 +74,7 @@
                     <div class="text-content">
                         <h2>Backed by Reviewer</h2>
                         <p style="margin-bottom: 32px;">Transform your study sessions with a powerful tool designed to streamline your learning. By highlighting essential concepts and enhancing retention, it makes exam preparation not just effective, but also engaging and efficient.</p>
-                        <a href="summarizer-and-reviewer.php" style="text-decoration: none;">
+                        <a href="{{route('summarizer_and_reviewer')}}" style="text-decoration: none;">
                             <button class="btn-secondary">Learn more</button>
                         </a>
                     </div>
@@ -92,7 +92,7 @@
                     <div class="text-content">
                         <h2>Personalized Quiz Maker</h2>
                         <p style="margin-bottom: 32px;">Generate tailored questions that challenge your knowledge and reinforce learning, ensuring you’re well-prepared for any assessment.</p>
-                        <a href="quiz-maker.php" style="text-decoration: none;">
+                        <a href="{{route('quiz_maker')}}" style="text-decoration: none;">
                             <button class="btn-secondary">Learn more</button>
                         </a>
                     </div>
@@ -131,5 +131,9 @@
             </div>
         </footer>
     </main>
+
+    <footer>
+        
+    </footer>
 
 </x-web_layout>

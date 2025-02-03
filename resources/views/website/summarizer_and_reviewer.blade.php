@@ -1,6 +1,6 @@
 <x-web_layout>
     <div class="relative right-0 top-0 pt-3 pl-3">
-        <a href="{{ route('landing')}}"><img class="w-5" src="{{ asset('logo_icons/x.svg')}}" alt=""></a>
+        <a href="{{ route('landing')}}"><img class="w-5" style = "padding:3px; height:25px; width:25px;" src="{{ asset('logo_icons/x.svg')}}" alt=""></a>
     </div>
 <main>
     <section class="quick-efficient">

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AUTHcontroller extends Controller
 {   
-    //REgister Usesr
+    //Register User
     public function register_user(Request $request){
         //Validate
         $field = $request->validate([
