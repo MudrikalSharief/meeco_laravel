@@ -22,7 +22,9 @@ class OPENAIController extends Controller
             $response = Http::withHeaders([
                 "Content-Type" => "application/json",
                 "Authorization" => "Bearer " . env('OPENAI_API_KEY')
-            ])->post('https://api.openai.com/v1/chat/completions', [
+            ])
+            ->timeout(60)
+            ->post('https://api.openai.com/v1/chat/completions', [
                 "model" => "gpt-4",
                 "messages" => [
                     [
@@ -50,7 +52,7 @@ class OPENAIController extends Controller
                     ]
                 ],
                 "temperature" => 0.5,
-                "max_tokens" => 2048
+                "max_tokens" => 4096
             ]);
     
             if ($response->failed()) {

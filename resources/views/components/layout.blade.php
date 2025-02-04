@@ -20,7 +20,7 @@
         
         <a href="{{ route('profile') }}" class="flex items-center ml-auto">
             @auth
-                <p class="name mr-1 hidden md:block">{{ auth()->user()->name }}</p>
+                <p class="name mr-1 hidden md:block">{{ auth()->user()->firstname}} {{ auth()->user()->lastname}}</p>
             @endauth
             <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
                 <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
