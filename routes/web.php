@@ -108,6 +108,7 @@ Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subs
 Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
 Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
 Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     
 
 
