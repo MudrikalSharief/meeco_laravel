@@ -100,7 +100,7 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payme
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
   
 //admin routes
-Route::view('/admin', 'admin.admin_view')->name('admin_dashboard');
+Route::view('/admin', 'admin.admin_view')->name('admin.dashboard');
 Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
 Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
 Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
