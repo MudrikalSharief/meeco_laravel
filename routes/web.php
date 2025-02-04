@@ -98,3 +98,20 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcrip
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+  
+//admin routes
+Route::view('/admin', 'admin.admin_view')->name('admin.dashboard');
+Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
+Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+    
+
+
+
+
+
+
