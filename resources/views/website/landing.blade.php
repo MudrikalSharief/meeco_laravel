@@ -70,7 +70,9 @@
         <section class="backed-by-reviewer">
             <div class="container">
                 <div class="content-split">
-                    
+                    <div class="image-content">
+                        <img src="{{asset('logo_icons/pictures/laptop.png')}}" alt="Info Digest Mascot" class="present-png">
+                    </div>
                     <div class="text-content">
                         <h2>Backed by Reviewer</h2>
                         <p style="margin-bottom: 32px;">Transform your study sessions with a powerful tool designed to streamline your learning. By highlighting essential concepts and enhancing retention, it makes exam preparation not just effective, but also engaging and efficient.</p>
@@ -101,35 +103,6 @@
             </div>
             
         </section>
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-grid">
-                    <div class="footer-section">
-                        <h3>About us</h3>
-                        <ul>
-                            <li><a href="#">Mission</a></li>
-                            <li><a href="#">Vision</a></li>
-                            <li><a href="#">Press</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Privacy and Terms</h3>
-                        <ul>
-                            <li><a href="#">Community guidelines</a></li>
-                            <li><a href="#">Terms</a></li>
-                            <li><a href="#">Privacy</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h3>Help and Support</h3>
-                        <ul>
-                            <li><a href="{{route('faq')}}">FAQ</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </footer>
     </main>
 
     <footer>

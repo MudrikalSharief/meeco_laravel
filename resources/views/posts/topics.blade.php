@@ -1,4 +1,5 @@
 <x-layout>
+
     <div class="subject_id_in_topics p-6 w-full h-full flex flex-col items-center" data-subject-id="{{ $subject->subject_id }}">
         <div class="w-full max-w-2xl">
             <div class="flex justify-between items-center">
@@ -8,7 +9,11 @@
                 </div>
                 <button id="addTopicButton" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Topic</button>
             </div> <div id="topics-container" class="w-full max-w-2xl">
-                
+     
+        <!-- Add Topic Button -->
+        <button id="addTopicButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Topic</button>
+        <div id="topics-container" class="w-full max-w-2xl">
+           {{-- topics to be added herre --}}
         </div>
         <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden"></p>
     </div>
@@ -65,7 +70,6 @@
     </div>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
         const topicsContainer = document.getElementById('topics-container'); // Ensure this exists
         if (topicsContainer) {
@@ -79,6 +83,5 @@
             });
         }
         });
-
     </script>
 </x-layout>

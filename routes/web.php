@@ -13,6 +13,9 @@ use App\Http\Controllers\RawController;
 
 use App\Http\Controllers\ReviewController;
 
+
+
+
 Route::view('/openai', 'openai.test')->name('test');
 Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
 
@@ -34,6 +37,10 @@ Route::middleware('guest')->group(function (){
     Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
     Route::view('/convert_image', 'website.convert_image')->name('convert_image');
     Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
+
+    //footer
+
+    Route::view('/terms', 'website.footer.terms')->name('terms');
 
 });
 
@@ -80,11 +87,10 @@ Route::middleware('auth')->group(function (){
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
 
-});
-
 
     //for quiz
     Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
+});
 
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
 Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
@@ -93,34 +99,21 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcrip
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
-Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+  
+//admin routes
+Route::view('/admin', 'admin.admin_view')->name('admin.dashboard');
+Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
+Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     
-    //admin routes
-    Route::get('/admin', function (){
-        return view('admin.admin_view');
-    });
-    Route::get('/admin/users', function (){
-        return view('admin.admin_users');
-    });
-    Route::get('/admin/transactions', function (){
-        return view('admin.admin_transactions');
-    });
-    Route::get('/admin/statistics', function (){
-        return view('admin.admin_statistics');
-    });
-    Route::get('/admin/subscription', function (){
-        return view('admin.admin_subscription');
-    });
-    Route::get('/admin/account', function (){
-        return view('admin.admin_account');
-    });
-    Route::get('/admin/support', function (){
-        return view('admin.admin_support');
-    });
-    Route::get('/admin/logs', function (){
-        return view('admin.admin_logs');
-    });
 
+
+Route::view('/terms', 'website.footer.terms')->name('terms');
 
 
 

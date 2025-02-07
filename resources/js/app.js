@@ -446,10 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const topicButton = document.createElement('button');
                     topicButton.className = 'subject_topics w-full border text-start py-2 px-3  my-2 shadow-md rounded-md flex justify-between items-center';
                     topicButton.id = topic.topic_id;
-                    topicButton.innerHTML =`
+                    topicButton.innerHTML =` 
                                                     <span>${topic.name}</span>
                                                     <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>
-                                                        `;
+                                                `;
                     if(topics_container){
                         topics_container.appendChild(topicButton);
                     }
