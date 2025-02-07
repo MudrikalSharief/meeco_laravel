@@ -9,11 +9,8 @@ use App\Http\Controllers\TOPICcontroller;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
-
-
 use App\Http\Controllers\ReviewController;
-
-
+use App\Http\Controllers\AUTHadminController;
 
 
 Route::view('/openai', 'openai.test')->name('test');
@@ -100,19 +97,31 @@ Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payme
 Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
   
 //admin routes
-Route::view('/admin', 'admin.admin_view')->name('admin.dashboard');
-Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
-Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
-Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
-Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
-Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
-    
+Route::middleware(['auth:admin'])->group(function () {
+    Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
+    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
+    Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+    Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+});
 
+// Auth admin
+Route::view('/admin', 'auth.login-admin')->name('admin.login');
+Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+Route::post('/admin-register', [AUTHcontroller::class, 'register_admin']);
+Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+Route::post('/admin-login', [AUTHcontroller::class, 'login_admin']);
 
-
+// Admin Authentication Routes
+Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
+Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
+Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
+Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
+Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
 
 
 
