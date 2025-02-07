@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Raw;
-use App\Models\Reviewer;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -32,26 +31,7 @@ class RawController extends Controller
     }
 
     public function getRawText(Request $request)
-    {   
-    
-        //return the raw text
-        $rawText = Raw::where('topic_id', $request->topic_id)->first()->raw_text ?? '';
-        return response()->json(['raw_text' => $rawText]);
-    }
-    
-    public function UpdateAndGet_RawText(Request $request)
-    {   
-        $request->validate([
-            'topic_id' => 'required|integer',
-            'raw_text' => 'required|string',
-        ]);
-
-        Raw::updateOrCreate(
-            ['topic_id' => $request->topic_id],
-            ['raw_text' => $request->raw_text]
-        );
-    
-        //return the raw text
+    {
         $rawText = Raw::where('topic_id', $request->topic_id)->first()->raw_text ?? '';
         return response()->json(['raw_text' => $rawText]);
     }
@@ -95,27 +75,10 @@ class RawController extends Controller
         }
     }
 
-
- 
-    
-
-    public function storeReviewer(Request $request)
+    public function showReviewPage($topicId)
     {
-        try {
-            $request->validate([
-                'topic_id' => 'required|integer',
-                'reviewer_text' => 'required|string',
-            ]);
-
-            Reviewer::updateOrCreate(
-                ['topic_id' => $request->topic_id],
-                ['reviewer_text' => $request->reviewer_text]
-            );
-
-            return redirect()->route('reviewer/', ['topicId' => $request->topic_id]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
-        }
+        $topic = Topic::findOrFail($topicId);
+        $rawText = Raw::where('topic_id', $topicId)->first()->raw_text ?? '';
+        return view('posts.reviewer', compact('topic', 'rawText'));
     }
-    
 }

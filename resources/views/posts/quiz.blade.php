@@ -1,5 +1,5 @@
 <x-layout>
 
-    <h1>im in upgrade</h1>
+    <h1>im quiz</h1>
    
 </x-layout>
