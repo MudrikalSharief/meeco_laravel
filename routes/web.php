@@ -33,6 +33,7 @@ Route::middleware('guest')->group(function (){
 
     Route::view('/website', 'website.landing')->name('landing');
     Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/info', 'website.info_digest')->name('info_digest');
     Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
     Route::view('/convert_image', 'website.convert_image')->name('convert_image');
     Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
@@ -112,7 +113,7 @@ Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     
 
 
-
+Route::view('/terms', 'website.footer.terms')->name('terms');
 
 
 
