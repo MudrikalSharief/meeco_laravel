@@ -1,26 +1,46 @@
 <x-web_footer>
     <div class="flex flex-col container w-[70vw]">
-        <h1 class="text-center p-3">Terms of Use</h1>
+        <h1 class="text-center p-3">Privacy Policy</h1>
         <div class="flex justify-center">
             <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
                 <p class="indent-8 mb-8">
-                    Welcome to Meèco! By accessing or using our web application, available through www.meèco.com, 
-                    you agree to comply with and be bound by the following Terms of Use. 
-                    Please read these Terms carefully. If you do not agree to these Terms, 
-                    you must stop using the Service immediately.
+                At Meèco, we value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and share information about you when you use our services, which include photo-to-text conversion, summarization, and mock quizzes, as well as your rights concerning your data.
+By using our platform, you agree to the collection and use of your personal information as described in this policy. If you do not agree, please stop using our service.
                 </p>
                 <p class="text-gray-500 text-sm">Last Updated: October 17, 2024</p>
             </div>
         </div>
-        <h2 class="text-center p-3">Acceptance of Terms</h2>
+        <h2 class="text-center p-3">Information We Collect</h2>
         <div class="flex justify-center">
             <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                    Welcome to Meèco! By accessing or using our web application, available through www.meèco.com, 
-                    you agree to comply with and be bound by the following Terms of Use. 
-                    Please read these Terms carefully. If you do not agree to these Terms, 
-                    you must stop using the Service immediately.
-                </p>
+                <h6 class="font-bold">Personal Information</h6>
+                <div class="indent-2">
+                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
+                    <li>Register an account using accurate and truthful information.</li>
+                    <li>Ensure that your account information remains up-to-date.</li>
+                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                </div>
+                <h6 class="font-bold">Contact Information</h6>
+                <div class="indent-2">
+                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
+                    <li>Register an account using accurate and truthful information.</li>
+                    <li>Ensure that your account information remains up-to-date.</li>
+                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                </div>
+                <h6 class="font-bold">Usage Data</h6>
+                <div class="indent-2">
+                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
+                    <li>Register an account using accurate and truthful information.</li>
+                    <li>Ensure that your account information remains up-to-date.</li>
+                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                </div>
+                <h6 class="font-bold">Cookies and Tracking Data</h6>
+                <div class="indent-2">
+                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
+                    <li>Register an account using accurate and truthful information.</li>
+                    <li>Ensure that your account information remains up-to-date.</li>
+                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                </div>
             </div>
         </div>
         <h2 class="text-center p-3">User Eligibility</h2>
