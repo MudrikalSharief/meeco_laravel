@@ -14,171 +14,115 @@ By using our platform, you agree to the collection and use of your personal info
         <div class="flex justify-center">
             <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
                 <h6 class="font-bold">Personal Information</h6>
-                <div class="indent-2">
-                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
-                    <li>Register an account using accurate and truthful information.</li>
-                    <li>Ensure that your account information remains up-to-date.</li>
-                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                <p class="">When you create an account or subscribe to our services, we may collect personal information such as:</p>
+                <div class="indent-2 mb-8">
+                    <li>Name</li>
+                    <li>Email Address</li>
+                    <li>Payment details (for subscription plans)</li>
+                    <li>Profile photo (if uploaded)</li>
                 </div>
-                <h6 class="font-bold">Contact Information</h6>
-                <div class="indent-2">
-                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
-                    <li>Register an account using accurate and truthful information.</li>
-                    <li>Ensure that your account information remains up-to-date.</li>
-                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                <h6 class="font-bold">Content Information</h6>
+                <p class="">When you use our photo-to-text conversion and summarization tools, we may collect:</p>
+                <div class="indent-2 mb-8">
+                    <li>Images and photos uploaded for text conversion</li>
+                    <li>Text data provided for summarization or mock quizzes</li>
                 </div>
                 <h6 class="font-bold">Usage Data</h6>
-                <div class="indent-2">
-                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
-                    <li>Register an account using accurate and truthful information.</li>
-                    <li>Ensure that your account information remains up-to-date.</li>
-                    <li>Use the Service in compliance with applicable laws and regulations.</li>
+                <p class="">We may collect information about your interactions with our platform, such as:</p>
+                <div class="indent-2 mb-8">
+                    <li>IP address</li>
+                    <li>Browser type and version</li>
+                    <li>Operating system</li>
+                    <li>Pages you visit</li>
+                    <li>Time and date of access</li>
+                    <li>Features you use</li>
+                    <li>API usage data (number of API calls for OCR or summarization)</li>
                 </div>
                 <h6 class="font-bold">Cookies and Tracking Data</h6>
-                <div class="indent-2">
-                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
-                    <li>Register an account using accurate and truthful information.</li>
-                    <li>Ensure that your account information remains up-to-date.</li>
-                    <li>Use the Service in compliance with applicable laws and regulations.</li>
-                </div>
-            </div>
-        </div>
-        <h2 class="text-center p-3">User Eligibility</h2>
-        <div class="flex justify-center">
-            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
-                <p class="">To use our Service, you must:</p>
-                <div class="indent-2">
-                    <li>Be at least 13 years old or, if under 13, have obtained parental or guardian consent.</li>
-                    <li>Register an account using accurate and truthful information.</li>
-                    <li>Ensure that your account information remains up-to-date.</li>
-                    <li>Use the Service in compliance with applicable laws and regulations.</li>
-                </div>
-            </div>
-        </div>
-        <h2 class="text-center p-3">Service Description</h2>
-        <div class="flex justify-center">
-            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
-                <p class="">Our Service includes the following key features:</p>
-                <div class="indent-2">
-                    <li>Photo-to-Text Conversion: Converts images into text using Optical Character Recognition (OCR) technology.</li>
-                    <li>Summarization Tool: Automatically summarizes text for easier understanding and review.</li>
-                    <li>Mock Quiz Generation: Creates mock quizzes from provided text or summaries for academic preparation.</li>
-                </div>
-            </div>
-        </div>
-        <h2 class="text-center p-3">Subscriptions and Payment</h2>
-        <div class="flex justify-center">
-            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
-                <p class="">We offer three premium subscription plans:</p>
+                <p class="indent-2">We use cookies and similar tracking technologies to track activity on our service and store certain information. Cookies are small data files that your browser stores on your device. These can be used to</p>
                 <div class="indent-2 mb-8">
-                    <li>Casual Plan: Basic access with limited features and API usage.</li>
-                    <li>Regular Plan: Enhanced access with more features and higher API usage limits.</li>
-                    <li>VIP Plan: Full access to all features with unlimited API usage.</li>
+                    <li>Remember your login credentials</li>
+                    <li>Track user preferences</li>
+                    <li>Analyze usage for performance improvements</li>
                 </div>
-                <p class="indent-8 mb-8">By subscribing to one of these plans, you agree to the pricing, payment, and subscription terms presented at checkout. All payments are non-refundable.</p>
-                <h6 class="font-bold">Free and Premium Services</h6>
-                <p class="indent-8 mb-8">We may offer a free version of the Service with limited features. Paid subscriptions provide additional features and higher usage limits. You can upgrade, downgrade, or cancel your subscription at any time, but changes will only take effect at the end of your current billing cycle.</p>
-                <h6 class="font-bold">Subscription Renewal</h6>
-                <p class="indent-8">Subscriptions does not automatically renew.</p>
+                <p class="indent-2">You can choose to disable cookies through your browser settings, but doing so may limit your ability to use some features of our service.</p>
+
             </div>
         </div>
-        <h2 class="text-center p-3">API and Usage</h2>
-        <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                    Certain services, such as the OCR and text summarization tools, 
-                    use APIs to perform their functions. Each subscription plan 
-                    comes with specific API usage limits. You agree not to exceed your plan’s limits. 
-                </p>
-            </div>
-        </div>
-        <h2 class="text-center p-3">Acceptable Use</h2>
+        <h2 class="text-center p-3">How We Use Your Information</h2>
         <div class="flex justify-center">
             <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
-                <p class="">By using our Service, you agree to:</p>
-                <div class="indent-2 mb-8">
-                    <li>Use it only for lawful purposes.</li>
-                    <li>Not misuse or attempt to hack the Service.</li>
-                    <li>Refrain from sharing offensive, defamatory, or inappropriate content.</li>
-                    <li>Respect intellectual property rights and not upload content you do not own or have permission to use.</li>
-                </div>
-                <p class="">You may not use the Service to:</p>
-                <div class="indent-2 mb-8">
-                    <li>Engage in fraudulent or illegal activities.</li>
-                    <li>Upload viruses or malicious code.</li>
-                    <li>Attempt to disrupt the Service or access parts of the platform you do not have permission to use.</li>
+                <p class="indent-2 mb-8">We use the information we collect for the following purposes:</p>
+                <div class="indent-2">
+                    <li>To Provide the Service: Process the photos you upload for text conversion, generate summaries, and create mock quizzes.</li>
+                    <li>To Manage Accounts: Facilitate account creation, authentication, and manage subscription plans.</li>
+                    <li>To Improve the Service: Analyze user interactions to optimize our platform and enhance user experience.</li>
+                    <li>To Communicate with You: Send you updates, offers, and notifications related to your account, or respond to your inquiries.</li>
+                    <li>For Billing and Payments: Process payments for premium subscriptions.</li>
+                    <li>For Security: Monitor and prevent any unauthorized or malicious activity on our platform.</li>
+                    <li>To Comply with Legal Obligations: As required by law, legal process, or court orders.</li>
                 </div>
             </div>
         </div>
-        <h2 class="text-center p-3">Termination of Service</h2>
+        <h2 class="text-center p-3">How We Share Your Information</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                We reserve the right to suspend or terminate your account if you violate these Terms, 
-                engage in illegal activities, or misuse our platform. 
-                We also reserve the right to refuse service or restrict access at our discretion.
-                </p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+            <p class="indent-2 mb-8">We do not sell your personal information. However, we may share your data under the following circumstances:</p>
+                <div class="indent-2">
+                    <li>Service Providers: We may share data with third-party companies that help us provide and improve our services, such as payment processors, hosting providers, and analytics services.</li>
+                    <li>Legal Compliance: We may disclose your information when required by law, such as in response to a court order or to prevent fraud or harm.</li>
+                    <li>Business Transfers: If Meèco is involved in a merger, acquisition, or asset sale, your data may be transferred as part of that transaction. We will notify you if such a transfer occurs.</li>
+                </div>
             </div>
         </div>
-        <h2 class="text-center p-3">Intellectual Property</h2>
+        <h2 class="text-center p-3">Data Retention</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                All content and features on the platform, including but not limited to text, images, 
-                software, and designs, are owned by Meèco or licensed to us. 
-                You may not copy, distribute, modify, or use our content without permission.
-                </p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+            <p class="indent-2 mb-8">We will retain your personal information only for as long as necessary to fulfill the purposes outlined in this policy. This may include retaining data to comply with legal obligations, resolve disputes, and enforce our agreements.</p>
+                <div class="indent-2">
+                    <li>Account Data: Kept for the duration of your account's activity.</li>
+                    <li>Content Data: Photos, text, and quiz data will be retained only as long as necessary for processing or for the purpose of generating summaries or quizzes.</li>
+                </div>
             </div>
         </div>
-        <h2 class="text-center p-3">Privacy and Data Use</h2>
+        <h2 class="text-center p-3">Your Data Rights</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                We respect your privacy. By using our Service, you agree to the collection 
-                and use of your data as described in our Privacy Policy. 
-                Personal information, such as the content you upload for OCR or summarization, will be handled according to this policy.
-                </p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+            <p class="indent-2 mb-8">Depending on your location and applicable laws, you may have the following rights regarding your personal data:</p>
+                <div class="indent-2 mb-8">
+                    <li>Access: You can request access to your personal data and information about how it is being processed.</li>
+                    <li>Correction: You have the right to correct inaccurate or incomplete personal data.</li>
+                    <li>Deletion: You can request that we delete your personal data, subject to legal obligations.</li>
+                    <li>Data Portability: You may request a copy of your data in a portable format.</li>
+                    <li>Object/Restrict Processing: You can object to or request the restriction of processing your data in certain circumstances.</li>
+                </div>
+            <p>To exercise any of these rights, please contact us at www.meèco.com. We will respond to your request in accordance with applicable data protection laws.</p>
             </div>
         </div>
-        <h2 class="text-center p-3">Disclaimers</h2>
+        <h2 class="text-center p-3">Security of Your Data</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                The Service is provided on an "as is" and "as available" basis. 
-                We do not warrant that the platform will be error-free, uninterrupted, 
-                or free from viruses or other harmful components. 
-                Meèco disclaims all warranties, express or implied, including those of merchantability, fitness for a particular purpose, and non-infringement.
-                </p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+            <p class="indent-2 mb-8">We take reasonable steps to protect your personal data from unauthorized access, use, or disclosure. These include encryption, secure storage, and access control measures.</p>
+            <p>However, no method of transmission over the internet is 100% secure. While we strive to protect your data, we cannot guarantee its absolute security.</p>
             </div>
         </div>
-        <h2 class="text-center p-3">Limitation of Liability</h2>
+        <h2 class="text-center p-3">Children's Privacy</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                To the maximum extent permitted by law, Meèco is not liable for any damages or losses, 
-                including but not limited to indirect, incidental, consequential, or punitive damages, 
-                arising from your use or inability to use the Service.</p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+                <p class="indent-2">Our service is not directed to individuals under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal data, please contact us so that we can take appropriate action.</p>
             </div>
         </div>
-        <h2 class="text-center p-3">Changes to Terms</h2>
+        <h2 class="text-center p-3">Changes to This Privacy Policy</h2>
         <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                We reserve the right to update or modify these Terms at any time. Significant changes will be communicated through the platform or via email. Continued use of the Service following any changes indicates your acceptance of the revised Terms.</p>
-            </div>
-        </div>
-        <h2 class="text-center p-3">Governing Law</h2>
-        <div class="flex justify-center">
-            <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
-                <p class="indent-8">
-                These Terms are governed by and construed in accordance with the laws of the Philippines. Any disputes arising from the use of the Service will be resolved in the courts of the Philippines.</p>
+            <div class="flex flex-col max-w-[90%] w-full mb-8 p-6 bg-white rounded-lg border border-black">
+                <p class="indent-2">     We may update this Privacy Policy from time to time. If we make significant changes, we will notify you by email or through our service. Please review the policy periodically for any updates.</p>
             </div>
         </div>
         <h2 class="text-center p-3">Contact Us</h2>
         <div class="flex justify-center">
             <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
                 <p class="">If you have any questions about these Terms, please contact us at:</p>
-                <div class="indent-2 mb-8">
+                <div class="indent-2">
                     <li>Email: www.meèco.com</li>
                     <li>Phone: [+123456789]</li>
                     <li>Address: [Company Address]</li>

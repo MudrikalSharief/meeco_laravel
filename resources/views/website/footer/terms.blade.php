@@ -158,7 +158,7 @@
         <div class="flex justify-center">
             <div class="max-w-[90%] w-full mb-2 p-6 bg-white rounded-lg border border-black">
                 <p class="">If you have any questions about these Terms, please contact us at:</p>
-                <div class="indent-2 mb-8">
+                <div class="indent-2">
                     <li>Email: www.meèco.com</li>
                     <li>Phone: [+123456789]</li>
                     <li>Address: [Company Address]</li>
