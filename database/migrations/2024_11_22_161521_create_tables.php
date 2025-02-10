@@ -14,7 +14,8 @@ return new class extends Migration
         // Create Users table
         Schema::create('users', function (Blueprint $table) {
             $table->id('user_id'); // Primary key as unsignedBigInteger
-            $table->string('name');
+            $table->string('firstname');
+            $table->string('lastname');
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['user', 'admin'])->default('user');
@@ -26,7 +27,7 @@ return new class extends Migration
 
         // Create Promos table
         Schema::create('promos', function (Blueprint $table) {
-            $table->id('promo_id'); // Primary key as unsignedBigInteger
+            $table->id('promo_id');
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->text('perks');
@@ -37,10 +38,10 @@ return new class extends Migration
 
         // Create Subscriptions table
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id('subscription_id'); // Primary key as unsignedBigInteger
-            $table->unsignedBigInteger('user_id'); // Explicitly define user_id
+            $table->id('subscription_id');
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('promo_id'); // Explicitly define promo_id
+            $table->unsignedBigInteger('promo_id');
             $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade');
             $table->timestamp('start_date')->useCurrent();
             $table->timestamp('end_date')->nullable();
@@ -76,21 +77,21 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Create Raw TExt table
+        // Create Raw Text table
         Schema::create('raw', function (Blueprint $table) {
             $table->id('raw_id');
             $table->unsignedBigInteger('topic_id');
             $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
-            $table->string('raw_text');
+            $table->longText('raw_text');
             $table->timestamps();
         });
 
-        // Create Reviewer TExt table
+        // Create Reviewer Text table
         Schema::create('reviewer', function (Blueprint $table) {
             $table->id('reviewer_id');
             $table->unsignedBigInteger('topic_id');
             $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
-            $table->string('reviewer_text');
+            $table->longText('reviewer_text');
             $table->timestamps();
         });
 
@@ -103,6 +104,19 @@ return new class extends Migration
             $table->text('answer');
             $table->timestamps();
         });
+
+        // Create Multiple Choice table (missing in original migration)
+        Schema::create('multiple_choice', function (Blueprint $table) {
+            $table->id('multiple_choice_id');
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
+            $table->integer('answer');
+            $table->text('A');
+            $table->text('B');
+            $table->text('C');
+            $table->text('D');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -110,7 +124,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('multiple_choice');
         Schema::dropIfExists('questions');
+        Schema::dropIfExists('reviewer');
+        Schema::dropIfExists('raw');
         Schema::dropIfExists('topics');
         Schema::dropIfExists('subjects');
         Schema::dropIfExists('admin_actions');

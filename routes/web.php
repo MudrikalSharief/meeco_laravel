@@ -11,41 +11,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 
 
-use App\Http\Controllers\ReviewController;
 
-
-
-
-Route::view('/openai', 'openai.test')->name('test');
-Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
-
-Route::get('/js/openai.js', function () {
-    return response()->file(resource_path('js/openai.js'));
-})->name('openai.js');
-
-Route::middleware('guest')->group(function (){
-    Route::view('/', 'auth.login')->name('login');
-    Route::view('/register', 'auth.register')->name('register');
-    Route::post('/register', [AUTHcontroller::class, 'register_user']);
-    
-    Route::view('/login', 'auth.login')->name('login');
-    Route::post('/login', [AUTHcontroller::class, 'login_user']);
-
-    Route::view('/website', 'website.landing')->name('landing');
-    Route::view('/faq', 'website.faq')->name('faq');
-    Route::view('/info', 'website.info_digest')->name('info_digest');
-    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
-    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
-    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
-
-    //footer
-
-    Route::view('/terms', 'website.footer.terms')->name('terms');
-
-});
-
+//these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
     Route::view('/','posts.capture')->name('loggedin');
+    
+    Route::view('/openai', 'openai.test')->name('test');
+    Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
+    
+    Route::get('/js/openai.js', function () {
+        return response()->file(resource_path('js/openai.js'));
+    })->name('openai.js');
+    //=====
     
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
@@ -86,10 +63,32 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
+    Route::get('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
 
     //for quiz
-    Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
+    Route::view('/quiz', 'posts.quiz')->name('quiz');
+});
+
+Route::middleware('guest')->group(function (){
+    
+    Route::view('/', 'website.landing')->name('landing');
+    Route::view('/register', 'auth.register')->name('register');
+    Route::post('/register', [AUTHcontroller::class, 'register_user']);
+    
+    Route::view('/login', 'auth.login')->name('login');
+    Route::post('/login', [AUTHcontroller::class, 'login_user']);
+
+    Route::view('/website', 'website.landing')->name('landing');
+    Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/info', 'website.info_digest')->name('info_digest');
+    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
+    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
+    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
+
+    //footer
+
+    Route::view('/terms', 'website.footer.terms')->name('terms');
 });
 
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
@@ -113,7 +112,7 @@ Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     
 
 
-Route::view('/terms', 'website.footer.terms')->name('terms');
+
 
 
 
