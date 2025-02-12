@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reviewer;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+
 
 class OPENAIController extends Controller
 {
@@ -41,13 +44,13 @@ class OPENAIController extends Controller
 
                             Example format for the output:
                             ---
+                            
                             **Subject:** Subject Name
                             **Card 1:** Title for card 1 Content for Card 1
                             **Card 2:** Title for card 1 Content for Card 2
                             ...
-                            
                             ---
-
+                            
                             Input notes: " . $request->post('content')
                     ]
                 ],
@@ -61,6 +64,67 @@ class OPENAIController extends Controller
     
             $responseBody = $response->body();
             return response()->json(json_decode($responseBody, true));
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+   
+    public function generate_quiz($topic_id)
+    {
+        $topic = Topic::find($topic_id);
+        
+        if (!$topic) {
+            return response()->json(['success' => false, 'message' => 'Topic not found.']);
+        }
+    
+        // Retrieve reviewer text and check if it exists
+        $reviewer = Reviewer::where('topic_id', $topic_id)->first();
+        if (!$reviewer) {
+            return response()->json(['success' => false, 'message' => 'No reviewer found for this topic.']);
+        }
+    
+        $reviewerText = $reviewer->reviewer_text;
+    
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                'Content-Type'  => 'application/json',
+            ])
+            ->timeout(60)
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4-turbo',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions. Return the response in JSON format.'],
+                    ['role' => 'user', 'content' => "Based on the following text, generate 10 multiple-choice quiz questions. Each question must have four options labeled A, B, C, and D. Only one option should be correct. Format your response in JSON like this: 
+    
+                    {
+                    \"questions\": [
+                        {
+                        \"question\": \"Which browser was the first widely popular web browser?\",
+                        \"choices\": {
+                            \"A\": \"Internet Explorer\",
+                            \"B\": \"Mozilla Firefox\",
+                            \"C\": \"Netscape Navigator\",
+                            \"D\": \"Google Chrome\"
+                        },
+                        \"correct_answer\": \"C\"
+                        }
+                    ]
+                    } 
+    
+                    Text: " . $reviewerText]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 1024
+            ]);
+    
+            if ($response->failed()) {
+                return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
+            }
+    
+            return response()->json(json_decode($response->body(), true));
+    
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
