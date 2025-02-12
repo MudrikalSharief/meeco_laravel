@@ -680,6 +680,7 @@ if (cancelDelete) {
 if (confirmDelete) {
     confirmDelete.addEventListener('click', function () {
         if (imgWrapperToDelete) {
+            confirmDelete.disabled = true;
             const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
 
             fetch('/capture/delete', {
@@ -711,8 +712,10 @@ if (confirmDelete) {
                 deleteConfirmModal.classList.add('hidden');
                 imgWrapperToDelete = null;
             });
+            confirmDelete.disabled = false;
         }
     });
+    
 }
 
 //THis is for FAQ in WEBSITE

@@ -25,7 +25,7 @@ class OPENAIController extends Controller
             ])
             ->timeout(60)
             ->post('https://api.openai.com/v1/chat/completions', [
-                "model" => "gpt-4",
+                "model" => "gpt-4o-mini",
                 "messages" => [
                     [
                         "role" => "user",
@@ -41,11 +41,11 @@ class OPENAIController extends Controller
 
                             Example format for the output:
                             ---
-                            **Subject:** [Subject Name]
-                            **Card 1:** [Content for Card 1]
-                            **Card 2:** [Content for Card 2]
+                            **Subject:** Subject Name
+                            **Card 1:** Title for card 1 Content for Card 1
+                            **Card 2:** Title for card 1 Content for Card 2
                             ...
-
+                            
                             ---
 
                             Input notes: " . $request->post('content')
