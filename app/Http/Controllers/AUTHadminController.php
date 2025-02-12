@@ -72,4 +72,9 @@ class AUTHadminController extends Controller
         // Redirect the admin
         return redirect('admin/login');
     }
+
+    public function index(){
+        $admins = Admin::all();
+        return view('admin.admin_manage', compact('admins'));
+    }
 }
