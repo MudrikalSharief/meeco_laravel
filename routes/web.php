@@ -134,6 +134,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+    Route::view('/admin/admin-manage', 'admin.admin_manage')->name('admin.admin-manage');
 });
 
 // Redirect to admin login if not authenticated
