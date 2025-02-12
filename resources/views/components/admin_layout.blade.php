@@ -86,7 +86,7 @@
             <li>
                 <a href="{{ route('admin.admin-manage') }}" class="menu-item {{ request()->routeIs('admin.admin-manage') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7zM12 14a4 4 0 100-8 4 4 0 000 8zm0 0c2.21 0 4 1.79 4 4v1H8v-1c0-2.21 1.79-4 4-4z" />
                     </svg>
                     Manage Admin
                 </a>
