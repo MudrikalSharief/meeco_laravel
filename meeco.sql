@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 29, 2025 at 05:26 AM
+-- Generation Time: Feb 10, 2025 at 12:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,6 +59,23 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `multiple_choice`
+--
+
+CREATE TABLE `multiple_choice` (
+  `question_id` bigint(20) UNSIGNED NOT NULL,
+  `answer` mediumint(9) NOT NULL,
+  `A` mediumtext NOT NULL,
+  `B` mediumtext NOT NULL,
+  `C` mediumtext NOT NULL,
+  `D` mediumtext NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `promos`
 --
 
@@ -83,7 +100,6 @@ CREATE TABLE `questions` (
   `question_id` bigint(20) UNSIGNED NOT NULL,
   `topic_id` bigint(20) UNSIGNED NOT NULL,
   `question_text` text NOT NULL,
-  `answer` text NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -107,7 +123,7 @@ CREATE TABLE `raw` (
 --
 
 INSERT INTO `raw` (`raw_id`, `topic_id`, `raw_text`, `created_at`, `updated_at`) VALUES
-(45, 126, '1. What is constitution?, an instrument\n> A. constitution is a set of fundamental vules that\ndetermine how a country of state is vun-\n2. What are the type / kinds of constitution?\n> 1; Written Constitution/\nis a formal, codified document that outlines\nthe fundamental lawas, principles, and structure\nof a country\'s government.\n> It typically a single document and serves as\nsupreme law of the land.\n2. Unwritten Constitution\nthe\n> An unwritten constitution consists of various sources,\nsuch as statutes, conventions, judicial decisions,\nand historical documents, that collectively define\ngovernance and structure of a country\n> It lacks a single, consolidated document-\n\"Conventional / Enacted Constitution /\n> was created through a constitutional convention;\nthis convention is called to be able to draft the\nconstitution.\n4. \"Cumulative / Evolve constitution\n> developed as a\npart of the history of a particular\nnation; it was not created through a national\nConvention.', '2025-01-28 20:07:02', '2025-01-28 20:08:02');
+(56, 138, '=Image 1=\nFIRST BROWSER WAR (1995-2001)\nMOSAIC S\nSUMMAR\n①Netscape Navigators Dominande\n2\n>the first widely popular web browser\nafter its release in 1994\nSSW\n>it quickly gained a large share of the\nmarket, becoming the dominant browser\nin the early days of the www.\n>Mozzilla Crenamed)\nMicrosoft\'s Entry with Internet Explorer\n> entered the browser market by releasing\nIE in 1995 as part of its Windows 95 plus! pack\n> IE was initially based on code licensed\nfrom Spyglass mosaic, which itself was a\nlicensed ver of it.\n3 The Battle Intensipies!\n99\n99\n> MS began aggressively bundling IE\nwith it\'s Windows operating system,\nwhich was already installed on a majoriy\nof personal computers. This strategy\nx\ngave IE a significant distribution advantage\nleading to rapid growth in its market share.\n>Netscape initially charged for its browser,\nwhile MS offered It for free.\n000\n>Netscape began to declive as It\'s\npresense grew.\n④Antitrust Lawsuit Against Microsoft\nMS,\nthe aggresive tactics employed by mis,\nled to an antitrust law suit, by the us\nDept. of Justice in 1998. The case argued\nthat m\'s was using its windws monopoly to\nstiple competition in brow sau market.', '2025-02-07 00:00:39', '2025-02-07 00:00:57');
 
 -- --------------------------------------------------------
 
@@ -128,7 +144,7 @@ CREATE TABLE `reviewer` (
 --
 
 INSERT INTO `reviewer` (`reviewer_id`, `topic_id`, `reviewer_text`, `created_at`, `updated_at`) VALUES
-(10, 126, '**Subject:** Civics\n\n**Card 1:** \nA constitution is a set of fundamental rules that determine how a country or state is run. It serves as the supreme law of the land and outlines the structure of the government.\n\n**Card 2:** \nThere are different types of constitutions. One type is the Written Constitution, which is a formal, codified document that outlines the fundamental laws, principles, and structure of a country\'s government.\n\n**Card 3:** \nThe Unwritten Constitution is another type. It consists of various sources, such as statutes, conventions, judicial decisions, and historical documents, that collectively define the governance and structure of a country.\n\n**Card 4:** \nThe Conventional or Enacted Constitution is created through a constitutional convention, which is called to draft the constitution.\n\n**Card 5:** \nThe Cumulative or Evolved Constitution is developed as a part of the history of a particular nation. It was not created through a national convention.', '2025-01-28 20:08:14', '2025-01-28 20:08:14');
+(21, 138, '---\n**Subject:** History of Web Browsers  \n**Card 1:** The First Browser War (1995-2001)  \nThe First Browser War took place between 1995 and 2001, marking a significant competition in the web browser market.\n\n**Card 2:** Mosaic and Netscape Navigator  \nMosaic was the first widely popular web browser, released in 1994. Netscape Navigator quickly gained popularity, becoming the dominant browser in the early days of the World Wide Web.\n\n**Card 3:** Microsoft\'s Entry with Internet Explorer  \nMicrosoft entered the browser market in 1995 with Internet Explorer (IE), included in the Windows 95 Plus! pack. IE was initially based on code licensed from Spyglass Mosaic.\n\n**Card 4:** Bundling Strategy and Market Share  \nMicrosoft aggressively bundled IE with its Windows operating system, giving it a significant distribution advantage. This strategy led to rapid growth in IE\'s market share.\n\n**Card 5:** Netscape\'s Decline  \nNetscape initially charged for its browser, while Microsoft offered IE for free. As a result, Netscape began to decline in market presence.\n\n**Card 6:** Antitrust Lawsuit Against Microsoft  \nThe aggressive tactics of Microsoft led to an antitrust lawsuit by the U.S. Department of Justice in 1998, arguing that Microsoft was using its Windows monopoly to stifle competition in the browser market.  \n---', '2025-02-07 00:13:06', '2025-02-07 00:13:06');
 
 -- --------------------------------------------------------
 
@@ -150,7 +166,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('Ra5ezu59wcqggSbgehpUOyKhMqZjGyBGanmvgyaw', 6, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibWZRalY1MDlzemM1RlIwMGVpTkJhUm0yWnFqdXRFcm5TZTNObG1SeCI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NjtzOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czoyODoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3RvcGljcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1738124261);
+('z0Z5YaLje1H1YKtiv0hsdiExL1PTiQrZI0qPJ0lY', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOXpaSzhEYmR6UEZDYjJrQjZ5TEU3a2YxbDM3WWNJaVRSSDYzOWtuTCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyODoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3RvcGljcyI7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1739126845);
 
 -- --------------------------------------------------------
 
@@ -171,7 +187,7 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`subject_id`, `user_id`, `name`, `created_at`, `updated_at`) VALUES
-(104, 6, 'new subject', '2025-01-28 20:06:47', '2025-01-28 20:06:47');
+(111, 11, 'New', '2025-02-07 00:00:20', '2025-02-07 00:00:20');
 
 -- --------------------------------------------------------
 
@@ -209,7 +225,7 @@ CREATE TABLE `topics` (
 --
 
 INSERT INTO `topics` (`topic_id`, `subject_id`, `name`, `created_at`, `updated_at`) VALUES
-(126, 104, 'new topic', '2025-01-28 20:06:54', '2025-01-28 20:06:54');
+(138, 111, 'New topic', '2025-02-07 00:00:27', '2025-02-07 00:00:27');
 
 -- --------------------------------------------------------
 
@@ -219,7 +235,8 @@ INSERT INTO `topics` (`topic_id`, `subject_id`, `name`, `created_at`, `updated_a
 
 CREATE TABLE `users` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `firstname` varchar(50) NOT NULL,
+  `lastname` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('user','admin') NOT NULL DEFAULT 'user',
@@ -234,13 +251,12 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`, `date_created`, `last_login`, `created_at`, `updated_at`, `remember_token`) VALUES
-(1, 'Admin', 'admin@gmail.com', '$2y$12$Grzs6DV7RGl0IwGm2RHSpe96xHRxW/SDhFiZMd6k3MvkhW/t2SMn6', 'user', '2024-12-03 10:02:00', NULL, '2024-12-03 02:02:00', '2024-12-03 02:02:00', NULL),
-(2, 'Anthony Marc', 'anthony@gmail.com', '$2y$12$o.bPEfiHPdfcn5leXwz5oORhzbFTJA4PeZuDO/mk8AClVzDU95nFC', 'user', '2024-12-05 08:17:50', NULL, '2024-12-05 00:17:50', '2024-12-05 00:17:50', NULL),
-(3, 'Sir Jaydee', 'Jaydee@gmail.com', '$2y$12$poHfZI6Iy68pzlKOXgTw4uAB3uiQk8V6/f5dwMlGb3BV0xg/Y6CWi', 'user', '2024-12-05 09:52:04', NULL, '2024-12-05 01:52:04', '2024-12-05 01:52:04', NULL),
-(4, 'Admin', 'admin1@mail.com', '$2y$12$wUrDS7rdnqnRQglUWVgEceFwllvj6/QWuWpDC2bRQWZFrRVmTrGu.', 'user', '2024-12-11 07:57:09', NULL, '2024-12-10 23:57:09', '2024-12-10 23:57:09', NULL),
-(5, 'Admin', 'bombom@gmail.com', '$2y$12$iL6rfJ307TVLn90EJ8TBr.rNXv65FmazuUUBtoAvvZ7oFHa.DCe72', 'user', '2024-12-29 07:41:59', NULL, '2024-12-28 23:41:59', '2024-12-28 23:41:59', NULL),
-(6, 'Sharief Mudrikal', 'sharief@gmail.com', '$2y$12$vixK7qWEwPpOy1RHq27/7eR18ASTt0WEJCt1C4fbkBBD84PhSwcYO', 'user', '2025-01-16 11:43:51', NULL, '2025-01-16 03:43:51', '2025-01-16 03:43:51', 'TuObHf56pjVwCsswGbBvWgE4FLp5RBpBVDkM46acjCbIAjNhFTSHugL79VTg');
+INSERT INTO `users` (`user_id`, `firstname`, `lastname`, `email`, `password`, `role`, `date_created`, `last_login`, `created_at`, `updated_at`, `remember_token`) VALUES
+(8, 'jomark', 'abello', 'hehe@gmail.com', '$2y$12$sR.zGuoEA9G2g1wERl1EyOXQJfnjF2RRxoN3t/EPz7nYAg1dSAPXO', 'user', '2025-01-31 07:12:06', NULL, '2025-01-30 23:12:06', '2025-01-30 23:12:06', NULL),
+(9, 'dean', 'nene', 'what@gmail.com', '$2y$12$RM4XZx2S/rhM9/EnYQdSwe8TdEVeDS66biBGdYs9H68CkUVNPXAUy', 'user', '2025-01-31 07:28:25', NULL, '2025-01-30 23:28:25', '2025-01-30 23:28:25', NULL),
+(10, 'hue', 'sca', 'krisdasabbaani@gmail.com', '$2y$12$aYiRitOt0Ycg4EdI2Enl5OT9f2be9gGfKHjsoU2F1vCRNkVjcM1kK', 'user', '2025-01-31 07:38:53', NULL, '2025-01-30 23:38:53', '2025-01-30 23:38:53', NULL),
+(11, 'Sharief kundo', 'Mudrikal', 'shariefkundo@gmail.com', '$2y$12$e0hZ3I7bYN.tw82heMyo1.wKuxXMFcwF.nwMMtv8CIn2Np93oBoe6', 'user', '2025-02-03 13:48:51', NULL, '2025-02-03 05:48:51', '2025-02-03 05:48:51', NULL),
+(12, 'Sharief kundo', 'Mudrikal', 'shariefkundo19@gmail.com', '$2y$12$UXg0z1l/6jlGFYU1jlz1r.go22pIvM2drKIvTfDM/UjFTJxkE4G9O', 'user', '2025-02-03 13:53:29', NULL, '2025-02-03 05:53:29', '2025-02-03 05:53:29', NULL);
 
 --
 -- Indexes for dumped tables
@@ -258,6 +274,13 @@ ALTER TABLE `admin_actions`
 --
 ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `multiple_choice`
+--
+ALTER TABLE `multiple_choice`
+  ADD UNIQUE KEY `question_id` (`question_id`),
+  ADD KEY `question_id_2` (`question_id`);
 
 --
 -- Indexes for table `promos`
@@ -356,19 +379,19 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `raw`
 --
 ALTER TABLE `raw`
-  MODIFY `raw_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `raw_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `reviewer`
 --
 ALTER TABLE `reviewer`
-  MODIFY `reviewer_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `reviewer_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `subject_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `subject_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT for table `subscriptions`
@@ -380,13 +403,13 @@ ALTER TABLE `subscriptions`
 -- AUTO_INCREMENT for table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `topic_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `topic_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
@@ -399,10 +422,10 @@ ALTER TABLE `admin_actions`
   ADD CONSTRAINT `admin_actions_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `questions`
+-- Constraints for table `multiple_choice`
 --
-ALTER TABLE `questions`
-  ADD CONSTRAINT `questions_topic_id_foreign` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE;
+ALTER TABLE `multiple_choice`
+  ADD CONSTRAINT `question_id` FOREIGN KEY (`question_id`) REFERENCES `questions` (`question_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `raw`
