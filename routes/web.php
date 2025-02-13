@@ -12,9 +12,16 @@ use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 
 
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('capture');
+    } else {
+        return redirect()->route('landing');
+    }
+});
+
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
-    Route::view('/','posts.capture')->name('loggedin');
     
     Route::view('/openai', 'openai.test')->name('test');
     Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
@@ -72,7 +79,6 @@ Route::middleware('auth')->group(function (){
 
 Route::middleware('guest')->group(function (){
     
-    Route::view('/', 'website.landing')->name('landing');
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AUTHcontroller::class, 'register_user']);
     
