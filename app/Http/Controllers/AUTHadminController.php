@@ -53,7 +53,7 @@ class AUTHadminController extends Controller
             return redirect()->route('admin.dashboard');
         } else {
             return back()->withErrors([
-                'failed' => 'Admin Account Does not Exist.'
+                'failed' => 'Account Doesnt Exist.'
             ]);
         }
     }
@@ -70,11 +70,6 @@ class AUTHadminController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect the admin
-        return redirect('admin/login');
-    }
-
-    public function index(){
-        $admins = Admin::all();
-        return view('admin.admin_manage', compact('admins'));
+        return redirect('login');
     }
 }
