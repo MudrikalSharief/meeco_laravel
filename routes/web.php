@@ -4,6 +4,7 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TOPICcontroller;
 use App\Http\Controllers\ReviewerController;
@@ -70,8 +71,9 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    Route::get('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
+    Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
+    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
 
     //for quiz
     Route::view('/quiz', 'posts.quiz')->name('quiz');

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\multiple_choice;
+use App\Models\Question;
 use App\Models\Reviewer;
 use App\Models\Topic;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 
 class OPENAIController extends Controller
@@ -70,7 +74,7 @@ class OPENAIController extends Controller
     }
 
    
-    public function generate_quiz($topic_id)
+    public function generate_quiz($topic_id, Request $request)
     {
         $topic = Topic::find($topic_id);
         
@@ -85,7 +89,8 @@ class OPENAIController extends Controller
         }
     
         $reviewerText = $reviewer->reviewer_text;
-    
+        $number = $request->post('number');
+
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
@@ -96,7 +101,7 @@ class OPENAIController extends Controller
                 'model' => 'gpt-4-turbo',
                 'messages' => [
                     ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions. Return the response in JSON format.'],
-                    ['role' => 'user', 'content' => "Based on the following text, generate 10 multiple-choice quiz questions. Each question must have four options labeled A, B, C, and D. Only one option should be correct. Format your response in JSON like this: 
+                    ['role' => 'user', 'content' => "Based on the following text, generate ". $number ." multiple-choice quiz questions. Each question must have four options labeled A, B, C, and D. Only one option should be correct. Format your response in JSON like this: 
     
                     {
                     \"questions\": [
@@ -123,7 +128,44 @@ class OPENAIController extends Controller
                 return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
             }
     
-            return response()->json(json_decode($response->body(), true));
+            $responseData = json_decode($response->body(), true);
+            Log::info('OpenAI API Response:', ['response' => $responseData]);
+
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
+            }
+
+            $content = json_decode($responseData['choices'][0]['message']['content'], true);
+            Log::info('Parsed Content:', ['content' => $content]);
+
+            if (empty($content['questions'])) {
+                return response()->json(['success' => false, 'message' => 'No questions generated.']);
+            }
+            
+            $question = Question::create([
+                'topic_id' => $topic_id,
+                'question_type' => 'multiple_choice',
+                'question_title' => $request->post('name'),
+                'number_of_question' => $request->post('number'), // Assuming each question is a single question
+            ]);
+
+            // Log the created question to check if the id is set
+            Log::info('Created Question:', ['question' => $question]);
+
+            // Save the questions and multiple choices
+            foreach ($content['questions'] as $questionData) {
+                multiple_choice::create([
+                    'question_id' => $question->question_id,
+                    'question_text' => $questionData['question'],
+                    'answer' => $questionData['correct_answer'],
+                    'A' => $questionData['choices']['A'],
+                    'B' => $questionData['choices']['B'],
+                    'C' => $questionData['choices']['C'],
+                    'D' => $questionData['choices']['D'],
+                ]);
+            }
+
+            return response()->json(['success' => true, 'data' => $content]);
     
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
