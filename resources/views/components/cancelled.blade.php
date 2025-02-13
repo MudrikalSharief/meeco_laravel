@@ -26,6 +26,19 @@
                     </ul>
                 </div>
             </div>
+           
+        </div>
+        <div class="mt-6 bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-blue-600 mb-4">Subscription Status</h3>
+            <p class="text-red-600 font-medium">You are not currently subscribed in any premium offers.</p>
+        </div>
+        <div class="mt-6 bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-blue-600 mb-4">Activity Tracker</h3>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Photos Uploaded: 18</li>
+                <li>Reviewers: 13</li>
+                <li>Mock Quizzes: 13</li>
+            </ul>
         </div>
 
         <!-- Modal -->

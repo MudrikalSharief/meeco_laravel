@@ -1,6 +1,10 @@
 <x-web_layout>
-    <div class="relative right-0 top-0 pt-3 pl-3">
-        <a href="{{ route('landing')}}"><img class="w-5" src="{{ asset('logo_icons/x.svg')}}" alt=""></a>
+<div class="relative right-0 top-0 pt-3 pl-3">
+        <a href="{{ route('landing')}}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
+            </svg>
+        </a>
     </div>
 <main>
     <section class="quick-efficient">

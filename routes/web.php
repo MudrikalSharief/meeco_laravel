@@ -3,40 +3,36 @@
 use App\Http\Controllers\OPENAIController;   
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
+use App\Http\Controllers\AUTHadminController;
 
 
-use App\Http\Controllers\ReviewController;
-
-
-use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\PromoController;
-
-Route::view('/openai', 'openai.test')->name('test');
-Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
-
-Route::get('/js/openai.js', function () {
-    return response()->file(resource_path('js/openai.js'));
-})->name('openai.js');
-
-Route::middleware('guest')->group(function () {
-    Route::view('/', 'auth.login')->name('login');
-    Route::view('/register', 'auth.register')->name('register');
-    Route::post('/register', [AUTHController::class, 'register_user']);
-    Route::view('/login', 'auth.login')->name('login');
-    Route::post('/login', [AUTHController::class, 'login_user']);
-    Route::view('/website', 'website.landing')->name('landing');
-    Route::view('/terms', 'website.footer.terms')->name('terms');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('capture');
+    } else {
+        return redirect()->route('landing');
+    }
 });
 
-Route::middleware('auth')->group(function () {
-    Route::view('/', 'posts.capture')->name('loggedin');
-    Route::post('/logout', [AUTHController::class, 'logout_user'])->name('logout');
+//these routes are only accecibble in authenticated or logged in users
+Route::middleware('auth')->group(function (){
+    
+    Route::view('/openai', 'openai.test')->name('test');
+    Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
+    
+    Route::get('/js/openai.js', function () {
+        return response()->file(resource_path('js/openai.js'));
+    })->name('openai.js');
+    //=====
+    
+    Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
     Route::view('/capture', 'posts.capture')->name('capture');
     Route::post('/capture/upload', [ImageController::class, 'upload'])->name('capture.upload');
@@ -70,8 +66,32 @@ Route::middleware('auth')->group(function () {
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
+    Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
-    Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
+    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
+
+    //for quiz
+    Route::view('/quiz', 'posts.quiz')->name('quiz');
+});
+
+Route::middleware('guest')->group(function (){
+    
+    Route::view('/register', 'auth.register')->name('register');
+    Route::post('/register', [AUTHcontroller::class, 'register_user']);
+    
+    Route::view('/login', 'auth.login')->name('login');
+    Route::post('/login', [AUTHcontroller::class, 'login_user']);
+
+    Route::view('/website', 'website.landing')->name('landing');
+    Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/info', 'website.info_digest')->name('info_digest');
+    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
+    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
+    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
+
+    //footer
+
+    Route::view('/terms', 'website.footer.terms')->name('terms');
 });
 
 Route::middleware(['auth:admin'])->group(function () {

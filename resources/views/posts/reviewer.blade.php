@@ -1,14 +1,8 @@
 <x-layout>
-    <div class="flex items-center">
-        <a href="{{ route('subject') }}">
-            <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects</h1>
-        </a>
-        <a href="#">
-            <h2 class="font-semibold text-xl text-blue-500"> > Topics</h2>
-        </a>
-    </div>
+   
 
-    <div class="max-w-3xl mx-auto p-6 bg-white  rounded-lg ">
+    <div class="max-w-2xl mx-auto pt-6 bg-white  rounded-lg">
+   
         <!-- Buttons -->
         <div class="flex gap-2 space-x-4 mb-6">
             <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
@@ -54,6 +48,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const topicName = @json($topic->name);
+            const topicId = @json($topic->topic_id);
             const reviewerText = @json($reviewerText);
             const rawText = @json($rawText);
 
@@ -80,7 +75,7 @@
                     //     content += `<p>Card ${index + 1}: ${card}</p>`;
                     // });
                     subjectData.cards.forEach((card) => {
-                        content += `<p><br>- ${card}</p>`;
+                        content += `<p><br>- ${card},</p>`;
                     });
                 });
 
@@ -102,7 +97,12 @@
                 toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
             });
 
-            const quizbutton
+            const quizbutton = document.getElementById('quiz');
+            quizbutton.addEventListener('click', function(){
+                window.location.href=`/quiz?topicId=${topicId}`;
+            });
+
+
         });
     </script>
 </x-layout>
