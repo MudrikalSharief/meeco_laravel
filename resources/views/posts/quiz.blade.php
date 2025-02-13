@@ -1,6 +1,6 @@
 <x-layout>
     
-    <div class="max-w-2xl mx-auto pt-6 bg-white  rounded-lg">
+    <div class="max-w-2xl h-full mx-auto pt-6 bg-white  rounded-lg">
         
         <div class="w-full max-w-2xl">
 
@@ -9,23 +9,31 @@
                 <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
             </div>
             <hr class="my-3">
-            <div class="flex justify-between items-center">
-                <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Quiz</h1>
-                <button id="addQuizButton" class=" bg-blue-500 text-white py-2 px-4 rounded">New Quiz</button>
-            </div>
 
-            {{-- this is for the title,type,and score --}}
-            <div class="px-6 flex justify-between mb-2">
-                <p class=" text-gray-500 font-semibold text-sm">Title</p>
-                <div class="flex justify-between w-5/12">
-                    <p class=" text-gray-500 font-semibold text-sm">Type</p>
-                    <p class=" text-gray-500 font-semibold text-sm">Score</p>
+            {{-- This code will show the quiz menu AND DROPDOWN --}}
+            <div id="quiz_menu_holder" class="hidden">
+                    <div class="flex justify-between items-center">
+                        <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Quiz</h1>
+                        <button id="addQuizButton" class=" bg-blue-500 text-white py-2 px-4 rounded">New Quiz</button>
+                    </div>
+        
+                    {{-- this is for the title,type,and score --}}
+                    <div class="px-6 flex justify-between mb-2">
+                        <p class=" text-gray-500 font-semibold text-sm">Title</p>
+                        <div class="flex justify-between w-5/12">
+                            <p class=" text-gray-500 font-semibold text-sm">Type</p>
+                            <p class=" text-gray-500 font-semibold text-sm">Score</p>
+                        </div>
+                    </div>
+        
+                <div id="quizContainer" class="w-full max-w-2xl">
+                    {{-- Question is here --}}
                 </div>
             </div>
-
-        <div id="quizContainer" class="w-full max-w-2xl">
-            {{-- Question is here --}}
-        </div>
+            
+            <div id="opened_quizz_holder" class=" bg-blue-50 h-full w-full">
+                hi
+            </div>
 
     </div>
    
@@ -163,6 +171,29 @@
                 if (data.success) {
                     addQuizModal.classList.add('hidden');
                     alert('Success to create quiz.');
+
+                    //generate the quiz card again
+                    fetch('/getquizzes')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            quizContainer.innerHTML="";
+                            data.questions.forEach(quiz => {
+                                const button = document.createElement('button');
+                                button.classList.add('w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                                button.innerHTML = `
+                                    <p class=" ">${quiz.question_title}</p>
+                                    <div class="flex justify-between w-1/2">
+                                        <p class="">${quiz.question_type}</p>
+                                        <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
+                                    </div>
+                                `;
+                                quizContainer.appendChild(button);
+                            });
+                        } else {
+                            alert('Failed to get quizzes: ' + data.message);
+                        }
+                    });       
                 } else {
                     alert('Failed to create quiz: ' + data.message);
                 }
