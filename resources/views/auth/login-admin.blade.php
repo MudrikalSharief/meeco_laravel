@@ -15,7 +15,7 @@
 
     <div class="bg-white p-6 rounded-lg shadow-md max-w-sm min-w-52 w-full">
         
-        <h1 class="text-xl font-bold text-blue-500 text-center mb-4">Welcome Back</h1>
+        <h1 class="text-xl font-bold text-blue-500 text-center mb-4">Welcome Back Admin</h1>
         
         <form action="{{ route('admin.login') }}" class="space-y-4" method="POST">
             @csrf

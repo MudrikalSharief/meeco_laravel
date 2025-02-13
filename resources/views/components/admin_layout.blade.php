@@ -84,6 +84,14 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.admin-manage') }}" class="menu-item {{ request()->routeIs('admin.admin-manage') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7zM12 14a4 4 0 100-8 4 4 0 000 8zm0 0c2.21 0 4 1.79 4 4v1H8v-1c0-2.21 1.79-4 4-4z" />
+                    </svg>
+                    Manage Admin
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.support') }}" class="menu-item {{ request()->routeIs('admin.support') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -112,17 +120,25 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     Logout
                 </a>
+                <form id="admin-logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
             </li>
         </ul>
     </nav>
     <div class="content pl-64 pt-12">
         {{ $slot }}
     </div>
+    <script>
+        document.getElementById('admin-logout-form').addEventListener('submit', function() {
+            window.location.href = "{{ route('admin.login') }}";
+        });
+    </script>
 </body>
 </html>
