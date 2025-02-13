@@ -9,20 +9,39 @@ use App\Http\Controllers\TOPICcontroller;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AUTHadminController;
 
 
+Route::view('/openai', 'openai.test')->name('test');
+Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
 
-//these routes are only accecibble in authenticated or logged in users
+Route::get('/js/openai.js', function () {
+    return response()->file(resource_path('js/openai.js'));
+})->name('openai.js');
+
+Route::middleware('guest')->group(function (){
+    Route::view('/', 'auth.login')->name('login');
+    Route::view('/register', 'auth.register')->name('register');
+    Route::post('/register', [AUTHcontroller::class, 'register_user']);
+    
+    Route::view('/login', 'auth.login')->name('login');
+    Route::post('/login', [AUTHcontroller::class, 'login_user']);
+
+    Route::view('/website', 'website.landing')->name('landing');
+    Route::view('/faq', 'website.faq')->name('faq');
+    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
+    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
+    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
+
+    //footer
+
+    Route::view('/terms', 'website.footer.terms')->name('terms');
+
+});
+
 Route::middleware('auth')->group(function (){
     Route::view('/','posts.capture')->name('loggedin');
-    
-    Route::view('/openai', 'openai.test')->name('test');
-    Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
-    
-    Route::get('/js/openai.js', function () {
-        return response()->file(resource_path('js/openai.js'));
-    })->name('openai.js');
-    //=====
     
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
@@ -63,32 +82,10 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    Route::get('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
 
     //for quiz
-    Route::view('/quiz', 'posts.quiz')->name('quiz');
-});
-
-Route::middleware('guest')->group(function (){
-    
-    Route::view('/', 'website.landing')->name('landing');
-    Route::view('/register', 'auth.register')->name('register');
-    Route::post('/register', [AUTHcontroller::class, 'register_user']);
-    
-    Route::view('/login', 'auth.login')->name('login');
-    Route::post('/login', [AUTHcontroller::class, 'login_user']);
-
-    Route::view('/website', 'website.landing')->name('landing');
-    Route::view('/faq', 'website.faq')->name('faq');
-    Route::view('/info', 'website.info_digest')->name('info_digest');
-    Route::view('/quiz_maker', 'website.quiz_maker')->name('quiz_maker');
-    Route::view('/convert_image', 'website.convert_image')->name('convert_image');
-    Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
-
-    //footer
-
-    Route::view('/terms', 'website.footer.terms')->name('terms');
+    Route::view('/reviewer/quiz', 'posts.quiz')->name('reviewer.quiz');
 });
 
 Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
@@ -110,6 +107,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+    Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
 });
 
 // Auth admin
@@ -125,6 +123,29 @@ Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
 Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
 Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
 Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+
+// Middleware for redirection based on authentication status
+Route::middleware(['auth:admin'])->group(function () {
+    Route::view('/admin/dashboard', 'admin.admin_view')->name('admin.dashboard');
+    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
+    Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+    Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+    
+    Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
+    Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
+});
+
+// Redirect to admin login if not authenticated
+Route::middleware(['auth:admin/login'])->group(function () {
+    Route::get('/admin/{any}', function () {
+        return redirect()->route('admin.login');
+    })->where('any', '.*');
+});
 
 
 

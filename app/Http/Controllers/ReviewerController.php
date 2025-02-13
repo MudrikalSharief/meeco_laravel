@@ -53,7 +53,7 @@ class ReviewerController extends Controller
         ]);
     
         $response = $request->reviewerText;
-        $response = preg_replace('/^---$/m', '', $response);
+    
         // Match subjects and their associated cards
         preg_match_all('/\*\*Subject:\*\* (.*?)\s*(?=\*\*Card (\d+):\*\*)/s', $response, $matches, PREG_SET_ORDER);
     
@@ -65,7 +65,6 @@ class ReviewerController extends Controller
     
             $cards = [];
             // Now, extract the content after subject to get all card content correctly
-            
             preg_match_all('/\*\*Card (\d+):\*\*\s*(.*?)(?=\*\*Card (\d+):|\z)/s', $response, $cardMatches);
     
             Log::info('Card Matches Count: ' . count($cardMatches[1]));

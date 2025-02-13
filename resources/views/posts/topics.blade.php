@@ -71,25 +71,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        
-        const topic_container = document.getElementById('topics-container');
-
-        if(topic_container){
-            topic_container.addEventListener('click', function(){
-
-                if(event.target.classList.contains('delete-topic')){
-                    console.log('Delete Clicked');
-                    event.stopPropagation();
+        const topicsContainer = document.getElementById('topics-container'); // Ensure this exists
+        if (topicsContainer) {
+            topicsContainer.addEventListener('click', function (event) {
+                console.log("the Container is clicked");
+                const topicButton = event.target.closest('.subject_topics'); // Check if the clicked element is a topic button
+                console.log(topicButton);
+                if (topicButton && topicButton.id) {
+                    window.location.href = `/reviewer/${topicButton.id}`;
                 }
-
-                if(event.target.classList.contains('subject_topics')){
-                    console.log('Topic Clicked');
-                    window.location.href=`/reviewer/${event.target.id}`;
-                }
-
             });
         }
-        
         });
     </script>
 </x-layout>

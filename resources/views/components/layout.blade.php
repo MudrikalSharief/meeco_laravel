@@ -9,10 +9,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/navbar-style.css'])
     {{-- , 'resources/js/openai.js' --}}
 </head>
-<body class="relative min-h-screen flex flex-col">
+<body class="h-screen w-full m-0 p-0">
 
     {{-- Upper Navigation --}}
-    <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between z-50">
+    <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between">
         <div class="logo_holder flex justify-start items-center gap-3 pl-4">
             <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
             <p class="nav_text blue_text text-xl font-bold">meeco</p>
@@ -28,10 +28,10 @@
         </a>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-xl h-16 flex flex-row justify-between items-center border-t shadow-[0_-3px_10px_1px_rgba(50,50,50,0.15)] rounded-lg">
+    {{-- Bottom Navigation --}}
+    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-0 w-full h-16 flex flex-row justify-between items-center border-t shadow-[0_-3px_10px_1px_rgba(50,50,50,0.15)]">
         <ul id="menu" class="flex flex-row items-center space-x-4 px-4 mx-auto">
-            <a href="{{ route('capture') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extracted') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('capture') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extacted') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start items-center gap-3 p-2">
                     <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
                     <p class="nav_text blue_text font-normal hidden md:block">Convert New</p>
@@ -56,9 +56,17 @@
                 </li>
             </a>
         </ul>
-    </nav>
 
-    <div class="pt-.5 w-full flex-grow mb-20 mt-12">
+        <form action="{{ route('logout') }}" method="POST" class="ml-auto px-4">
+            @csrf
+            <button id="sidebar-signout" class="flex justify-start items-center gap-3 p-2 cursor-pointer">
+                <img class="filter-red max-w-6" src="{{ asset('logo_icons/sign-out-alt.svg') }}" alt="Sign out">
+                <p class="nav_text red_text font-medium hidden md:block">Logout</p>
+            </button>
+        </form>
+    </nav>
+    
+    <div class="md: pt-12 content here w-full h-full">
         {{ $slot ?? '' }}
     </div>
 

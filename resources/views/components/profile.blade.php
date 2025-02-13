@@ -11,7 +11,7 @@
                         <p class="text-gray-600">Joined August 2024</p>
                     </div>
                 </div>
-                <button id="profile_logout" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Logout</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Logout</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white shadow-md rounded-lg p-6">
@@ -46,23 +46,4 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function(){
-                const logoutButton = document.getElementById('profile_logout');
-                logoutButton.addEventListener('click', function() {
-                    logoutButton.disabled = true;
-                    fetch('/logout', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    }).then(response => {
-                        if (response.ok) {
-                            window.location.href = '/login';
-                        }
-                    });
-                    logoutButton.disabled = false;
-            });
-        });
-    </script>
 </x-layout>
