@@ -110,7 +110,6 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
-    Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
 });
 
 // Auth admin
@@ -126,29 +125,6 @@ Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
 Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
 Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
 Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
-
-// Middleware for redirection based on authentication status
-Route::middleware(['auth:admin'])->group(function () {
-    Route::view('/admin/dashboard', 'admin.admin_view')->name('admin.dashboard');
-    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
-    Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
-    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
-    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
-    Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
-    
-    Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
-    Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
-});
-
-// Redirect to admin login if not authenticated
-Route::middleware(['auth:admin/login'])->group(function () {
-    Route::get('/admin/{any}', function () {
-        return redirect()->route('admin.login');
-    })->where('any', '.*');
-});
 
 
 
