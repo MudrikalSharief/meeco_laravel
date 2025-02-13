@@ -4,13 +4,16 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\PromoController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
+
 
 
 Route::get('/', function () {

@@ -52,8 +52,6 @@ class SubscriptionController extends Controller
             'save_reviewer' => 'required|in:unlimited,limited',
             'download_reviewer' => 'required|in:unlimited,limited',
             'start_date' => 'nullable|date',
-            'download_reviewer' => 'required|in:unlimited,limited',
-            'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'discount_type' => 'required|in:percent,fixed',
             'percent_discount' => 'nullable|numeric|min:0|max:100',
