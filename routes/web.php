@@ -9,7 +9,7 @@ use App\Http\Controllers\TOPICcontroller;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
-
+use App\Http\Controllers\AUTHadminController;
 
 
 //these routes are only accecibble in authenticated or logged in users
