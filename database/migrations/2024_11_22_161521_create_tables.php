@@ -30,11 +30,18 @@ return new class extends Migration
             $table->id('promo_id');
             $table->string('name');
             $table->decimal('price', 10, 2);
-            $table->text('perks');
+            $table->text('perks')->nullable();
             $table->integer('duration')->comment('Duration in days');
-            $table->text('limitations')->nullable();
+            $table->longText('features')->nullable()->charset('utf8mb4')->collation('utf8mb4_bin')->check('json_valid(`features`)');
             $table->timestamps();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->enum('discount_type', ['percent', 'fixed'])->nullable();
+            $table->decimal('percent_discount', 5, 2)->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
         });
+
+        
 
         // Create Subscriptions table
         Schema::create('subscriptions', function (Blueprint $table) {
@@ -99,11 +106,11 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id('question_id');
             $table->unsignedBigInteger('topic_id');
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
             $table->text('question_type');
             $table->string('question_title');
             $table->integer('number_of_question');
             $table->integer('score')->default(0);
-            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
             $table->timestamps();
         });
 
