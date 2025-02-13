@@ -4,17 +4,24 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHcontroller;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TOPICcontroller;
 use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 
-
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('capture');
+    } else {
+        return redirect()->route('landing');
+    }
+});
 
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
-    Route::view('/','posts.capture')->name('loggedin');
+    
     
     Route::view('/openai', 'openai.test')->name('test');
     Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
@@ -63,8 +70,9 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    Route::get('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
+    Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
+    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
 
     //for quiz
     Route::view('/quiz', 'posts.quiz')->name('quiz');
@@ -72,7 +80,7 @@ Route::middleware('auth')->group(function (){
 
 Route::middleware('guest')->group(function (){
     
-    Route::view('/', 'website.landing')->name('landing');
+    
     Route::view('/register', 'auth.register')->name('register');
     Route::post('/register', [AUTHcontroller::class, 'register_user']);
     

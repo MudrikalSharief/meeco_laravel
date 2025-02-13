@@ -23,9 +23,11 @@ class Question extends Model
 
     // Define the fillable attributes
     protected $fillable = [
-        'question_id', 
         'topic_id',
-        'question_text',
+        'question_type',
+        'question_title',
+        'number_of_question',
+        'score',
     ];
 
     // Define the relationship with the User model

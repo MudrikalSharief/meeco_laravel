@@ -13,10 +13,10 @@ class multiple_choice extends Model
     protected $table = 'multiple_choice';
 
     // Define the primary key if it's not 'id'
-    protected $primaryKey = 'question_id';
+    protected $primaryKey = 'multiple_choice_id';
 
     // Indicate if the IDs are auto-incrementing
-    public $incrementing = false;
+    public $incrementing = true;
 
     // Specify the data type of the primary key
     protected $keyType = 'int';
@@ -24,6 +24,7 @@ class multiple_choice extends Model
     // Define the fillable attributes
     protected $fillable = [
         'question_id', 
+        'question_text',
         'answer',
         'A',
         'B',

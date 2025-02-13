@@ -99,9 +99,11 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id('question_id');
             $table->unsignedBigInteger('topic_id');
+            $table->text('question_type');
+            $table->string('question_title');
+            $table->integer('number_of_question');
+            $table->integer('score')->default(0);
             $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
-            $table->text('question_text');
-            $table->text('answer');
             $table->timestamps();
         });
 
@@ -110,7 +112,8 @@ return new class extends Migration
             $table->id('multiple_choice_id');
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
-            $table->integer('answer');
+            $table->string('question_text');
+            $table->text('answer');
             $table->text('A');
             $table->text('B');
             $table->text('C');
