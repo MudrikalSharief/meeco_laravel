@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.subjects.forEach((subject, index) => {
                     const subjectButton = document.createElement('a');
                     subjectButton.href = `/subjects/${subject.name}`;
-                    subjectButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
+                    subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                     <span>${subject.name}</span>
                                                     <span class="delete-subject text-red-500 h-full" data-subject-id="${subject.subject_id}">Delete</span>
                                                 </button>`;
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.topics && data.topics.length > 0 ) {
                 data.topics.forEach((topic, index) => {
                     const topicButton = document.createElement('button');
-                    topicButton.className = 'subject_topics w-full border text-start py-2 px-3  my-2 shadow-md rounded-md flex justify-between items-center';
+                    topicButton.className = 'subject_topics w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300';
                     topicButton.id = topic.topic_id;
                     topicButton.innerHTML =` 
                                                     <span>${topic.name}</span>
