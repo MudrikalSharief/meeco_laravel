@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -17,7 +17,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $primaryKey = 'user_id'; // Define the primary key as 'user_id'
+    protected $primaryKey = 'admin_id'; // Define the primary key as 'admin_id'
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -31,7 +31,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $keyType = 'int'; // 'user_id' is an integer
+    protected $keyType = 'int'; // 'admin_id' is an integer
 
     /**
      * The attributes that are mass assignable.
@@ -63,13 +63,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
     public function subjects()
     {
-        return $this->hasMany(Subject::class, 'user_id', 'user_id');
+        return $this->hasMany(Subject::class, 'admin_id', 'admin_id');
     }
 }
