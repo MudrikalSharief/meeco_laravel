@@ -134,6 +134,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
+    Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
+    Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
 });
 
 // Auth admin

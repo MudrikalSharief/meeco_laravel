@@ -80,4 +80,31 @@ class AUTHadminController extends Controller
         $users = User::all();
         return view('admin.admin_users', compact('users'));
     }
+
+    // Get User by ID
+    public function getUserById($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.user_detail', compact('user'));
+    }
+
+    // Create User
+    public function createUser(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:3|confirmed'
+        ]);
+
+        User::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+    }
 }
