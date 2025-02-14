@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User; // Add this line to import the User model
 
 class AUTHadminController extends Controller
 {
@@ -71,5 +72,12 @@ class AUTHadminController extends Controller
 
         // Redirect the admin
         return redirect('login');
+    }
+
+    // Show Users
+    public function showUsers()
+    {
+        $users = User::all();
+        return view('admin.admin_users', compact('users'));
     }
 }

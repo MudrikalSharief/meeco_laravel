@@ -130,6 +130,7 @@ Route::middleware(['auth:admin'])->group(function () {
     // Route for subscription view
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+    Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
 });
 
 // Auth admin
