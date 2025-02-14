@@ -77,7 +77,7 @@ class AUTHadminController extends Controller
     // Show Users
     public function showUsers()
     {
-        $users = User::all();
+        $users = User::paginate(10);
         return view('admin.admin_users', compact('users'));
     }
 

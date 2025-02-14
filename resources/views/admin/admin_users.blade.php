@@ -8,9 +8,10 @@
                 line-height:2.25rem; 
             }
             table {
-                width: 100%;
+                width: calc(100% - 20px);
                 border-collapse: collapse;
                 margin-top: 20px;
+                margin-right: 20px;
             }
             th, td {
                 border: 1px solid #ddd;
@@ -44,7 +45,7 @@
                 margin: 5% auto;
                 padding: 20px;
                 border: 1px solid #888;
-                width: 80%;
+                width: 50%;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.3);
                 border-radius: 10px;
             }
@@ -61,7 +62,7 @@
                 cursor: pointer;
             }
             #addUserBtn {
-                background-color: #4CAF50;
+                background-color:  #3b82f6;
                 color: white;
                 padding: 10px 20px;
                 border: none;
@@ -70,7 +71,7 @@
                 font-size: 16px;
             }
             #addUserBtn:hover {
-                background-color: #45a049;
+                background-color:rgb(90, 144, 230);
             }
             .modal form div {
                 margin-bottom: 15px;
@@ -86,7 +87,7 @@
                 border-radius: 5px;
             }
             .modal form button {
-                background-color: #4CAF50;
+                background-color: #3b82f6;
                 color: white;
                 padding: 10px 20px;
                 border: none;
@@ -95,9 +96,40 @@
                 font-size: 16px;
             }
             .modal form button:hover {
-                background-color: #45a049;
+                background-color:rgb(90, 144, 230);
+            }
+            .pagination {
+                margin-right: 20px;
             }
         </style>
+
+        @if(isset($users) && $users->count() > 0)
+            <table>
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($users as $user)
+                        <tr>
+                            <td>{{ $user->firstname }}</td>
+                            <td>{{ $user->lastname }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>{{ $user->created_at->format('Y-m-d') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <div class="pagination">
+                {{ $users->links() }}
+            </div>
+        @else
+            <p>No users found.</p>
+        @endif
 
         <button id="addUserBtn">Add User</button>
 
@@ -131,31 +163,6 @@
                 </form>
             </div>
         </div>
-
-        @if(isset($users) && $users->count() > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Date Joined</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($users as $user)
-                        <tr>
-                            <td>{{ $user->firstname }}</td>
-                            <td>{{ $user->lastname }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->created_at->format('Y-m-d') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <p>No users found.</p>
-        @endif
 
         <script>
             // Get the modal
