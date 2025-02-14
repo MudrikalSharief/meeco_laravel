@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.subjects.forEach((subject, index) => {
                     const subjectButton = document.createElement('a');
                     subjectButton.href = `/subjects/${subject.name}`;
-                    subjectButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
+                    subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                     <span>${subject.name}</span>
                                                     <span class="delete-subject text-red-500 h-full" data-subject-id="${subject.subject_id}">Delete</span>
                                                 </button>`;
@@ -443,12 +443,13 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data.topics && data.topics.length > 0 ) {
                 data.topics.forEach((topic, index) => {
-                    const topicButton = document.createElement('a');
-                    topicButton.href = `/reviewer`;
-                    topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
+                    const topicButton = document.createElement('button');
+                    topicButton.className = 'subject_topics w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300';
+                    topicButton.id = topic.topic_id;
+                    topicButton.innerHTML =` 
                                                     <span>${topic.name}</span>
                                                     <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>
-                                                </button>`;
+                                                `;
                     if(topics_container){
                         topics_container.appendChild(topicButton);
                     }
@@ -527,6 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
                     if (data.success) {
                         // Show the upload confirmation modal
                         uploadConfirmModal.classList.remove('hidden');
@@ -678,6 +680,7 @@ if (cancelDelete) {
 if (confirmDelete) {
     confirmDelete.addEventListener('click', function () {
         if (imgWrapperToDelete) {
+            confirmDelete.disabled = true;
             const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
 
             fetch('/capture/delete', {
@@ -709,8 +712,10 @@ if (confirmDelete) {
                 deleteConfirmModal.classList.add('hidden');
                 imgWrapperToDelete = null;
             });
+            confirmDelete.disabled = false;
         }
     });
+    
 }
 
 //THis is for FAQ in WEBSITE
@@ -1102,13 +1107,13 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error adding topic:', error);
-                    
+                    alert('Error adding topic: ' + error.message);
                 });
             }
 
@@ -1165,7 +1170,7 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
@@ -1254,15 +1259,13 @@ if (closeCaptureConfirm) {
                         if (data.message.includes('unique')) {
                             topicExistsModal.classList.remove('hidden');
                         } else {
-                          
-                            console.error('Error adding topic:', error);
+                            alert('Error adding topic: ' + data.message);
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error adding topic:', error);
-                   
-                    
+                    alert('Error adding topic: ' + error.message);
                 });
             }
         });
@@ -1312,12 +1315,12 @@ if (closeCaptureConfirm) {
                             noTopicsMessage.classList.remove('hidden');
                         }
                     } else {
-                        console.error('Error adding topic:', error);
+                        alert('Failed to delete topic: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error deleting topic:', error);
-                    
+                    alert('Error deleting topic: ' + error.message);
                 })
                 .finally(() => {
                     deleteTopicConfirmModal.classList.add('hidden');
@@ -1335,7 +1338,7 @@ if (closeCaptureConfirm) {
                 topicsContainer.innerHTML = ''; // Clear existing topics
                 data.topics.forEach((topic, index) => {
                     const topicButton = document.createElement('a');
-                    topicButton.href = `/reviewer`;
+                    topicButton.href = `/review/${topic.topic_id}`;
                     topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${topic.name}</span>
                                                     <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>

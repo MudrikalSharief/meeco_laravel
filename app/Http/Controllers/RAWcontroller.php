@@ -66,12 +66,13 @@ class RawController extends Controller
 
         if (empty($rawText)) {
             try {
+                
                 $imageAnnotatorClient = new ImageAnnotatorClient();
                 $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
                 $extractedText = '';
                 foreach ($image_paths as $index => $image_path) {
                     $imageContent = file_get_contents($image_path);
-                    $response = $imageAnnotatorClient->textDetection($imageContent);
+                    $response = $imageAnnotatorClient->textDetection($imageContent,['timeout' => 300]);
                     $text = $response->getTextAnnotations();
                     $extractedText .= '=Image ' . ($index + 1) . '=' . PHP_EOL;
                     $extractedText .= $text[0]->getDescription() . PHP_EOL . PHP_EOL;
