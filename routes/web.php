@@ -13,6 +13,8 @@ use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
+use App\Http\Controllers\ADMINController;
+use App\Http\Controllers\TransactionController;
 
 
 
@@ -100,7 +102,6 @@ Route::middleware('guest')->group(function (){
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
     Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
     Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::post('/subscriptions/store', [SubscriptionController::class, 'store'])->name('subscriptions.store');
@@ -135,13 +136,29 @@ Route::middleware(['auth:admin'])->group(function () {
 // Auth admin
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
 Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+<<<<<<< Updated upstream
 Route::post('/admin-register', [AUTHController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
 Route::post('/admin-login', [AUTHController::class, 'login_admin']);
+=======
+Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+>>>>>>> Stashed changes
 
 // Admin Authentication Routes
 Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
 Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
 Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
+<<<<<<< Updated upstream
 Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+=======
+Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+
+//Transaction Routes
+Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
+
+
+
+>>>>>>> Stashed changes
