@@ -26,6 +26,7 @@ class multiple_choice extends Model
         'question_id', 
         'question_text',
         'answer',
+        'user_answer',
         'A',
         'B',
         'C',

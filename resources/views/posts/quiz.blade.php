@@ -75,14 +75,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    
+        // this will go to the reviewer page
+        const urlParams = new URLSearchParams(window.location.search);
+        const topicId = urlParams.get('topicId');
+
     // this code is esponsible for getting all the quiz
     const quizContainer = document.getElementById('quizContainer');
     if (!quizContainer) {
         console.error('Quiz container not found');
         return;
     }else{
-        fetch('/getquizzes')
+        fetch(`/getquizzes/${topicId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -102,16 +105,15 @@
                 });
                 
             } else {
-                alert('Failed to get quizzes: ' + data.message);
+                const NoQuestions = document.createElement('p');
+                NoQuestions.classList.add('text-center', 'text-red-500', 'text-lg', 'py-4');
+                NoQuestions.innerHTML = 'No quizzes found.';
+                quizContainer.appendChild(NoQuestions);
             }
 
         });
     }
     
-    
-    // this will go to the reviewer page
-        const urlParams = new URLSearchParams(window.location.search);
-        const topicId = urlParams.get('topicId');
 
         const reviewer = document.getElementById('reviewer');
         if(reviewer){
@@ -146,6 +148,8 @@
         const quiztype = document.getElementById('quiztype');
         const quiznumber = document.getElementById('quiznumber');
 
+        
+
         saveQuizButton.addEventListener('click', function() {
             const QuizName = newQuizName.value.trim();
             const QuizType = quiztype.value;
@@ -175,7 +179,7 @@
                     alert('Success to create quiz.');
 
                     //generate the quiz card again
-                    fetch('/getquizzes')
+                    fetch(`/getquizzes/${topicId}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -194,7 +198,7 @@
                                 quizContainer.appendChild(button);
                             });
                            
-                            location.reload();
+                            // location.reload();
                         } else {
                             alert('Failed to get quizzes: ' + data.message);
                         }

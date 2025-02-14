@@ -45,6 +45,8 @@
 
             const submitQuizButton = document.getElementById('submitQuizButton');
             submitQuizButton.addEventListener('click', function(event) {
+                
+
                 event.preventDefault();
                 const formData = new FormData(quizForm);
                 const answers = {};
