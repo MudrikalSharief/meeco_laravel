@@ -34,6 +34,7 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
+                        <th>Date Joined</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +43,7 @@
                             <td>{{ $user->firstname }}</td>
                             <td>{{ $user->lastname }}</td>
                             <td>{{ $user->email }}</td>
+                            <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
