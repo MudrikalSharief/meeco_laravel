@@ -11,7 +11,6 @@
             </div> <div id="topics-container" class="w-full max-w-2xl">
      
         <!-- Add Topic Button -->
-        <button id="addTopicButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Add Topic</button>
         <div id="topics-container" class="w-full max-w-2xl">
            {{-- topics to be added herre --}}
         </div>
