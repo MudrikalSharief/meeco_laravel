@@ -71,9 +71,12 @@ Route::middleware('auth')->group(function (){
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
     Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
 
-    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
-
     //for quiz
+    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
+    Route::get('/getquiz/{quizId}',[QuizController::class,'getQuiz'])->name('get.quiz');
+    Route::get('/startquiz/{questionId}',[QuizController::class,'startQuiz'])->name('start.quiz');
+    Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take.quiz');
+    Route::post('/submitquiz',[QuizController::class,'submitQuiz'])->name('submit.quiz');
     Route::view('/quiz', 'posts.quiz')->name('quiz');
 });
 
