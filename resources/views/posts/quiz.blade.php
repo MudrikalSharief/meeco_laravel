@@ -4,23 +4,23 @@
         
         <div class="w-full max-w-2xl">
 
-            <div class="flex gap-2 space-x-4 mb-6">
+            <div class="flex gap-2 space-x-4 mb-6 px-6">
                 <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
                 <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
             </div>
             <hr class="my-3">
 
             {{-- This code will show the quiz menu AND DROPDOWN --}}
-            <div id="quiz_menu_holder" class="hidden">
+            <div id="quiz_menu_holder" class="bg-white h-full w-full px-6 py-3">
                     <div class="flex justify-between items-center">
                         <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Quiz</h1>
                         <button id="addQuizButton" class=" bg-blue-500 text-white py-2 px-4 rounded">New Quiz</button>
                     </div>
         
                     {{-- this is for the title,type,and score --}}
-                    <div class="px-6 flex justify-between mb-2">
+                    <div class="px-2 flex justify-between mb-2">
                         <p class=" text-gray-500 font-semibold text-sm">Title</p>
-                        <div class="flex justify-between w-5/12">
+                        <div class="flex justify-between w-3/5">
                             <p class=" text-gray-500 font-semibold text-sm">Type</p>
                             <p class=" text-gray-500 font-semibold text-sm">Score</p>
                         </div>
@@ -31,8 +31,8 @@
                 </div>
             </div>
             
-            <div id="opened_quizz_holder" class=" bg-blue-50 h-full w-full">
-                hi
+            <div id="opened_quizz_holder" class="hidden bg-blue-50 h-full w-full px-6 py-3">
+               
             </div>
 
     </div>
@@ -56,7 +56,7 @@
             </div>
             
             <div class="mb-4">
-                <label for="quiznumber" class="block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+                <label for="quiznumber" class=" block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
                 <select name="quiznumber" id="quiznumber" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -75,7 +75,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
+    
     // this code is esponsible for getting all the quiz
     const quizContainer = document.getElementById('quizContainer');
     if (!quizContainer) {
@@ -86,18 +86,21 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                
                 data.questions.forEach(quiz => {
                     const button = document.createElement('button');
-                    button.classList.add('w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                    button.classList.add('question_button','w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                    button.id = quiz.question_id;
                     button.innerHTML = `
                         <p class=" ">${quiz.question_title}</p>
-                        <div class="flex justify-between w-1/2">
-                            <p class="">${quiz.question_type}</p>
+                        <div class="flex justify-between w-3/5">
+                            <p class=" text-sm">${quiz.question_type}</p>
                             <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
                         </div>
                     `;
                     quizContainer.appendChild(button);
                 });
+                
             } else {
                 alert('Failed to get quizzes: ' + data.message);
             }
@@ -105,8 +108,7 @@
         });
     }
     
-
-
+    
     // this will go to the reviewer page
         const urlParams = new URLSearchParams(window.location.search);
         const topicId = urlParams.get('topicId');
@@ -177,6 +179,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
+                            
                             quizContainer.innerHTML="";
                             data.questions.forEach(quiz => {
                                 const button = document.createElement('button');
@@ -184,12 +187,14 @@
                                 button.innerHTML = `
                                     <p class=" ">${quiz.question_title}</p>
                                     <div class="flex justify-between w-1/2">
-                                        <p class="">${quiz.question_type}</p>
+                                        <p class="text-sm">${quiz.question_type}</p>
                                         <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
                                     </div>
                                 `;
                                 quizContainer.appendChild(button);
                             });
+                           
+                            location.reload();
                         } else {
                             alert('Failed to get quizzes: ' + data.message);
                         }
@@ -200,6 +205,81 @@
             })
             .catch(error => console.error('Error:', error));
         });
+
+
+
+
+        const opened_quizz_holder = document.getElementById('opened_quizz_holder');
+        const quiz_menu_holder = document.getElementById('quiz_menu_holder');
+        // Event delegation for question buttons
+        quizContainer.addEventListener('click', function(event) {
+            const button = event.target.closest('.question_button');
+            if (button) {
+                console.log("question is clicked");
+                const questionId = button.id;
+                fetch(`getquiz/${questionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        quiz_menu_holder.classList.add('hidden');
+                        opened_quizz_holder.classList.remove('hidden');
+                        opened_quizz_holder.innerHTML = ''; // Clear previous content
+
+                        // Create the quiz info div
+                        const quizInfoDiv = document.createElement('div');
+                        quizInfoDiv.id = 'quiz_info';
+                        quizInfoDiv.classList.add('w-full', 'max-w-2xl');
+                        quizInfoDiv.innerHTML = `
+                            <h1 id = "backbutton" class=" cursor-pointer text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
+                            <p><span class="text-sm text-gray-600">Quiz Name:</span> ${data.question.question_title}</p>
+                            <p><span class="text-sm text-gray-600">Quiz Type:</span> ${data.question.question_type}</p>
+                            <p><span class="text-sm text-gray-600">Question Count:</span> ${data.question.number_of_question}</p>
+                            <p><span class="text-sm text-gray-600">Score:</span> ${data.question.score} / ${data.question.number_of_question}</p>
+                            <p class="mt-5 "><span class="text-sm text-blue-600">Start Quiz Noww!!</span></p>
+                        `;
+                        opened_quizz_holder.appendChild(quizInfoDiv);
+
+                        // Create the start quiz button
+                        const startQuizButton = document.createElement('button');
+                        startQuizButton.id = data.question.question_id;
+                        startQuizButton.classList.add('startQuiz','bg-blue-500', 'mt-2', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'hover:bg-blue-600');
+                        startQuizButton.textContent = 'Start Quiz';
+                        opened_quizz_holder.appendChild(startQuizButton);
+                    } else {
+                        alert('Failed to get quizzes: ' + data.message);
+                    }
+                });
+            }
+        });
+
+        // Event delegation for back button
+        opened_quizz_holder.addEventListener('click', function(event) {
+            //for back button
+            const button = event.target.closest('#backbutton');
+            if (button) {
+                opened_quizz_holder.classList.add('hidden');
+                quiz_menu_holder.classList.remove('hidden');
+            }
+
+            //for start quiz button
+            const button2 = event.target.closest('.startQuiz');
+            if (button2) {
+               console.log("start quiz button is clicked");
+               fetch(`startquiz/${button2.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect to the next page
+                        console.log("quiz started");
+                        window.location.href = `/takequiz/${button2.id}`;
+                       
+                    } else {
+                        alert('Failed to start quiz: ' + data.message);
+                    }
+                });
+            }
+        });
+
         
 });
 
