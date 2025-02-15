@@ -4,7 +4,7 @@
         
         <div class="w-full max-w-2xl">
 
-            <div class="flex gap-2 space-x-4 mb-6 px-6">
+            <div class="flex gap-2 space-x-4 mb-6">
                 <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
                 <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
             </div>

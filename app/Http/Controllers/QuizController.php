@@ -73,6 +73,7 @@ class QuizController extends Controller
             $userAnswers[$choiceId] = $answer;
         }
 
+        //updating the useranswer in the multiple_choice table
         $index = 0;
         foreach($multiple_choice_id as $id){
             if(isset($userAnswers[$index])){
@@ -89,7 +90,9 @@ class QuizController extends Controller
             }
         }
        
-    
+        //updateing the score in the multiple_choice table
+        Question::where('question_id', $questionId)->update(['score' => $score]);
+
         return response()->json(['success' => true, 'score' => $score,'useranswer' => $userAnswers, 'answer' =>$correctAnswers, 'multiple_choice_id' => $multiple_choice_id]);
     }
 }
