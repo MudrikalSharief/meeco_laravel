@@ -113,6 +113,26 @@ class AUTHadminController extends Controller
         return redirect()->route('admin.users')->with('success', 'User created successfully.');
     }
 
+    // Create Admin
+    public function createAdmin(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|unique:admins',
+            'password' => 'required|min:3|confirmed'
+        ]);
+
+        Admin::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect()->route('admin.admin-manage')->with('success', 'Admin created successfully.');
+    }
+
     // Delete User by Email
     public function deleteUserByEmail($email)
     {
