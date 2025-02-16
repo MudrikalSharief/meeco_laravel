@@ -2,8 +2,8 @@
 <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 <x-admin_layout>
     <main>
-        <div class=" container mt-5">
-            <table id="myTable", class="min-w-full bg-white">
+        <div class="container mt-5">
+            <table id="myTable" class="min-w-full bg-white">
                 <thead>
                     <tr>
                         <th>Id</th>
@@ -27,11 +27,80 @@
                     @endforeach
                 </tbody>
             </table>
+            <button id="addAdminBtn" class="btn btn-primary mt-3">Add Admin</button>
+        </div>
+
+        <!-- Add Admin Modal -->
+        <div id="addAdminModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Admin</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('admin.admins.create') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="firstname">First Name:</label>
+                                <input type="text" id="firstname" name="firstname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname">Last Name:</label>
+                                <input type="text" id="lastname" name="lastname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password_confirmation">Confirm Password:</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Admin</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
-        let table = new DataTable('#myTable');
+        $(document).ready(function() {
+            let table = new DataTable('#myTable');
+
+            // Get the modal
+            var modal = $('#addAdminModal');
+
+            // Get the button that opens the modal
+            var btn = $('#addAdminBtn');
+
+            // Get the <span> element that closes the modal
+            var span = $('.close');
+
+            // When the user clicks the button, open the modal 
+            btn.on('click', function() {
+                modal.show();
+            });
+
+            // When the user clicks on <span> (x), close the modal
+            span.on('click', function() {
+                modal.hide();
+            });
+
+            // When the user clicks anywhere outside of the modal, close it
+            $(window).on('click', function(event) {
+                if ($(event.target).is(modal)) {
+                    modal.hide();
+                }
+            });
+        });
     </script>
 </x-admin_layout>
