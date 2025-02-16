@@ -145,9 +145,9 @@ Route::middleware(['auth:admin'])->group(function () {
 // Auth admin
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
 Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-Route::post('/admin-register', [AUTHController::class, 'register_admin']);
+Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHController::class, 'login_admin']);
+Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 // Redirect to admin login if not authenticated
 Route::middleware(['auth:admin/login'])->group(function () {
