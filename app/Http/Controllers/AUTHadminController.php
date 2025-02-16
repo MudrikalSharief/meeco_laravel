@@ -71,7 +71,7 @@ class AUTHadminController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect the admin
-        return redirect('admin/login');
+        return redirect('admin');
     }
 
     public function index(){
