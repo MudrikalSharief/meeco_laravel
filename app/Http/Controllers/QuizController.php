@@ -9,10 +9,14 @@ use Illuminate\Http\Request;
 
 class QuizController extends Controller
 {
-    public function getAllQuiz()
+    public function getAllQuiz($topicId)
     {   
-        $questions = Question::all();
+        $questions = Question::where('topic_id', $topicId)->get();
+        if($questions->isEmpty()){
+            return response()->json(['success'=>false,'message' => `No Question Yet, {{$questions}} `]);
+        }
         return response()->json(['success'=>true,'questions' => $questions]);
+
     }
 
     public function getQuiz($quizId)
@@ -59,12 +63,24 @@ class QuizController extends Controller
     
         // Retrieve all answers with the same question_id from the multiple_choice table
         $correctAnswers = multiple_choice::where('question_id', $questionId)->pluck('answer');
+        $multiple_choice_id = multiple_choice::where('question_id', $questionId)->pluck('multiple_choice_id');
+
     
         $answers = $request->except('questionId');
         $userAnswers = [];
         foreach ($answers as $question => $answer) {
             $choiceId = intval(explode('_', $question)[1]);
             $userAnswers[$choiceId] = $answer;
+        }
+
+        //updating the useranswer in the multiple_choice table
+        $index = 0;
+        foreach($multiple_choice_id as $id){
+            if(isset($userAnswers[$index])){
+                multiple_choice::where('multiple_choice_id', $id)
+                ->update(['user_answer' => $userAnswers[$index]]);
+                $index++;
+            }
         }
 
             // Compare the request answers with the correct answers
@@ -74,7 +90,9 @@ class QuizController extends Controller
             }
         }
        
-    
-        return response()->json(['success' => true, 'score' => $score,'useranswer' => $userAnswers, 'answer' =>$correctAnswers]);
+        //updateing the score in the multiple_choice table
+        Question::where('question_id', $questionId)->update(['score' => $score]);
+
+        return response()->json(['success' => true, 'score' => $score,'useranswer' => $userAnswers, 'answer' =>$correctAnswers, 'multiple_choice_id' => $multiple_choice_id]);
     }
 }

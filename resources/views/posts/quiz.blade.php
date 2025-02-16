@@ -4,7 +4,7 @@
         
         <div class="w-full max-w-2xl">
 
-            <div class="flex gap-2 space-x-4 mb-6 px-6">
+            <div class="flex gap-2 space-x-4 mb-6">
                 <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
                 <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
             </div>
@@ -44,10 +44,10 @@
             <div class="mb-4">
                 <label for="quiztype" class="block text-sm font-medium text-gray-700 mb-1">Select Quiz Type</label>
                 <select name="quiztype" id="quiztype" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-                    <option value="0">Multiple Choice</option>
-                    <option value="1">Identification</option>
-                    <option value="2">True or false</option>
-                    <option value="3">Mixed</option>
+                    <option value="Multiple Choice">Multiple Choice</option>
+                    <option value="Identification">Identification</option>
+                    <option value="True or false">True or false</option>
+                    <option value="Mixed">Mixed</option>
                 </select>
             </div>
             <div class="mb-4">
@@ -75,14 +75,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    
+        // this will go to the reviewer page
+        const urlParams = new URLSearchParams(window.location.search);
+        const topicId = urlParams.get('topicId');
+
     // this code is esponsible for getting all the quiz
     const quizContainer = document.getElementById('quizContainer');
     if (!quizContainer) {
         console.error('Quiz container not found');
         return;
     }else{
-        fetch('/getquizzes')
+        fetch(`/getquizzes/${topicId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -102,16 +105,15 @@
                 });
                 
             } else {
-                alert('Failed to get quizzes: ' + data.message);
+                const NoQuestions = document.createElement('p');
+                NoQuestions.classList.add('text-center', 'text-red-500', 'text-lg', 'py-4');
+                NoQuestions.innerHTML = 'No quizzes found.';
+                quizContainer.appendChild(NoQuestions);
             }
 
         });
     }
     
-    
-    // this will go to the reviewer page
-        const urlParams = new URLSearchParams(window.location.search);
-        const topicId = urlParams.get('topicId');
 
         const reviewer = document.getElementById('reviewer');
         if(reviewer){
@@ -146,6 +148,8 @@
         const quiztype = document.getElementById('quiztype');
         const quiznumber = document.getElementById('quiznumber');
 
+        
+
         saveQuizButton.addEventListener('click', function() {
             const QuizName = newQuizName.value.trim();
             const QuizType = quiztype.value;
@@ -175,7 +179,7 @@
                     alert('Success to create quiz.');
 
                     //generate the quiz card again
-                    fetch('/getquizzes')
+                    fetch(`/getquizzes/${topicId}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -194,7 +198,7 @@
                                 quizContainer.appendChild(button);
                             });
                            
-                            location.reload();
+                            // location.reload();
                         } else {
                             alert('Failed to get quizzes: ' + data.message);
                         }

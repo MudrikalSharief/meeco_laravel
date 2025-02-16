@@ -1,6 +1,5 @@
 <x-layout>
-   
-
+    
     <div class="max-w-2xl mx-auto pt-6 bg-white  rounded-lg">
    
         <!-- Buttons -->
@@ -28,9 +27,6 @@
             <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
 
-         <div class="Questions border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
-    
-         </div>
      
     </div>
 

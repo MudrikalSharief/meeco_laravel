@@ -141,10 +141,12 @@ class OPENAIController extends Controller
             if (empty($content['questions'])) {
                 return response()->json(['success' => false, 'message' => 'No questions generated'.$number.'.', 'data' => $content,'raw' => $reviewerText]);
             }
+
+
             
             $question = Question::create([
                 'topic_id' => $topic_id,
-                'question_type' => 'multiple_choice',
+                'question_type' => $request->post('type'),
                 'question_title' => $request->post('name'),
                 'number_of_question' => $request->post('number'), // Assuming each question is a single question
             ]);
