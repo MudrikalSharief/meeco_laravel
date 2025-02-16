@@ -31,9 +31,7 @@
                 </div>
             </div>
             
-            <div id="opened_quizz_holder" class="hidden bg-blue-50 h-full w-full px-6 py-3">
-               
-            </div>
+           
 
     </div>
    
@@ -221,69 +219,11 @@
             if (button) {
                 console.log("question is clicked");
                 const questionId = button.id;
-                fetch(`getquiz/${questionId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        quiz_menu_holder.classList.add('hidden');
-                        opened_quizz_holder.classList.remove('hidden');
-                        opened_quizz_holder.innerHTML = ''; // Clear previous content
-
-                        // Create the quiz info div
-                        const quizInfoDiv = document.createElement('div');
-                        quizInfoDiv.id = 'quiz_info';
-                        quizInfoDiv.classList.add('w-full', 'max-w-2xl');
-                        quizInfoDiv.innerHTML = `
-                            <h1 id = "backbutton" class=" cursor-pointer text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
-                            <p><span class="text-sm text-gray-600">Quiz Name:</span> ${data.question.question_title}</p>
-                            <p><span class="text-sm text-gray-600">Quiz Type:</span> ${data.question.question_type}</p>
-                            <p><span class="text-sm text-gray-600">Question Count:</span> ${data.question.number_of_question}</p>
-                            <p><span class="text-sm text-gray-600">Score:</span> ${data.question.score} / ${data.question.number_of_question}</p>
-                            <p class="mt-5 "><span class="text-sm text-blue-600">Start Quiz Noww!!</span></p>
-                        `;
-                        opened_quizz_holder.appendChild(quizInfoDiv);
-
-                        // Create the start quiz button
-                        const startQuizButton = document.createElement('button');
-                        startQuizButton.id = data.question.question_id;
-                        startQuizButton.classList.add('startQuiz','bg-blue-500', 'mt-2', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'hover:bg-blue-600');
-                        startQuizButton.textContent = 'Start Quiz';
-                        opened_quizz_holder.appendChild(startQuizButton);
-                    } else {
-                        alert('Failed to get quizzes: ' + data.message);
-                    }
-                });
+                window.location.href=`/quizresult?questionId=${questionId}`;
             }
         });
 
-        // Event delegation for back button
-        opened_quizz_holder.addEventListener('click', function(event) {
-            //for back button
-            const button = event.target.closest('#backbutton');
-            if (button) {
-                opened_quizz_holder.classList.add('hidden');
-                quiz_menu_holder.classList.remove('hidden');
-            }
-
-            //for start quiz button
-            const button2 = event.target.closest('.startQuiz');
-            if (button2) {
-               console.log("start quiz button is clicked");
-               fetch(`startquiz/${button2.id}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Redirect to the next page
-                        console.log("quiz started");
-                        window.location.href = `/takequiz/${button2.id}`;
-                       
-                    } else {
-                        alert('Failed to start quiz: ' + data.message);
-                    }
-                });
-            }
-        });
-
+        
         
 });
 
