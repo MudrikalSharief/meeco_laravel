@@ -117,6 +117,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
     Route::post('/admin/admins/create', [AUTHadminController::class, 'createAdmin'])->name('admin.admins.create');
+    Route::put('/admin/admins/update', [AUTHadminController::class, 'updateAdmin'])->name('admin.admins.update');
+    Route::get('/admin/admins/{admin}/edit', [AUTHadminController::class, 'editAdmin'])->name('admin.admins.edit');
 
     // Routes for promo actions
     Route::resource('promos', PromoController::class);
