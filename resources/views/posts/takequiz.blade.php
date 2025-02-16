@@ -14,6 +14,8 @@
                 </form>
                 <button id="submitQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Quiz</button>
             </div>
+            
+
         </div>
     </div>
     <script>
@@ -51,10 +53,10 @@
                 questionDiv.innerHTML = `
                     <p class ="text-blue-500">${index + 1}) ${question.question_text}</p>
                     <ul>
-                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A: ${question.A}</label></li>
-                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B: ${question.B}</label></li>
-                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="C"> C: ${question.C}</label></li>
-                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="D"> D: ${question.D}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A) ${question.A}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B) ${question.B}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="C"> C) ${question.C}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="D"> D) ${question.D}</label></li>
                     </ul>
                 `;
                 quizForm.appendChild(questionDiv);
@@ -82,9 +84,9 @@
 
             const submitQuizButton = document.getElementById('submitQuizButton');
             const quizContainer = document.querySelector('.quiz-container');
-            submitQuizButton.addEventListener('click', function(event) {
-                
+            
 
+            submitQuizButton.addEventListener('click', function(event) {
                 event.preventDefault();
                 const formData = new FormData(quizForm);
                 const answers = {};
@@ -121,9 +123,10 @@
                         const closeModalButton = document.getElementById('closeModalButton');
                         closeModalButton.addEventListener('click', function() {
                             scoreModal.remove();
+                        
                         });
 
-                        quizContainer.remove();
+                       
                     } else {
                         alert('Failed to submit quiz: ' + data.message);
                     }
