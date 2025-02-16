@@ -113,9 +113,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
 
-   });
-
- // Routes for promo actions
+    // Routes for promo actions
     Route::resource('promos', PromoController::class);
     Route::post('/promos', [PromoController::class, 'store'])->name('promos.store');
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
@@ -157,10 +155,9 @@ Route::post('/admin-register', [AUTHController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
 Route::post('/admin-login', [AUTHController::class, 'login_admin']);
 
-/*// Admin Authentication Routes
+// Admin Authentication Routes
 Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
 Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
 Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
 Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
-*/
