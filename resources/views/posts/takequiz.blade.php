@@ -1,14 +1,14 @@
 <!-- resources/views/posts/takequiz.blade.php -->
 <x-layout>
 
-    <div class="max-w-2xl h-full mx-auto bg-white  rounded-lg">
+    <div class="z-50 bg-white px-6 py-3 fixed w-full shadow-lg">
+        <p id="title" class=" text-blue-500"></p>
+    </div>
+    <div class="max-w-2xl h-full mx-auto bg-white rounded-lg">
         
         <div class="w-full max-w-2xl">
-            <div class="z-50 bg-white px-6 py-3 fixed w-full shadow-lg">
-                <p id="title" class=" text-blue-500"></p>
-            </div>
 
-            <div class="quiz-container px-24 pt-24">
+            <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-24">
                 <form id="quizForm">
                     <!-- Questions will be dynamically inserted here -->
                 </form>
