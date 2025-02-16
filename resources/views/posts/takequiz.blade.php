@@ -1,14 +1,14 @@
 <!-- resources/views/posts/takequiz.blade.php -->
 <x-layout>
 
-    <div class="z-50 bg-white px-6 py-3 fixed w-full shadow-lg">
+    <div class=" z-50 sticky top-12 bg-white px-6 py-3 w-full shadow-lg">
         <p id="title" class=" text-blue-500"></p>
     </div>
     <div class="max-w-2xl h-full mx-auto bg-white rounded-lg">
         
         <div class="w-full max-w-2xl">
 
-            <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-24">
+            <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5">
                 <form id="quizForm">
                     <!-- Questions will be dynamically inserted here -->
                 </form>
@@ -34,14 +34,14 @@
                     const title = document.getElementById('title');
                     title.classList.add('cursor-pointer','font-medium');
                     title.innerHTML = `<span>&#129120</span> ${data.question.question_title}`;
-                    topicId = data.question.topic_id;
+                    topicId = data.question.question_id;
                     console.log(data);
                 }
             }).catch(error => console.error('Error:', error));
 
             const title = document.getElementById('title');
             title.addEventListener('click', function() {
-                window.location.href=`/quiz?topicId=${topicId}`;
+                window.location.href=`/quizresult?questionId=${topicId}`;
             });
 
             const botnav = document.getElementById('bottom_nav');
@@ -51,7 +51,7 @@
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('question');
                 questionDiv.innerHTML = `
-                    <p class ="text-blue-500">${index + 1}) ${question.question_text}</p>
+                    <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                     <ul>
                         <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A) ${question.A}</label></li>
                         <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B) ${question.B}</label></li>
@@ -84,10 +84,59 @@
 
             const submitQuizButton = document.getElementById('submitQuizButton');
             const quizContainer = document.querySelector('.quiz-container');
+            const questionDivs = quizContainer.querySelectorAll('.question');
             
 
             submitQuizButton.addEventListener('click', function(event) {
+                //validation
                 event.preventDefault();
+                let index = 0;
+                let clear = 0;
+                let total = 0;
+                questionDivs.forEach(questionDivs =>{
+                    total++;
+                    const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
+                    let answered = 0;        
+                    labels.forEach(label => {
+                        if(label.checked){
+                            answered++;
+                            clear++;
+                        }
+                        if(answered == 0){
+                            const q = document.getElementById(`q${index+1}`);
+                            q.innerHTML = "Please answer this question";
+                        }else{
+                            const q = document.getElementById(`q${index+1}`);
+                            q.innerHTML = "";
+                        }
+                    });
+                    console.log(index, answered,clear);
+                    index++;
+                   
+                })
+                if (clear < total) {
+                    const ValidateModal = document.createElement('div');
+                    ValidateModal.id = 'ValidateModal';
+                    ValidateModal.classList.add('z-50','fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                    ValidateModal.innerHTML = `
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                <h2 class="text-2xl mb-4">Oh No!</h2>
+                                <p id="scoreText" class="text-lg">Please Answer all Questions</p>
+                                <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+                            </div>
+                        `;
+                        document.body.appendChild(ValidateModal);
+                        
+                        const closeModalButton = document.getElementById('closeModalButton');
+                        if(closeModalButton){
+                            closeModalButton.addEventListener('click', function() {
+                                ValidateModal.remove();
+                            });
+                        }
+                        return;
+                 }
+
+                    //if validaten continue
                 const formData = new FormData(quizForm);
                 const answers = {};
                 formData.forEach((value, key) => {
@@ -110,12 +159,12 @@
                         console.log(data);
                         const scoreModal = document.createElement('div');
                         scoreModal.id = 'scoreModal';
-                        scoreModal.classList.add('fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                        scoreModal.classList.add('z-50','fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
                         scoreModal.innerHTML = `
                             <div class="bg-white p-6 rounded-lg shadow-lg">
-                                <h2 class="text-2xl mb-4">Quiz Score</h2>
-                                <p id="scoreText" class="text-lg">Your score: ${data.score}</p>
-                                <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+                                <h2 class="text-2xl mb-4">Congratulation!!</h2>
+                                <p id="scoreText" class="text-lg">The result of your quiz is ready.</p>
+                                <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Result</button>
                             </div>
                         `;
                         document.body.appendChild(scoreModal);
@@ -123,7 +172,7 @@
                         const closeModalButton = document.getElementById('closeModalButton');
                         closeModalButton.addEventListener('click', function() {
                             scoreModal.remove();
-                        
+                            window.location.href=`/quizresult?questionId=${data.question_id}`;
                         });
 
                        

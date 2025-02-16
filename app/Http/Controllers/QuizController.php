@@ -47,8 +47,17 @@ class QuizController extends Controller
         }
         return view('posts.takequiz', ['questions' => $questions]);
     }
-
-
+    
+    public function getQuizResult($questionId)
+    {
+        $id = intval($questionId);
+        $questions = multiple_choice::where('question_id', $id)->get();
+        $correctAnswers = multiple_choice::where('question_id', $questionId)->pluck('answer');
+        if ($correctAnswers[0] === null) {
+            return response()->json(['success' => false, 'message' => 'No Answer Yet']);
+        }
+        return response()->json(['success' => true, 'questions' => $questions]);
+    }
     
     public function submitQuiz(Request $request)
     {
@@ -93,6 +102,6 @@ class QuizController extends Controller
         //updateing the score in the multiple_choice table
         Question::where('question_id', $questionId)->update(['score' => $score]);
 
-        return response()->json(['success' => true, 'score' => $score,'useranswer' => $userAnswers, 'answer' =>$correctAnswers, 'multiple_choice_id' => $multiple_choice_id]);
+        return response()->json(['success' => true, 'question_id' => $questionId]);
     }
 }
