@@ -81,6 +81,7 @@
             });
 
             const submitQuizButton = document.getElementById('submitQuizButton');
+            const quizContainer = document.querySelector('.quiz-container');
             submitQuizButton.addEventListener('click', function(event) {
                 
 
@@ -121,6 +122,8 @@
                         closeModalButton.addEventListener('click', function() {
                             scoreModal.remove();
                         });
+
+                        quizContainer.remove();
                     } else {
                         alert('Failed to submit quiz: ' + data.message);
                     }
