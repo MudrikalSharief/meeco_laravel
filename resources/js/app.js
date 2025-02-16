@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     subjectButton.href = `/subjects/${subject.name}`;
                     subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                     <span>${subject.name}</span>
-                                                    <span class="delete-subject text-red-500 h-full" data-subject-id="${subject.subject_id}">Delete</span>
+                                                    <span class="delete-subject text-red-500 h-full" data-subject-id="${subject.subject_id}"> <img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                 </button>`;
                     if(subjectsContainer){
                         subjectsContainer.appendChild(subjectButton);
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     topicButton.id = topic.topic_id;
                     topicButton.innerHTML =` 
                                                     <span>${topic.name}</span>
-                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>
+                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                 `;
                     if(topics_container){
                         topics_container.appendChild(topicButton);
@@ -1148,7 +1148,7 @@ if (closeCaptureConfirm) {
                         topicButton.href = `/review/${data.topic.topic_id}`;
                         topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${data.topic.name}</span>
-                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${data.topic.topic_id}">Delete</span>
+                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${data.topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                 </button>`;
                         topicsContainer.appendChild(topicButton);
                         noTopicsMessage.classList.add('hidden');
@@ -1237,7 +1237,7 @@ if (closeCaptureConfirm) {
                         topicButton.href = `/review/${data.topic.topic_id}`;
                         topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${data.topic.name}</span>
-                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${data.topic.topic_id}">Delete</span>
+                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${data.topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                 </button>`;
                         topicsContainer.appendChild(topicButton);
                         noTopicsMessage.classList.add('hidden');
@@ -1338,7 +1338,7 @@ if (closeCaptureConfirm) {
                     topicButton.href = `/review/${topic.topic_id}`;
                     topicButton.innerHTML = `<button class="w-full border text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center">
                                                     <span>${topic.name}</span>
-                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}">Delete</span>
+                                                    <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                 </button>`;
                     if(topicsContainer){
                         topicsContainer.appendChild(topicButton);

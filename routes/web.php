@@ -69,10 +69,10 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
-
+    
     //for quiz
-    Route::get('/getquizzes',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
+    Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
+    Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
     Route::get('/getquiz/{quizId}',[QuizController::class,'getQuiz'])->name('get.quiz');
     Route::get('/startquiz/{questionId}',[QuizController::class,'startQuiz'])->name('start.quiz');
     Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take.quiz');
@@ -134,6 +134,10 @@ Route::middleware(['auth:admin'])->group(function () {
     // Route for subscription view
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+    Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
+    Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
+    Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
+    Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
 });
 
 // Auth admin

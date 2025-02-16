@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User; // Add this line to import the User model
 
 class AUTHadminController extends Controller
 {
@@ -76,5 +77,48 @@ class AUTHadminController extends Controller
     public function index(){
         $admins = Admin::all();
         return view('admin.admin_manage', compact('admins'));
+    }
+
+    // Show Users
+    public function showUsers()
+    {
+        $users = User::paginate(10);
+        return view('admin.admin_users', compact('users'));
+    }
+
+    // Get User by ID
+    public function getUserById($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.user_detail', compact('user'));
+    }
+
+    // Create User
+    public function createUser(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:3|confirmed'
+        ]);
+
+        User::create([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+    }
+
+    // Delete User by Email
+    public function deleteUserByEmail($email)
+    {
+        $user = User::where('email', $email)->firstOrFail();
+        $user->delete();
+
+        return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
     }
 }
