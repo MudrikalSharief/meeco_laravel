@@ -1,13 +1,14 @@
 <!-- resources/views/posts/takequiz.blade.php -->
 <x-layout>
 
-    <div class="max-w-2xl h-full mx-auto pt-6 bg-white  rounded-lg">
+    <div class="max-w-2xl h-full mx-auto bg-white  rounded-lg">
         
         <div class="w-full max-w-2xl">
-            <p id="title" class=" text-blue-500"></p>
-            <hr class="my-3">
+            <div class="z-50 bg-white px-6 py-3 fixed w-full shadow-lg">
+                <p id="title" class=" text-blue-500"></p>
+            </div>
 
-            <div class="quiz-container px-24">
+            <div class="quiz-container px-24 pt-24">
                 <form id="quizForm">
                     <!-- Questions will be dynamically inserted here -->
                 </form>
@@ -21,18 +22,25 @@
             const questions = @json($questions);
             const questionid = questions[0].question_id;
             const quizForm = document.getElementById('quizForm');
+            let topicId = null;
             
-
             //get the title of the question
             fetch( `/getquiz/${questionid}`)
             .then(response => response.json())
             .then(data => {
                 if(data.success){
                     const title = document.getElementById('title');
+                    title.classList.add('cursor-pointer','font-medium');
                     title.innerHTML = `<span>&#129120</span> ${data.question.question_title}`;
+                    topicId = data.question.topic_id;
                     console.log(data);
                 }
             }).catch(error => console.error('Error:', error));
+
+            const title = document.getElementById('title');
+            title.addEventListener('click', function() {
+                window.location.href=`/quiz?topicId=${topicId}`;
+            });
 
             const botnav = document.getElementById('bottom_nav');
             botnav.classList.add('hidden');
@@ -41,15 +49,35 @@
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('question');
                 questionDiv.innerHTML = `
-                    <p>${index + 1}) ${question.question_text}</p>
+                    <p class ="text-blue-500">${index + 1}) ${question.question_text}</p>
                     <ul>
-                        <li><label><input type="radio" name="question_${index}" value="A"> A: ${question.A}</label></li>
-                        <li><label><input type="radio" name="question_${index}" value="B"> B: ${question.B}</label></li>
-                        <li><label><input type="radio" name="question_${index}" value="C"> C: ${question.C}</label></li>
-                        <li><label><input type="radio" name="question_${index}" value="D"> D: ${question.D}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A: ${question.A}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B: ${question.B}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="C"> C: ${question.C}</label></li>
+                        <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="D"> D: ${question.D}</label></li>
                     </ul>
                 `;
                 quizForm.appendChild(questionDiv);
+            });
+
+            quizForm.addEventListener('change', function(event) {
+                if (event.target.type === 'radio') {
+                    const selectedLabel = event.target.closest('label');
+                    const questionGroup = selectedLabel.closest('.question');
+                    const labels = questionGroup.querySelectorAll('label');
+                    
+                    labels.forEach(label => {
+                        label.classList.add('shadow-sm');
+                        label.classList.remove('shadow-md');
+                        label.classList.remove('bg-blue-200');
+                        label.classList.add('bg-blue-50');
+                    });
+                    
+                    selectedLabel.classList.add('bg-blue-50');
+                    selectedLabel.classList.add('bg-blue-200');
+                    selectedLabel.classList.remove('shadow-sm');
+                    selectedLabel.classList.add('shadow-md');
+                }
             });
 
             const submitQuizButton = document.getElementById('submitQuizButton');

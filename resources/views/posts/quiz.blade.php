@@ -44,10 +44,10 @@
             <div class="mb-4">
                 <label for="quiztype" class="block text-sm font-medium text-gray-700 mb-1">Select Quiz Type</label>
                 <select name="quiztype" id="quiztype" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-                    <option value="0">Multiple Choice</option>
-                    <option value="1">Identification</option>
-                    <option value="2">True or false</option>
-                    <option value="3">Mixed</option>
+                    <option value="Multiple Choice">Multiple Choice</option>
+                    <option value="Identification">Identification</option>
+                    <option value="True or false">True or false</option>
+                    <option value="Mixed">Mixed</option>
                 </select>
             </div>
             <div class="mb-4">
