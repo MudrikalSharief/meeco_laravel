@@ -39,7 +39,7 @@ class Question extends Model
 
     public function multiple_choice()
     {
-        return $this->hasOne(multiple_choice::class,'question_id','question_id');
+        return $this->hasMany(multiple_choice::class,'question_id','question_id');
     }
 
 }

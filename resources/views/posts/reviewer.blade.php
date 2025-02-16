@@ -68,7 +68,7 @@
                 let content = '';
 
                 data.forEach((subjectData) => {
-                    content += `<h2>Subject: ${subjectData.subject}</h2>`;
+                    //content += `<h2>Subject: ${subjectData.subject}</h2>`;
                     //This code below will show the name of the card
                     // subjectData.cards.forEach((card, index) => {
                     //     content += `<p>Card ${index + 1}: ${card}</p>`;

@@ -121,7 +121,7 @@ class OPENAIController extends Controller
                     Text: " . $reviewerText]
                 ],
                 'temperature' => 0.7,
-                'max_tokens' => 1024
+                'max_tokens' => 4096
             ]);
     
             if ($response->failed()) {
@@ -139,7 +139,7 @@ class OPENAIController extends Controller
             Log::info('Parsed Content:', ['content' => $content]);
 
             if (empty($content['questions'])) {
-                return response()->json(['success' => false, 'message' => 'No questions generated.']);
+                return response()->json(['success' => false, 'message' => 'No questions generated'.$number.'.', 'data' => $content,'raw' => $reviewerText]);
             }
             
             $question = Question::create([

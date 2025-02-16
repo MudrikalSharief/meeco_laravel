@@ -119,7 +119,7 @@ return new class extends Migration
             $table->id('multiple_choice_id');
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
-            $table->string('question_text');
+            $table->longText('question_text');
             $table->text('answer');
             $table->text('A');
             $table->text('B');
