@@ -181,6 +181,21 @@ class AUTHadminController extends Controller
         $admin = Admin::findOrFail($request->admin_id);
         $admin->delete();
 
+        // Check if the logged-in admin is deleting their own account
+        if (Auth::guard('admin')->id() == $admin->admin_id) {
+            // Logout the admin
+            Auth::guard('admin')->logout();
+
+            // Invalidate the session
+            $request->session()->invalidate();
+
+            // Regenerate the token
+            $request->session()->regenerateToken();
+
+            // Redirect to admin login
+            return redirect()->route('admin.login')->with('success', 'Admin deleted successfully. Please log in again.');
+        }
+
         return redirect()->route('admin.admin-manage')->with('success', 'Admin deleted successfully.');
     }
 
