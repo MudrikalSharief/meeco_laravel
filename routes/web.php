@@ -116,6 +116,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
+    Route::post('/admin/admins/create', [AUTHadminController::class, 'createAdmin'])->name('admin.admins.create');
 
     // Routes for promo actions
     Route::resource('promos', PromoController::class);
@@ -138,6 +139,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
     Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
+    
 });
 
 // Auth admin
