@@ -150,6 +150,21 @@ class AUTHadminController extends Controller
             'email' => $request->email,
         ]);
 
+        // Check if the logged-in admin is updating their own credentials
+        if (Auth::guard('admin')->id() == $admin->admin_id) {
+            // Logout the admin
+            Auth::guard('admin')->logout();
+
+            // Invalidate the session
+            $request->session()->invalidate();
+
+            // Regenerate the token
+            $request->session()->regenerateToken();
+
+            // Redirect to admin login
+            return redirect()->route('admin.login')->with('success', 'Admin updated successfully. Please log in again.');
+        }
+
         return redirect()->route('admin.admin-manage')->with('success', 'Admin updated successfully.');
     }
 
