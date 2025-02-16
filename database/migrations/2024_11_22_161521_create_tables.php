@@ -41,21 +41,6 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive'])->default('active');
         });
 
-        
-
-        // Create Subscriptions table
-        Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id('subscription_id');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('promo_id');
-            $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade');
-            $table->timestamp('start_date')->useCurrent();
-            $table->timestamp('end_date')->nullable();
-            $table->enum('status', ['active', 'cancelled', 'expired'])->default('active');
-            $table->timestamps();
-        });
-
         // Create Admin_Actions table
         Schema::create('admin_actions', function (Blueprint $table) {
             $table->id('action_id');
