@@ -127,9 +127,25 @@ Route::middleware(['auth:admin'])->group(function () {
     // New route for adding a promo
     Route::view('/admin/add-promo', 'admin.admin_addPromo')->name('admin.addPromo');
     Route::get('/admin/add-promo/{promo?}', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
-    // Route for subscription view
+    Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
+    Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
+});
+
+Route::middleware(['auth:admin'])->group(function () {
+    Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
+    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
+    Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+    
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
-    Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+    Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
+    Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
+    Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
+    Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
 });
 
 // Auth admin

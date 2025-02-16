@@ -2,20 +2,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo;
-use App\Models\Subscription; // Ensure this line is present
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 
 class PromoController extends Controller
 {
     // Display a listing of the promos and subscriptions
-    public function index()
+    public function index(Request $request)
     {
-        $promos = Promo::all();
-        $subscriptions = Subscription::all();
+        $search = $request->input('search');
+        $searchSubscribers = $request->input('search_subscribers');
+
+        $promos = Promo::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                             ->orWhere('price', 'like', "%{$search}%")
+                             ->orWhere('duration', 'like', "%{$search}%")
+                             ->orWhere('start_date', 'like', "%{$search}%")
+                             ->orWhere('end_date', 'like', "%{$search}%")
+                             ->orWhere('status', 'like', "%{$search}%");
+            })
+            ->get();
+
+        $subscriptions = Subscription::query()
+            ->when($searchSubscribers, function ($query, $searchSubscribers) {
+                return $query->where('name', 'like', "%{$searchSubscribers}%")
+                             ->orWhere('email', 'like', "%{$searchSubscribers}%")
+                             ->orWhere('subscription_type', 'like', "%{$searchSubscribers}%")
+                             ->orWhere('start_date', 'like', "%{$searchSubscribers}%")
+                             ->orWhere('end_date', 'like', "%{$searchSubscribers}%");
+            })
+            ->get();
+
         $activePromosCount = Promo::where('status', 'active')->count();
         $totalSubscribersCount = Subscription::count();
 
         return view('admin.admin_subscription', compact('promos', 'subscriptions', 'activePromosCount', 'totalSubscribersCount'));
+    }
+
+    // Show the form for creating or editing a promo
+    public function createOrEdit(Promo $promo = null)
+    {
+        return view('admin.admin_addPromo', compact('promo'));
     }
 
     // Store a newly created promo in the database
@@ -28,10 +56,18 @@ class PromoController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'status' => 'required|string',
-            // Add other fields as necessary
+            'photo_to_text' => 'required|string',
+            'photo_limit' => 'nullable|integer',
+            'reviewer_generator' => 'required|string',
+            'reviewer_limit' => 'nullable|integer',
+            'mock_quiz_generator' => 'required|string',
+            'mock_quiz_limit' => 'nullable|integer',
+            'save_reviewer' => 'required|string',
+            'save_reviewer_limit' => 'nullable|integer',
+            'perks' => 'nullable|string',
         ]);
 
-        Promo::create($data);
+        Promo::updateOrCreate(['promo_id' => $request->id], $data);
 
         return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
     }
@@ -42,6 +78,6 @@ class PromoController extends Controller
         $promo->delete();
 
         // Redirect with success message
-        return redirect()->route('promos.index')->with('success', 'Promo deleted successfully!');
+        return redirect()->route('admin.subscription')->with('success', 'Promo deleted successfully!');
     }
 }
