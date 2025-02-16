@@ -119,6 +119,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/admins/create', [AUTHadminController::class, 'createAdmin'])->name('admin.admins.create');
     Route::put('/admin/admins/update', [AUTHadminController::class, 'updateAdmin'])->name('admin.admins.update');
     Route::get('/admin/admins/{admin}/edit', [AUTHadminController::class, 'editAdmin'])->name('admin.admins.edit');
+    Route::delete('/admin/admins/delete', [AUTHadminController::class, 'deleteAdmin'])->name('admin.admins.delete');
 
     // Routes for promo actions
     Route::resource('promos', PromoController::class);
