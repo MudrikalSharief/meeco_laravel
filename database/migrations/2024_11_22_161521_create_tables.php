@@ -25,21 +25,7 @@ return new class extends Migration
             $table->rememberToken();
         });
 
-        // Create Promos table
-        Schema::create('promos', function (Blueprint $table) {
-            $table->id('promo_id');
-            $table->string('name');
-            $table->decimal('price', 10, 2);
-            $table->text('perks')->nullable();
-            $table->integer('duration')->comment('Duration in days');
-            $table->longText('features')->nullable()->charset('utf8mb4')->collation('utf8mb4_bin')->check('json_valid(`features`)');
-            $table->timestamps();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->enum('discount_type', ['percent', 'fixed'])->nullable();
-            $table->decimal('percent_discount', 5, 2)->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
-        });
+        
 
         // Create Admin_Actions table
         Schema::create('admin_actions', function (Blueprint $table) {
