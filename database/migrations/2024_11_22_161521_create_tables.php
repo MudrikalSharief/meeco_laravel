@@ -121,7 +121,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->text('answer');
-            $table->text('answer');
+            $table->text('user_answer');
             $table->text('A');
             $table->text('B');
             $table->text('C');
