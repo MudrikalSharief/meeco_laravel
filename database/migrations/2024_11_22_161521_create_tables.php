@@ -25,37 +25,6 @@ return new class extends Migration
             $table->rememberToken();
         });
 
-        // Create Promos table
-        Schema::create('promos', function (Blueprint $table) {
-            $table->id('promo_id');
-            $table->string('name');
-            $table->decimal('price', 10, 2);
-            $table->text('perks')->nullable();
-            $table->integer('duration')->comment('Duration in days');
-            $table->longText('features')->nullable()->charset('utf8mb4')->collation('utf8mb4_bin')->check('json_valid(`features`)');
-            $table->timestamps();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->enum('discount_type', ['percent', 'fixed'])->nullable();
-            $table->decimal('percent_discount', 5, 2)->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
-        });
-
-        
-
-        // Create Subscriptions table
-        Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id('subscription_id');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('promo_id');
-            $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade');
-            $table->timestamp('start_date')->useCurrent();
-            $table->timestamp('end_date')->nullable();
-            $table->enum('status', ['active', 'cancelled', 'expired'])->default('active');
-            $table->timestamps();
-        });
-
         // Create Admin_Actions table
         Schema::create('admin_actions', function (Blueprint $table) {
             $table->id('action_id');
