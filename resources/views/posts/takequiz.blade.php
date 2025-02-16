@@ -4,11 +4,7 @@
     <div class="max-w-2xl h-full mx-auto pt-6 bg-white  rounded-lg">
         
         <div class="w-full max-w-2xl">
-
-            <div class="flex gap-2 space-x-4 mb-6 px-6">
-                <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
-                <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
-            </div>
+            <p id="title" class=" text-blue-500"></p>
             <hr class="my-3">
 
             <div class="quiz-container px-24">
@@ -21,10 +17,23 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // The $questions variable in the Blade template comes from the takeQuiz method in the QuizController
             const questions = @json($questions);
             const questionid = questions[0].question_id;
             const quizForm = document.getElementById('quizForm');
             
+
+            //get the title of the question
+            fetch( `/getquiz/${questionid}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    const title = document.getElementById('title');
+                    title.innerHTML = `<span>&#129120</span> ${data.question.question_title}`;
+                    console.log(data);
+                }
+            }).catch(error => console.error('Error:', error));
+
             const botnav = document.getElementById('bottom_nav');
             botnav.classList.add('hidden');
 
