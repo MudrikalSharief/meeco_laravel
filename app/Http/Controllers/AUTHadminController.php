@@ -175,6 +175,15 @@ class AUTHadminController extends Controller
         return response()->json($admin);
     }
 
+    // Delete Admin
+    public function deleteAdmin(Request $request)
+    {
+        $admin = Admin::findOrFail($request->admin_id);
+        $admin->delete();
+
+        return redirect()->route('admin.admin-manage')->with('success', 'Admin deleted successfully.');
+    }
+
     // Delete User by Email
     public function deleteUserByEmail($email)
     {
