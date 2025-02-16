@@ -12,6 +12,7 @@
                         <th>Email</th>
                         <th>Date Created</th>
                         <th>Last Login</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,6 +24,9 @@
                             <td>{{ $admin->email }}</td>
                             <td>{{ $admin->created_at }}</td>
                             <td>{{ $admin->last_login }}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm editAdminBtn" data-id="{{ $admin->admin_id }}">Edit</button>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -69,6 +73,40 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Admin Modal -->
+        <div id="editAdminModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Admin</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAdminForm" action="{{ route('admin.admins.update') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" id="edit_admin_id" name="admin_id">
+                            <div class="form-group">
+                                <label for="edit_firstname">First Name:</label>
+                                <input type="text" id="edit_firstname" name="firstname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_lastname">Last Name:</label>
+                                <input type="text" id="edit_lastname" name="lastname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_email">Email:</label>
+                                <input type="email" id="edit_email" name="email" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Admin</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
@@ -99,6 +137,40 @@
             $(window).on('click', function(event) {
                 if ($(event.target).is(modal)) {
                     modal.hide();
+                }
+            });
+
+            // Get the edit modal
+            var editModal = $('#editAdminModal');
+
+            // Get the button that opens the edit modal
+            var editBtns = $('.editAdminBtn');
+
+            // When the user clicks the edit button, open the edit modal and populate the form
+            editBtns.on('click', function() {
+                var adminId = $(this).data('id');
+                $.ajax({
+                    url: '/admin/admins/' + adminId + '/edit',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#edit_admin_id').val(data.admin_id);
+                        $('#edit_firstname').val(data.firstname);
+                        $('#edit_lastname').val(data.lastname);
+                        $('#edit_email').val(data.email);
+                        editModal.show();
+                    }
+                });
+            });
+
+            // When the user clicks on <span> (x), close the edit modal
+            editModal.find('.close').on('click', function() {
+                editModal.hide();
+            });
+
+            // When the user clicks anywhere outside of the edit modal, close it
+            $(window).on('click', function(event) {
+                if ($(event.target).is(editModal)) {
+                    editModal.hide();
                 }
             });
         });
