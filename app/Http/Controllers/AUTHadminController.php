@@ -133,6 +133,33 @@ class AUTHadminController extends Controller
         return redirect()->route('admin.admin-manage')->with('success', 'Admin created successfully.');
     }
 
+    // Update Admin
+    public function updateAdmin(Request $request)
+    {
+        $request->validate([
+            'admin_id' => 'required|exists:admins,admin_id',
+            'firstname' => 'required|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|unique:admins,email,' . $request->admin_id . ',admin_id',
+        ]);
+
+        $admin = Admin::findOrFail($request->admin_id);
+        $admin->update([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('admin.admin-manage')->with('success', 'Admin updated successfully.');
+    }
+
+    // Fetch Admin Data for Editing
+    public function editAdmin($admin_id)
+    {
+        $admin = Admin::findOrFail($admin_id);
+        return response()->json($admin);
+    }
+
     // Delete User by Email
     public function deleteUserByEmail($email)
     {
