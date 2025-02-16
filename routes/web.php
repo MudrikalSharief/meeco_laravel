@@ -150,7 +150,7 @@ Route::view('/admin', 'auth.login-admin')->name('admin.login');
 Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
 Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHController::class, 'login_admin']);
+Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 // // Admin Authentication Routes
 // Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
