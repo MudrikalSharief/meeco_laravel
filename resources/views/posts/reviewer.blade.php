@@ -44,6 +44,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const topicName = @json($topic->name);
+            const topicId = @json($topic->topic_id);
             const reviewerText = @json($reviewerText);
             const rawText = @json($rawText);
 
@@ -70,7 +71,7 @@
                     //     content += `<p>Card ${index + 1}: ${card}</p>`;
                     // });
                     subjectData.cards.forEach((card) => {
-                        content += `<p><br>- ${card}</p>`;
+                        content += `<p><br>- ${card},</p>`;
                     });
                 });
 
@@ -93,7 +94,9 @@
             });
 
             const quizbutton = document.getElementById('quiz');
-            
+            quizbutton.addEventListener('click', function(){
+                window.location.href=`/quiz?topicId=${topicId}`;
+            });
 
 
         });
