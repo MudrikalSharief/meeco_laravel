@@ -26,6 +26,7 @@
                             <td>{{ $admin->last_login }}</td>
                             <td>
                                 <button class="btn btn-warning btn-sm editAdminBtn" data-id="{{ $admin->admin_id }}">Edit</button>
+                                <button class="btn btn-danger btn-sm deleteAdminBtn" data-id="{{ $admin->admin_id }}">Delete</button>
                             </td>
                         </tr>
                     @endforeach
@@ -107,6 +108,32 @@
                 </div>
             </div>
         </div>
+
+        <!-- Delete Admin Modal -->
+        <div id="deleteAdminModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Admin</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this admin?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form id="deleteAdminForm" action="{{ route('admin.admins.delete') }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" id="delete_admin_id" name="admin_id">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
@@ -171,6 +198,31 @@
             $(window).on('click', function(event) {
                 if ($(event.target).is(editModal)) {
                     editModal.hide();
+                }
+            });
+
+            // Get the delete modal
+            var deleteModal = $('#deleteAdminModal');
+
+            // Get the button that opens the delete modal
+            var deleteBtns = $('.deleteAdminBtn');
+
+            // When the user clicks the delete button, open the delete modal and set the admin ID
+            deleteBtns.on('click', function() {
+                var adminId = $(this).data('id');
+                $('#delete_admin_id').val(adminId);
+                deleteModal.show();
+            });
+
+            // When the user clicks on <span> (x), close the delete modal
+            deleteModal.find('.close').on('click', function() {
+                deleteModal.hide();
+            });
+
+            // When the user clicks anywhere outside of the delete modal, close it
+            $(window).on('click', function(event) {
+                if ($(event.target).is(deleteModal)) {
+                    deleteModal.hide();
                 }
             });
         });
