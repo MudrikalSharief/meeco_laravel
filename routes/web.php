@@ -136,6 +136,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
+    Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
 });
 
 // Auth admin

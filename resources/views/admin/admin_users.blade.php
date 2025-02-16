@@ -1,116 +1,17 @@
 <x-admin_layout>
     <main>
-        <H1>USERS</H1>
-        <style>
-            H1{
-                font-weight: 700;
-                font-size: 1.875rem;
-                line-height:2.25rem; 
-            }
-            table {
-                width: calc(100% - 20px);
-                border-collapse: collapse;
-                margin-top: 20px;
-                margin-right: 20px;
-            }
-            th, td {
-                border: 1px solid #ddd;
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-            tr:hover {
-                background-color: #ddd;
-            }
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-                background-color: rgb(0,0,0);
-                background-color: rgba(0,0,0,0.4);
-                padding-top: 60px;
-            }
-            .modal-content {
-                background-color: #fefefe;
-                margin: 5% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 50%;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                border-radius: 10px;
-            }
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
-            .close:hover,
-            .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
-            #addUserBtn {
-                background-color:  #3b82f6;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-            }
-            #addUserBtn:hover {
-                background-color:rgb(90, 144, 230);
-            }
-            .modal form div {
-                margin-bottom: 15px;
-            }
-            .modal form label {
-                display: block;
-                margin-bottom: 5px;
-            }
-            .modal form input {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
-            .modal form button {
-                background-color: #3b82f6;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-            }
-            .modal form button:hover {
-                background-color:rgb(90, 144, 230);
-            }
-            .pagination {
-                margin-right: 20px;
-            }
-        </style>
-
-        @if(isset($users) && $users->count() > 0)
-            <table>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+        
+        <div class="container mt-3">
+            <table id="myTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
                         <th>Date Joined</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,76 +21,101 @@
                             <td>{{ $user->lastname }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->created_at->format('Y-m-d') }}</td>
+                            <td>
+                                <!-- Delete User Form -->
+                                <form action="{{ route('admin.users.delete', ['email' => $user->email]) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            <div class="pagination">
-                {{ $users->links() }}
-            </div>
-        @else
-            <p>No users found.</p>
-        @endif
-
-        <button id="addUserBtn">Add User</button>
-
-        <!-- Create User Modal -->
-        <div id="addUserModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <form action="{{ route('admin.users.create') }}" method="POST">
-                    @csrf
-                    <div>
-                        <label for="firstname">First Name:</label>
-                        <input type="text" id="firstname" name="firstname" required>
-                    </div>
-                    <div>
-                        <label for="lastname">Last Name:</label>
-                        <input type="text" id="lastname" name="lastname" required>
-                    </div>
-                    <div>
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div>
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div>
-                        <label for="password_confirmation">Confirm Password:</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required>
-                    </div>
-                    <button type="submit">Create User</button>
-                </form>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="pagination">
+                    {{ $users->links() }}
+                </div>
+                <button id="addUserBtn" class="btn btn-primary">Add User</button>
             </div>
         </div>
 
+        <!-- Create User Modal -->
+        <div id="addUserModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('admin.users.create') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="firstname">First Name:</label>
+                                <input type="text" id="firstname" name="firstname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname">Last Name:</label>
+                                <input type="text" id="lastname" name="lastname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password_confirmation">Confirm Password:</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
         <script>
-            // Get the modal
-            var modal = document.getElementById("addUserModal");
+            $(document).ready(function() {
+                $('#myTable').DataTable({
+                    "paging": false,
+                    "info": false
+                });
 
-            // Get the button that opens the modal
-            var btn = document.getElementById("addUserBtn");
+                // Get the modal
+                var modal = $('#addUserModal');
 
-            // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName("close")[0];
+                // Get the button that opens the modal
+                var btn = $('#addUserBtn');
 
-            // When the user clicks the button, open the modal 
-            btn.onclick = function() {
-                modal.style.display = "block";
-            }
+                // Get the <span> element that closes the modal
+                var span = $('.close');
 
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
+                // When the user clicks the button, open the modal 
+                btn.on('click', function() {
+                    modal.show();
+                });
 
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
+                // When the user clicks on <span> (x), close the modal
+                span.on('click', function() {
+                    modal.hide();
+                });
+
+                // When the user clicks anywhere outside of the modal, close it
+                $(window).on('click', function(event) {
+                    if ($(event.target).is(modal)) {
+                        modal.hide();
+                    }
+                });
+            });
         </script>
     </main>
 </x-admin_layout>

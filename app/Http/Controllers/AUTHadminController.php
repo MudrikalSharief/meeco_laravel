@@ -107,4 +107,13 @@ class AUTHadminController extends Controller
 
         return redirect()->route('admin.users')->with('success', 'User created successfully.');
     }
+
+    // Delete User by Email
+    public function deleteUserByEmail($email)
+    {
+        $user = User::where('email', $email)->firstOrFail();
+        $user->delete();
+
+        return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
+    }
 }
