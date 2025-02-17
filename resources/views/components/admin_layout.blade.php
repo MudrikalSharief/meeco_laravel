@@ -17,8 +17,8 @@
             <img src="{{ asset('logo_icons/menu-burger.svg') }}" alt="Menu">
         </div>
         <a href=" {{route('profile')}}" class="flex items-center">
-            @auth
-                <p class="name mr-1">{{ auth()->user()->name }}</p>
+            @auth('admin')
+                <p class="name mr-1 hidden md:block">{{ auth('admin')->user()->firstname }} {{ auth('admin')->user()->lastname }}</p>
             @endauth
             <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
                 <img class="w-full h-full object-contain " src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
