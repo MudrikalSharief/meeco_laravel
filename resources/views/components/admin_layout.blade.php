@@ -8,6 +8,8 @@
     <title>{{ env('APP_NAME') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/admin-layout.css'])
+    @vite(['resources/css/data-admin.css'])
+    @vite(['resources/js/admin.js'])
 </head>
 <body class="h-screen w-full">
 
