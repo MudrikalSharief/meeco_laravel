@@ -10,7 +10,8 @@ class TransactionController extends Controller
 {
     public function get_transactions(Request $request)
     {
-        $transactions = Transaction::with('user')->get();
+        $transactions = Transaction::with('user', 'promo')->get();
+
         return view('admin.admin_transactions', compact('transactions'));
     }
 }
