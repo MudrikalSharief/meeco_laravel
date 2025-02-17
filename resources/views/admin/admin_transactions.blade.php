@@ -1,10 +1,16 @@
 <x-admin_layout>
     <main>
-        <select name="" id="">
-            <option value=""></option>
+        <select name="" id="subscription-filter">
+            <option value="All">All</option>
+            <option value="Subscribed">Subscribed</option>
+            <option value="Admin Granted">Admin Granted</option>
         </select>
         <select name="" id="">
-            <option value=""></option>
+            <option value="">Sort By</option>
+            <option value="">Users</option>
+            <option value="">Promo Type</option>
+            <option value="">Date</option>
+            <option value="">Amount</option>
         </select>
         <input type="text" placeholder="Search">
 

@@ -152,6 +152,7 @@ Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name(
 
 //Transaction Routes
 Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
+Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
 
 
 
