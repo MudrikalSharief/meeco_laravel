@@ -1,6 +1,11 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+
 <x-admin_layout>
+    <style>
+        .dt-input {
+            margin-right: 10px;
+        }
+    </style>
     <main>
         <div class="container mt-5">
             <table id="myTable" class="min-w-full bg-white">
@@ -137,94 +142,4 @@
     </main>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            let table = new DataTable('#myTable');
-
-            // Get the modal
-            var modal = $('#addAdminModal');
-
-            // Get the button that opens the modal
-            var btn = $('#addAdminBtn');
-
-            // Get the <span> element that closes the modal
-            var span = $('.close');
-
-            // When the user clicks the button, open the modal 
-            btn.on('click', function() {
-                modal.show();
-            });
-
-            // When the user clicks on <span> (x), close the modal
-            span.on('click', function() {
-                modal.hide();
-            });
-
-            // When the user clicks anywhere outside of the modal, close it
-            $(window).on('click', function(event) {
-                if ($(event.target).is(modal)) {
-                    modal.hide();
-                }
-            });
-
-            // Get the edit modal
-            var editModal = $('#editAdminModal');
-
-            // Get the button that opens the edit modal
-            var editBtns = $('.editAdminBtn');
-
-            // When the user clicks the edit button, open the edit modal and populate the form
-            editBtns.on('click', function() {
-                var adminId = $(this).data('id');
-                $.ajax({
-                    url: '/admin/admins/' + adminId + '/edit',
-                    method: 'GET',
-                    success: function(data) {
-                        $('#edit_admin_id').val(data.admin_id);
-                        $('#edit_firstname').val(data.firstname);
-                        $('#edit_lastname').val(data.lastname);
-                        $('#edit_email').val(data.email);
-                        editModal.show();
-                    }
-                });
-            });
-
-            // When the user clicks on <span> (x), close the edit modal
-            editModal.find('.close').on('click', function() {
-                editModal.hide();
-            });
-
-            // When the user clicks anywhere outside of the edit modal, close it
-            $(window).on('click', function(event) {
-                if ($(event.target).is(editModal)) {
-                    editModal.hide();
-                }
-            });
-
-            // Get the delete modal
-            var deleteModal = $('#deleteAdminModal');
-
-            // Get the button that opens the delete modal
-            var deleteBtns = $('.deleteAdminBtn');
-
-            // When the user clicks the delete button, open the delete modal and set the admin ID
-            deleteBtns.on('click', function() {
-                var adminId = $(this).data('id');
-                $('#delete_admin_id').val(adminId);
-                deleteModal.show();
-            });
-
-            // When the user clicks on <span> (x), close the delete modal
-            deleteModal.find('.close').on('click', function() {
-                deleteModal.hide();
-            });
-
-            // When the user clicks anywhere outside of the delete modal, close it
-            $(window).on('click', function(event) {
-                if ($(event.target).is(deleteModal)) {
-                    deleteModal.hide();
-                }
-            });
-        });
-    </script>
 </x-admin_layout>

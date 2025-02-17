@@ -1,3 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.filter-blue{
+    filter: brightness(0) saturate(100%) invert(12%) sepia(88%) saturate(6253%) hue-rotate(220deg) brightness(72%) contrast(116%);
+}
+
+.filter-red{
+    filter: brightness(0) saturate(100%) invert(14%) sepia(83%) saturate(6133%) hue-rotate(345deg) brightness(95%) contrast(114%);
+}
+
+.blue_text{
+    color:#002BAD;
+}
+
+.red_text{
+    color:#ff0026;
+}
+
+.error{
+    @apply text-red-500 text-xs;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,13 +30,17 @@
 }
 
 .sidebar {
-    width: 250px;
+   
     height: 100vh;
     background: white;
     border-right: 1px solid #e5e7eb;
     padding: 1rem;
     display: flex;
     flex-direction: column;
+}
+
+.sidebar.md\:w-64 {
+    width: 64px;
 }
 
 .logo {
@@ -62,3 +90,13 @@
     padding-top: 1rem;
     margin-top: auto;
 }
+
+@media (max-width: 768px) {
+    .logo_holder {
+        display: none;
+    }
+   .content{
+    padding-left: 8rem;
+    }
+}
+
