@@ -8,13 +8,15 @@
                     <h2 class=" text-l font-bold text-blue-500"> > Topics</h2>
                 </div>
                 <button id="addTopicButton" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Topic</button>
-            </div> <div id="topics-container" class="w-full max-w-2xl">
+            </div>
      
         <!-- Add Topic Button -->
         <div id="topics-container" class="w-full max-w-2xl">
            {{-- topics to be added herre --}}
         </div>
-        <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden"></p>
+        <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden text-center">
+            No Existiong Topics.
+        </p>
     </div>
 
     <!-- Modal for Adding Topic -->
@@ -70,17 +72,111 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const topicsContainer = document.getElementById('topics-container'); // Ensure this exists
-        if (topicsContainer) {
-            topicsContainer.addEventListener('click', function (event) {
-                console.log("the Container is clicked");
-                const topicButton = event.target.closest('.subject_topics'); // Check if the clicked element is a topic button
-                console.log(topicButton);
-                if (topicButton && topicButton.id) {
-                    window.location.href = `/reviewer/${topicButton.id}`;
+            const subject = @json($subject);
+            const topic = @json($topic);
+            const topicsContainer = document.getElementById('topics-container'); // Ensure this exists
+            const deleteTopicConfirmModal = document.getElementById('deleteTopicConfirmModal');
+            const topics_container = document.getElementById('topics-container');
+            let topicIdToDelete = null;
+            let topicElementToDelete = null;
+        // if (topicsContainer) {
+        //     topicsContainer.addEventListener('click', function (event) {
+        //         console.log("the Container is clicked");
+        //         const topicButton = event.target.closest('.subject_topics'); // Check if the clicked element is a topic button
+        //         // const 
+        //         console.log(topicButton);
+        //         if (topicButton && topicButton.id) {
+        //             // window.location.href = `/reviewer/${topicButton.id}`;
+        //         }
+        //     });
+        // }
+
+        fetch(`/subject/topics/${subject.subject_id}`)
+        .then(response => response.json())
+        .then(data => {
+            if(data){
+                    if (data.topics && data.topics.length > 0 ) {
+                    topicsContainer.innerHTML = ''; // Clear existing topics
+                    data.topics.forEach((topic, index) => {
+                        const topicButton = document.createElement('a');
+                        topicButton.href = `/reviewer/${topic.topic_id}`;
+                        topicButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
+                                                        <span>${topic.name}</span>
+                                                        <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
+                                                    </button>`;
+                        if(topicsContainer){
+                            topicsContainer.appendChild(topicButton);
+                        }
+                    });
+
+                    document.querySelectorAll('.delete-topic').forEach(button => {
+                        button.addEventListener('click', function (event) {
+                            event.preventDefault(); // Prevent navigation
+                            topicIdToDelete = this.getAttribute('data-topic-id');
+                            topicElementToDelete = this.closest('a');
+                            deleteTopicConfirmModal.classList.remove('hidden');
+                        });
+                    });
+                } else {
+                    if(noTopicsMessage){
+                        noTopicsMessage.classList.remove('hidden');
+                    }
                 }
+            }
+            
+        })
+        .catch(console.log('Error fetching topics:'));
+
+        
+        const cancelTopicDelete = document.getElementById('cancelTopicDelete');
+        const confirmTopicDelete = document.getElementById('confirmTopicDelete');
+        if (cancelTopicDelete) {
+            cancelTopicDelete.addEventListener('click', function () {
+                deleteTopicConfirmModal.classList.add('hidden');
+                topicIdToDelete = null;
+                topicElementToDelete = null;
             });
         }
-        });
+
+            if (confirmTopicDelete) {
+                confirmTopicDelete.addEventListener('click', function () {
+                    if (topicIdToDelete && topicElementToDelete) {
+                        fetch('/topics/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ id: topicIdToDelete })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                topicElementToDelete.remove();
+                                if (topics_container.children.length === 0) {
+                                    noTopicsMessage.classList.remove('hidden');
+                                }
+                            } else {
+                                alert('Failed to delete topic.');
+                            }
+                        })
+                        .catch(error => console.error('Error deleting topic:', error))
+                        .finally(() => {
+                            deleteTopicConfirmModal.classList.add('hidden');
+                            topicIdToDelete = null;
+                            topicElementToDelete = null;
+                        });
+                    }
+                });
+            }
+            
+            if (cancelTopicDelete) {
+                cancelTopicDelete.addEventListener('click', function () {
+                    deleteTopicConfirmModal.classList.add('hidden');
+                    topicIdToDelete = null;
+                    topicElementToDelete = null;
+                });
+            }
+    });
     </script>
 </x-layout>

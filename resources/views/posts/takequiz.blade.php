@@ -8,7 +8,7 @@
         
         <div class="w-full max-w-2xl">
 
-            <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5">
+            <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5 pb-3">
                 <form id="quizForm">
                     <!-- Questions will be dynamically inserted here -->
                 </form>
