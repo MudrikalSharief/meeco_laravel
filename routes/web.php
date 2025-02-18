@@ -80,6 +80,16 @@ Route::middleware('auth')->group(function (){
     Route::post('/submitquiz',[QuizController::class,'submitQuiz'])->name('submit.quiz');
     Route::view('/quiz', 'posts.quiz')->name('quiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
+
+
+    //for upgrade
+    Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
+    Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subcriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcriptionFolder.authentication')->name('upgrade.authentication');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
 });
 
 Route::middleware('guest')->group(function (){
@@ -98,7 +108,6 @@ Route::middleware('guest')->group(function (){
     Route::view('/summarizer_and_reviewer', 'website.summarizer_and_reviewer')->name('summarizer_and_reviewer');
 
     //footer
-
     Route::view('/terms', 'website.footer.terms')->name('terms');
 });
 
