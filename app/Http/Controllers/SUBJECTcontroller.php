@@ -29,8 +29,6 @@ class SubjectController extends Controller
 
             return response()->json(['success' => true, 'subject' => $subject]);
         } catch (\Exception $e) {
-            Log::error('Error creating subject: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Error creating subject'], 500);
         }
     }

@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function (){
     
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
-    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
+    Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');

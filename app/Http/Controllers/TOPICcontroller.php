@@ -20,14 +20,25 @@ class TOPICcontroller extends Controller
     public function getTopicsBySubject($subjectId)
     {
         $topics = Topic::where('subject_id', $subjectId)->get(['topic_id', 'name']);
-        return response()->json(['topics' => $topics]);
+        if($topics->isEmpty()){
+            return response()->json(['message'=>'No topics found for subject id: ' . $subjectId]);
+        }
+        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId]);
     }
 
-    public function getTopicsBySubjectName($subjectName)
-    {
-        $subject = Subject::where('name', $subjectName)->firstOrFail();
-        $topics = Topic::where('subject_id', $subject->id)->get();
-        return view('posts.topics', compact('topics', 'subject'));
+    public function getTopicsBySubjectName($subjectID)
+    {   
+        if(ctype_digit($subjectID)){
+            $subject = Subject::where('subject_id', $subjectID)->firstOrFail();
+            if($subject === null){
+                return view('posts.subject');
+            }
+            $topic = Topic::where('subject_id', $subject->id)->get();
+            return view('posts.topics', compact('topic','subject'));
+        }else{
+            // return response()->json(['success' => false, 'message' => 'Invalid subject id', 'id' => $subjectID], 400);
+            return view('posts.subject');
+        }
     }
 
     public function createTopic(Request $request)
