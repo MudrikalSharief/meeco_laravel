@@ -24,9 +24,17 @@
                     </a>
                 </div>
             </div>
+
             <!-- Existing Promos Table -->
             <div class="mt-8">
-                <h2 class="text-2xl font-bold mb-4">Existing Promos</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Existing Promos</h2>
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center">
+                        <input type="text" name="search" placeholder="Search Promos" class="w-48 p-2 border border-gray-300 rounded-lg" value="{{ request('search') }}">
+                        <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
+                    </form>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
                         <thead class="bg-gray-100">
@@ -37,6 +45,7 @@
                                 <th class="py-2 px-4 border-b">Start Date</th>
                                 <th class="py-2 px-4 border-b">End Date</th>
                                 <th class="py-2 px-4 border-b">Status</th>
+                                <th class="py-2 px-4 border-b">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,6 +57,14 @@
                                 <td class="py-2 px-4 border-b">{{ $promo->start_date }}</td>
                                 <td class="py-2 px-4 border-b">{{ $promo->end_date }}</td>
                                 <td class="py-2 px-4 border-b">{{ $promo->status }}</td>
+                                <td class="py-2 px-4 border-b">
+                                    <a href="{{ route('admin.editPromo', $promo->promo_id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Edit</a>
+                                    <form action="{{ route('admin.deletePromo', $promo->promo_id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -57,7 +74,14 @@
 
             <!-- Subscribers Table -->
             <div class="mt-8">
-                <h2 class="text-2xl font-bold mb-4">Subscribers</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Subscribers</h2>
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center">
+                        <input type="text" name="search_subscribers" placeholder="Search Subscribers" class="w-48 p-2 border border-gray-300 rounded-lg" value="{{ request('search_subscribers') }}">
+                        <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
+                    </form>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
                         <thead class="bg-gray-100">

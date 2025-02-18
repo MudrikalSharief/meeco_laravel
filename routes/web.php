@@ -137,23 +137,30 @@ Route::middleware(['auth:admin'])->group(function () {
     // New route for adding a promo
     Route::view('/admin/add-promo', 'admin.admin_addPromo')->name('admin.addPromo');
     Route::get('/admin/add-promo/{promo?}', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
-    // Route for subscription view
-    Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
+    Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
+    Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
+
     Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
+
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
     Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
     
+    Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
+    Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
+    Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
+    Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
+
+    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 });
 
-// Auth admin
-Route::view('/admin', 'auth.login-admin')->name('admin.login');
-Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
+// Auth admin
 // // Admin Authentication Routes
 // Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
 // Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
