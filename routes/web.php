@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+    Route::get('/upgrade', [PromoController::class, 'showPromos'])->name('upgrade');
 });
 
 Route::middleware('guest')->group(function (){

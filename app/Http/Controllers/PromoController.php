@@ -35,9 +35,10 @@ class PromoController extends Controller
             ->get();
 
         $activePromosCount = Promo::where('status', 'active')->count();
+        $inactivePromosCount = Promo::where('status', 'inactive')->count();
         $totalSubscribersCount = Subscription::count();
 
-        return view('admin.admin_subscription', compact('promos', 'subscriptions', 'activePromosCount', 'totalSubscribersCount'));
+        return view('admin.admin_subscription', compact('promos', 'subscriptions', 'activePromosCount', 'inactivePromosCount', 'totalSubscribersCount'));
     }
 
     // Show the form for creating or editing a promo
@@ -79,5 +80,12 @@ class PromoController extends Controller
 
         // Redirect with success message
         return redirect()->route('admin.subscription')->with('success', 'Promo deleted successfully!');
+    }
+
+    // Show the active promos on the upgrade page
+    public function showPromos()
+    {
+        $promos = Promo::where('status', 'active')->get();
+        return view('subscriptionFolder.upgrade', compact('promos'));
     }
 }
