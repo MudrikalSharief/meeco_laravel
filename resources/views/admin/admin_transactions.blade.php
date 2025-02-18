@@ -5,14 +5,15 @@
             <option value="Subscribed">Subscribed</option>
             <option value="Admin Granted">Admin Granted</option>
         </select>
-        <select name="" id="">
-            <option value="">Sort By</option>
-            <option value="">Users</option>
-            <option value="">Promo Type</option>
-            <option value="">Date</option>
-            <option value="">Amount</option>
+        <select name="" id="sort-by">
+            <option value="Sort By">Sort By</option>
+            <option value="Users">Users</option>
+            <option value="Promo Type">Promo Type</option>
+            <option value="Date">Date</option>
+            <option value="Amount">Amount</option>
         </select>
-        <input type="text" placeholder="Search">
+
+        <input type="text" placeholder="Search" id="search-transactions">
 
         <table>
             <thead>
@@ -38,5 +39,31 @@
                 @endforeach
             </tbody>
         </table>
+
+        <!-- Pagination with Arrow Navigation -->
+        <div class="pagination">
+            <!-- Left Arrow -->
+            @if ($transactions->onFirstPage())
+                <span class="arrow disabled">&laquo; Previous</span>
+            @else
+                <a href="{{ $transactions->previousPageUrl() }}" class="arrow">&laquo; Previous</a>
+            @endif
+
+            <!-- Pagination Links -->
+            @foreach(range(1, $transactions->lastPage()) as $page)
+                @if ($page == $transactions->currentPage())
+                    <span class="current-page">{{ $page }}</span>
+                @else
+                    <a href="{{ $transactions->url($page) }}">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            <!-- Right Arrow -->
+            @if ($transactions->hasMorePages())
+                <a href="{{ $transactions->nextPageUrl() }}" class="arrow">Next &raquo;</a>
+            @else
+                <span class="arrow disabled">Next &raquo;</span>
+            @endif
+        </div>
     </main>
 </x-admin_layout>
