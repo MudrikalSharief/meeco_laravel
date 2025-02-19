@@ -10,18 +10,11 @@
     margin-bottom: 60px;
 }
 
-.services {
-    display: flex;
-    justify-content: center;
-    gap: 90px;
-    margin-top: 40px;
-}
-
 .service {
     display: flex;
     align-items: flex-start;
     gap: 40px;
-    max-width: 300px;
+    max-width: 500px;
 }
 
 .icon {
