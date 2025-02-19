@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\multiple_choice;
 use App\Models\Question;
+use App\Models\true_or_false;
 use Illuminate\Http\Request;
 
 class QuizController extends Controller
@@ -31,32 +32,66 @@ class QuizController extends Controller
 
     public function startQuiz($questionId){
         $id = intval($questionId);
-        $question = multiple_choice::where('question_id',$id)->get();
-        if($question === null){
-            return response()->json(['success'=>false,'message' => `No Question Yet, {{$question}} `]);
+        $question_type = Question::where('question_id',$id)->pluck('question_type');
+        if($question_type[0] == 'Multiple Choice'){
+            $questions = multiple_choice::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '1No Question Yet']);
+            }
+            return response()->json(['success'=>true,'question' => $questions]);
+        }        
+        elseif($question_type[0] == 'True or false'){
+            $questions = true_or_false::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '2No Question Yet']);
+            }
+            return response()->json(['success'=>true,'question' => $questions]);
         }
-        return response()->json(['success'=>true,'question' => $question]);
-    }
+    }   
 
     public function takeQuiz($questionId)
-    {
+    {   
         $id = intval($questionId);
-        $questions = multiple_choice::where('question_id', $id)->get();
-        if ($questions->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'No Question Yet']);
+
+        $question_type = Question::where('question_id',$id)->pluck('question_type');
+        if($question_type[0] == 'Multiple Choice'){
+            $questions = multiple_choice::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '1No Question Yet']);
+            }
+            return response()->json(['success'=>true,'question' => $questions]);
+        }        
+        elseif($question_type[0] == 'True or false'){
+            $questions = true_or_false::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '2No Question Yet']);
+            }
+            return response()->json(['success'=>true,'question' => $questions]);
         }
-        return view('posts.takequiz', ['questions' => $questions]);
+
     }
     
     public function getQuizResult($questionId)
     {
         $id = intval($questionId);
-        $questions = multiple_choice::where('question_id', $id)->get();
-        $userAnswers = multiple_choice::where('question_id', $questionId)->pluck('user_answer');
-        if ($userAnswers[0] === null) {
-            return response()->json(['success' => false, 'message' => 'No Answer Yet']);
+        $question_type = Question::where('question_id', $id)->pluck('question_type');
+        if($question_type[0] == 'Multiple Choice'){
+            $questions = multiple_choice::where('question_id', $id)->get();
+            $userAnswers = multiple_choice::where('question_id', $questionId)->pluck('user_answer');
+            if ($userAnswers[0] === null) {
+                return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type[0]]);
+            }
+            return response()->json(['success' => true, 'questions' => $questions, 'type' => $question_type[0]]);
+
+        }elseif($question_type[0] == 'True or false'){
+            $questions = true_or_false::where('question_id', $id)->get();
+            $userAnswers = true_or_false::where('question_id', $questionId)->pluck('user_answer');
+            if ($userAnswers[0] === null) {
+                return response()->json(['success' => false, 'message' => 'No Anaswer Yet', 'type' => $question_type[0]]);
+            }
+            return response()->json(['success' => true, 'questions' => $questions, 'type' => $question_type[0]]);
         }
-        return response()->json(['success' => true, 'questions' => $questions]);
+        
     }
     
     public function submitQuiz(Request $request)

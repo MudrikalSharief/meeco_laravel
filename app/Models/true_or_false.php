@@ -24,6 +24,7 @@ class true_or_false extends Model
     // Define the fillable attributes
     protected $fillable = [
         'true_or_false_id', 
+        'question_id',
         'question_text',
         'answer',
         'user_answer',

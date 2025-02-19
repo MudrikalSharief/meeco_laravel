@@ -111,14 +111,14 @@ return new class extends Migration
         });
 
         // Create  True or false table
-        Schema::dropIfExists('true_or_flase');
-        Schema::create('true_or_flase', function (Blueprint $table) {
-            $table->id('true_or_flase_id');
+        Schema::dropIfExists('true_or_false');
+        Schema::create('true_or_false', function (Blueprint $table) {
+            $table->id('true_or_false_id');
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->string('answer');
-            $table->string('user_answer');
+            $table->string('user_answer')->default(null);;
             $table->timestamps();
         });
 
@@ -130,7 +130,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->string('answer');
-            $table->string('user_answer');
+            $table->string('user_answer')->default(null);;
             $table->timestamps();
         });
     }

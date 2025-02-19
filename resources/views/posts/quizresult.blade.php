@@ -96,66 +96,64 @@
                         if(quiz_result){ 
                             quiz_result.innerHTML = ''; // Clear previous content
                             data. questions.forEach((question, index) => {
-                             const questionDiv = document.createElement('div');
-                             questionDiv.classList.add('question');
-                             questionDiv.innerHTML = `
-                                 <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
-                                 <ul>
-                                     <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
-                                     <li><label class = "choices${index}B w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="B"> B) ${question.B}</label></li>
-                                     <li><label class = "choices${index}C w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="C"> C) ${question.C}</label></li>
-                                     <li><label class = "choices${index}D w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="D"> D) ${question.D}</label></li>
-                                 </ul>
-                             `;
-                             quiz_result.appendChild(questionDiv);
-    
-                            // Highlight the correct answer
-                            const correctAnswer = question.answer;
-                            const userAnswer = question.user_answer;
-                            const correctAnswerLabel = questionDiv.querySelectorAll(`input[name="question_${index}"]`);
-                            
-    
-                            if(correctAnswerLabel.length === 0){
-                                console.log('No correct answer found', index);
-                            }else{
+                                const questionDiv = document.createElement('div');
+                                questionDiv.classList.add('question');
+                                questionDiv.innerHTML = `
+                                    <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                    <ul>
+                                        <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
+                                        <li><label class = "choices${index}B w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="B"> B) ${question.B}</label></li>
+                                        <li><label class = "choices${index}C w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="C"> C) ${question.C}</label></li>
+                                        <li><label class = "choices${index}D w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="D"> D) ${question.D}</label></li>
+                                    </ul>
+                                `;
+                                quiz_result.appendChild(questionDiv);
+        
+                                // Highlight the correct answer
+                                const correctAnswer = question.answer;
+                                const userAnswer = question.user_answer;
+                                const correctAnswerLabel = questionDiv.querySelectorAll(`input[name="question_${index}"]`);
                                 
-                                correctAnswerLabel.forEach(label => {
-                                    if (label.value === userAnswer) {
-                                        // console.log('User :', label.value,' user:', userAnswer);
-                                        let letter = label.value;
-                                        const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
-    
-                                        choices.forEach(choice => {
-                                            // console.log('choices'+index+userAnswer)
-                                            if(choice.classList.contains('choices'+index+userAnswer)){
-                                                choice.classList.remove('bg-blue-50');
-                                                choice.classList.add('bg-red-200');
-                                                label.checked = true;
-                                            }
-                                        });
-                                    }
-    
-                                    if (label.value === correctAnswer) {
-                                        // console.log('Correct :', label.value,' user:', correctAnswer);
-                                        let letter = label.value;
-                                        const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
-    
-                                        choices.forEach(choice => {
-                                            // console.log('choices'+index+correctAnswer)
-                                            if(choice.classList.contains('choices'+index+correctAnswer)){
-                                                
-                                                choice.classList.remove('bg-blue-50');
-                                                choice.classList.remove('bg-red-200');
-                                                choice.classList.add('bg-green-200');
-                                            }
-                                        });
-                                    }
-                                   
-                                });
-                            }
+        
+                                if(correctAnswerLabel.length === 0){
+                                    console.log('No correct answer found', index);
+                                }else{
+                                    
+                                    correctAnswerLabel.forEach(label => {
+                                        if (label.value === userAnswer) {
+                                            // console.log('User :', label.value,' user:', userAnswer);
+                                            let letter = label.value;
+                                            const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
+        
+                                            choices.forEach(choice => {
+                                                // console.log('choices'+index+userAnswer)
+                                                if(choice.classList.contains('choices'+index+userAnswer)){
+                                                    choice.classList.remove('bg-blue-50');
+                                                    choice.classList.add('bg-red-200');
+                                                    label.checked = true;
+                                                }
+                                            });
+                                        }
+        
+                                        if (label.value === correctAnswer) {
+                                            // console.log('Correct :', label.value,' user:', correctAnswer);
+                                            let letter = label.value;
+                                            const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
+        
+                                            choices.forEach(choice => {
+                                                // console.log('choices'+index+correctAnswer)
+                                                if(choice.classList.contains('choices'+index+correctAnswer)){
+                                                    
+                                                    choice.classList.remove('bg-blue-50');
+                                                    choice.classList.remove('bg-red-200');
+                                                    choice.classList.add('bg-green-200');
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             
-    
-                        });
+                            });
                         }
                     } else {
                         console.log("the user did not take the quiz yet")

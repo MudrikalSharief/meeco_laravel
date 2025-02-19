@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\Reviewer;
 use App\Models\Topic;
 
+use App\Models\true_or_false;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
@@ -279,14 +280,10 @@ class OPENAIController extends Controller
         
                 // Save the questions and multiple choices
                 foreach ($content['questions'] as $questionData) {
-                    multiple_choice::create([
+                    true_or_false::create([
                         'question_id' => $question->question_id,
                         'question_text' => $questionData['question'],
                         'answer' => $questionData['correct_answer'],
-                        'A' => $questionData['choices']['A'],
-                        'B' => $questionData['choices']['B'],
-                        'C' => $questionData['choices']['C'],
-                        'D' => $questionData['choices']['D'],
                     ]);
                 }
         
