@@ -91,12 +91,24 @@
     margin-top: auto;
 }
 
+#modal_sidebar {
+    display: none;
+}
+
+#modal_sidebar .sidebar {
+    width: 100%;
+    max-width: 16rem;
+}
+
 @media (max-width: 768px) {
     .logo_holder {
         display: none;
     }
-   .content{
-    padding-left: 8rem;
+    .content {
+        padding-left: 8rem;
+    }
+    #modal_sidebar {
+        display: block;
     }
 }
 
