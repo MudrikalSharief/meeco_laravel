@@ -105,10 +105,11 @@
         display: none;
     }
     .content {
-        padding-left: 8rem;
+        padding-left: 10rem;
     }
     #modal_sidebar {
         display: block;
     }
 }
+
 

@@ -250,7 +250,7 @@
         </div>
     </div>
 
-    <div class="content pl-64 pt-12">
+    <div class="content pl-64 pt-12 md:pl-18 lg:pl-100">
         {{ $slot }}
     </div>
     <script>      
