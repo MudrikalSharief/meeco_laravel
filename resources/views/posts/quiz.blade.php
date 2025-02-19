@@ -22,7 +22,7 @@
                         <p class=" text-gray-500 font-semibold text-sm w-2/5" >Title</p>
                         <div class="flex justify-between w-3/5">
                             <p class=" text-gray-500 font-semibold text-sm">Type</p>
-                            <div class="flex justify-between w-1/2">
+                            <div class="flex justify-between w-1/2 gap-1">
                                 <p class=" text-gray-500 font-semibold text-sm">Score</p>
                                 <p class=" text-gray-500 font-semibold text-sm">Action</p>
                             </div>
@@ -98,9 +98,9 @@
                     button.innerHTML = `
                         <p class="w-2/5 ">${quiz.question_title}</p>
                         <div class="flex justify-between w-3/5">
-                            <p class="text-xs sm:text-sm">${quiz.question_type}</p>
-                            <div class="flex justify-between w-1/2">
-                                <p class="w-2/5 flex item-center text-blue-400"> ${quiz.score}/${quiz.number_of_question}</p>
+                            <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
+                            <div class="flex justify-between w-1/2  gap-1">
+                                <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
                                 <div class="flex gap-1 items-center w- 3/5">
                                     <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
                                     <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete">
@@ -197,10 +197,16 @@
                                 button.classList.add('question_button','w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
                                 button.id = quiz.question_id;
                                 button.innerHTML = `
-                                    <p class="w-1/2">${quiz.question_title}</p>
-                                    <div class="flex justify-between w-1/2">
-                                        <p class="text-sm">${quiz.question_type}</p>
-                                        <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
+                                    <p class="w-2/5 ">${quiz.question_title}</p>
+                                    <div class="flex justify-between w-3/5">
+                                        <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
+                                        <div class="flex justify-between w-1/2 gap-1">
+                                            <p class="w-2/5 flex item-center text-green-400 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
+                                            <div class="flex gap-1 items-center w- 3/5">
+                                                <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
+                                                <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete">
+                                            </div>
+                                        </div>    
                                     </div>
                                 `;
 

@@ -85,7 +85,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Create Multiple Choice table (missing in original migration)
+        // Create Multiple Choice table 
         Schema::create('multiple_choice', function (Blueprint $table) {
             $table->id('multiple_choice_id');
             $table->unsignedBigInteger('question_id');
@@ -99,6 +99,28 @@ return new class extends Migration
             $table->text('D');
             $table->timestamps();
         });
+
+        // Create  True or false table
+        Schema::create('true_or_flase', function (Blueprint $table) {
+            $table->id('true_or_flase_id');
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
+            $table->longText('question_text');
+            $table->string('answer');
+            $table->string('user_answer');
+            $table->timestamps();
+        });
+
+        // Create  True or false table
+        Schema::create('fill_in_the_blank', function (Blueprint $table) {
+            $table->id('fill_in_the_blank_id');
+            $table->unsignedBigInteger('question_id');
+            $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
+            $table->longText('question_text');
+            $table->string('answer');
+            $table->string('user_answer');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -106,6 +128,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('true_or_flase');
+        Schema::dropIfExists('fill_in_the_blank');
         Schema::dropIfExists('multiple_choice');
         Schema::dropIfExists('questions');
         Schema::dropIfExists('reviewer');

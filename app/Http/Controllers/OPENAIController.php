@@ -32,7 +32,7 @@ class OPENAIController extends Controller
             ])
             ->timeout(300)
             ->post('https://api.openai.com/v1/chat/completions', [
-                "model" => "gpt-4",
+                "model" => "gpt-4-turbo",
                 "messages" => [
                     [
                         "role" => "user",
@@ -110,12 +110,12 @@ class OPENAIController extends Controller
                     {
                     \"questions\": [
                         {
-                        \"question\": \"Which browser was the first widely popular web browser?\",
+                        \"question\": \"Question in here?\",
                         \"choices\": {
-                            \"A\": \"Internet Explorer\",
-                            \"B\": \"Mozilla Firefox\",
-                            \"C\": \"Netscape Navigator\",
-                            \"D\": \"Google Chrome\"
+                            \"A\": \"choice\",
+                            \"B\": \"choice\",
+                            \"C\": \"choice\",
+                            \"D\": \"choice\"
                         },
                         \"correct_answer\": \"C\"
                         }
