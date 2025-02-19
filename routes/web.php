@@ -109,6 +109,9 @@ Route::middleware('guest')->group(function (){
 
     //footer
     Route::view('/terms', 'website.footer.terms')->name('terms');
+
+    //contact us
+    Route::view('/contact', 'website.footer.contact')->name('contact');
 });
 
 Route::middleware(['auth:admin'])->group(function () {
