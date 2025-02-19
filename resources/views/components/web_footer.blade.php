@@ -8,7 +8,7 @@
     'resources/css/footer-style.css','resources/css/faq-style.css', 'resources/js/app.js'])
     @vite(['resources/css/contact.css'])
 </head>
-<body>
+<body class="h-screen w-full">
     <nav class="navbar">
         <div class="container">
             <div class="logo">
@@ -17,6 +17,9 @@
             <a href="{{ route('login')}}"><button class="login-btn">Log In</button></a>
         </div>
     </nav>
-    {{ $slot }}
+
+    <div class="content mt-5">
+        {{ $slot }}
+    </div>
 </body>
 </html>
