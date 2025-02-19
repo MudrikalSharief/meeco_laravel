@@ -6,6 +6,7 @@
     <title>Meeco - Study Smart</title>
     @vite(['resources/css/landing-page-style.css', 'resources/css/navbar-style.css',
     'resources/css/footer-style.css','resources/css/faq-style.css', 'resources/js/app.js'])
+    
 </head>
 <body>
     <nav class="navbar">
@@ -40,7 +41,7 @@
                     <h3>Help and Support</h3>
                     <ul>
                         <li><a href="{{route('faq')}}">FAQ</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="{{route('contact')}}">Contact Us</a></li>
                     </ul>
                 </div>
             </div>
