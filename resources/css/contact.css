@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.breadcrumb {
+    margin-bottom: 40px;
+}
+
+.breadcrumb a {
+    color: #0000FF;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    color: #0000FF;
+    margin: 0 5px;
+}
+
+h1 {
+    color: #0000FF;
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.description {
+    text-align: center;
+    color: #333;
+    margin-bottom: 60px;
+}
+
+.services {
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    margin-top: 40px;
+}
+
+.service {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    max-width: 300px;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+}
+
+.service-content h3 {
+    color: #0000FF;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.service-content p {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+}
