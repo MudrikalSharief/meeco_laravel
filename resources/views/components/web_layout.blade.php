@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-            <a href="landing_page.php" style="text-decoration: none;"><img src="{{ asset('logo_icons/pictures/meeco-logo-text.png')}}" alt="Meeco Logo"></a>
+            <a href="{{ route('login')}}" style="text-decoration: none;"><img src="{{ asset('logo_icons/pictures/meeco-logo-text.png')}}" alt="Meeco Logo"></a>
             </div>
             <a href="{{ route('login')}}"><button class="login-btn">Log In</button></a>
         </div>
