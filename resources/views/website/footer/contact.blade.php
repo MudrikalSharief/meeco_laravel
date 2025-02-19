@@ -10,21 +10,26 @@
         <p class="description">Thank you for choosing Meeco. Please feel free to contact us with the channel below, we are happy to help.</p>
     
         <div class="services">
-            <div class="service">
-                <img class="Note w-20 h-20 object-contain mx-auto mt-3" src="{{ asset('logo_icons/pictures/note.png') }}" alt="Note">
-                <div class="service-content">
-                    <h3 class="font-bold text-lg">Inquiry</h3>
-                    <p>Got questions? This is your pathway to unravel the unknown.</p>
+            <a href="{{ route('inquiry') }}">
+                <div class="service">
+                        <img class="Note w-20 h-20 object-contain mx-auto mt-3" src="{{ asset('logo_icons/pictures/note.png') }}" alt="Note">
+                        <div class="service-content">
+                            <h3 class="font-bold text-lg">Inquiry</h3>
+                            <p>Got questions? This is your pathway to unravel the unknown.</p>
+                        </div>
                 </div>
-            </div>
-    
-            <div class="service">
-                <img class="Note w-20 h-20 object-contain mx-auto mt-3" src="{{ asset('logo_icons/pictures/history.png') }}" alt="Note">
-                <div class="service-content">
-                    <h3 class="font-bold text-lg">Inquiry History</h3>
-                    <p>See how your questions have shaped your quest for knowledge.</p>
+            </a>
+            
+            <a href="{{ route('inquiry-history') }}">
+                <div class="service">
+                    <img class="Note w-20 h-20 object-contain mx-auto mt-3" src="{{ asset('logo_icons/pictures/history.png') }}" alt="Note">
+                    <div class="service-content">
+                        <h3 class="font-bold text-lg">Inquiry History</h3>
+                        <p>See how your questions have shaped your quest for knowledge.</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
     </main>
 </x-web_footer>
