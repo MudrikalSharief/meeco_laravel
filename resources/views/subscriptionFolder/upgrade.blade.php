@@ -5,7 +5,6 @@
             <div class="flex items-center gap-2">
                 <button class="text-xl hover:text-gray-200 transition-colors duration-300">&larr;</button>
                 <span class="flex items-center text-xl font-semibold">
-                 
                     PREMIUM OFFERS
                 </span>
             </div>
@@ -27,9 +26,9 @@
                         </ul>
                     </div>
                     <div class="flex justify-center pb-4">
-                        <button onclick="openModal('{{ $promo->promo_id }}')" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
+                        <a href="{{ route('upgrade.payment', ['promo_id' => $promo->promo_id]) }}" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
                             Subscribe to {{ $promo->name }}
-                        </button>
+                        </a>
                     </div>
                 </div>
                 @endforeach

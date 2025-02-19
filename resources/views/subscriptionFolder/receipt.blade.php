@@ -7,12 +7,12 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-extrabold mb-6 text-green-600">Payment Success!</h1>
-            <p class="mb-2">Amount Paid: Php 27.00</p>
-            <p class="mb-2">Reference Number: 90283625415</p>
-            <p class="mb-2">Payment Time: 10-10-2024, 13:11</p>
+            <p class="mb-2">Amount Paid: Php {{ $promo->price }}</p>
+            <p class="mb-2">Reference Number: {{ $referenceNumberValue }}</p>
+            <p class="mb-2">Payment Time: {{ now()->format('d-m-Y, H:i') }}</p>
             <p class="mb-2">Payment Method: Gcash</p>
-            <p class="mb-2">Sender Name: Anthony Marc</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-6" onclick="showModal()">Finish Transaction</button>
+            <p class="mb-2">Sender Name: {{ $userName }}</p>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-6" onclick="redirectToCapture()">Finish Transaction</button>
             
             <!-- Modal -->
             <div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
@@ -23,8 +23,8 @@
                         </svg>
                     </div>
                     <h2 class="text-2xl font-extrabold mb-4 text-blue-800">Premium</h2>
-                    <div class="text-lg font-semibold mb-2">Casual</div>
-                    <div class="text-base mb-4">You've got upgraded to Casual!</div>
+                    <div class="text-lg font-semibold mb-2">{{ $promo->name }}</div>
+                    <div class="text-base mb-4">You've got upgraded to {{ $promo->name }}!</div>
                     <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="hideModal()">Close</button>
                 </div>
             </div>
@@ -36,6 +36,10 @@
 
                 function hideModal() {
                     document.getElementById('modal').classList.add('hidden');
+                }
+
+                function redirectToCapture() {
+                    window.location.href = "{{ route('capture') }}";
                 }
             </script>
         </div>
