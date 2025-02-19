@@ -22,7 +22,7 @@ class Reviewer extends Model
     protected $keyType = 'int';
 
     // Define the fillable attributes
-    protected $fillable = ['topic_id', 'reviewer_text'];
+    protected $fillable = ['topic_id', 'reviewer_about', 'reviewer_text'];
 
     // Define the relationship with the Topic model
     public function topic()

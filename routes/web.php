@@ -23,7 +23,7 @@ Route::get('/', function () {
         return redirect()->route('landing');
     }
 });
-
+    
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
     

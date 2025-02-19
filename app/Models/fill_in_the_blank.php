@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class fill_in_the_blank extends Model
 {
-    
+    use HasFactory;
     // Specify the table name if it doesn't follow the convention
     protected $table = 'fill_in_the_blank';
 

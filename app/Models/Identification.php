@@ -6,14 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class true_or_false extends Model
+class Identification extends Model
 {
     use HasFactory;
     // Specify the table name if it doesn't follow the convention
-    protected $table = 'true_or_false';
+    protected $table = 'Identification';
 
     // Define the primary key if it's not 'id'
-    protected $primaryKey = 'true_or_false_id';
+    protected $primaryKey = 'Identification_id';
 
     // Indicate if the IDs are auto-incrementing
     public $incrementing = true;
@@ -23,7 +23,7 @@ class true_or_false extends Model
 
     // Define the fillable attributes
     protected $fillable = [
-        'true_or_false_id', 
+        'Identification_id', 
         'question_text',
         'answer',
         'user_answer',

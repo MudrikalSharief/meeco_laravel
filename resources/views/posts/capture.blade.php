@@ -19,6 +19,7 @@
 
         <!-- Container for Uploaded Images -->
         <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
+   
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         

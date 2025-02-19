@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Log;
 class OPENAIController extends Controller
 {
     public function handleChat(Request $request)
-    {
+    {   
+        set_time_limit(300); // Set the maximum execution time to 300 seconds
         try {
             $request->validate([
                 'content' => 'required|string',
@@ -24,62 +25,84 @@ class OPENAIController extends Controller
         } catch (ValidationException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
+
+        $true = Reviewer::where(['topic_id' => $request->post('topic_id')])->get();
+        if(!$true->isEmpty()){
+            return response()->json(['success' => true, 'message' => "Reviewer Already Created"]);
+        }else{
+
+            try {
+                $response = Http::withHeaders([
+                    "Content-Type" => "application/json",
+                    "Authorization" => "Bearer " . env('OPENAI_API_KEY')
+                ])
+                ->timeout(300)
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    "model" => "gpt-4-turbo",
+                    "messages" => [
+                        [
+                            "role" => "user",
+                            "content" => "
+                                You are an AI that helps generate organized study reviewers. A user has uploaded notes, and your task is to analyze the content  and divide the information accordingly. 
+        
+                                Here are the rules for processing:
+                                1. Identify the main topics in the notes .
+                                2. Break the topics content into smaller, logically grouped pieces that fit on individual cards.
+                                3. Each piece should focus on a single concept or subtopic, with no piece being longer than 100 words.
+                                4. If the notes are unclear, use your best judgment to organize the content logically while keeping it concise and easy to understand.
+                                5. Use simple and clear language suitable for a reviewer.
+        
+                                Example format for the output:
+                                [
+                                    {
+                                             Topic, 
+                                             Description of the topic.
+                                    }
+                                ]
+        
+                                Input notes: " . $request->post('content')
+                        ]
+                    ],
+                    "temperature" => 0.5,
+                    "max_tokens" => 4096
+                ]);
+        
+                if ($response->failed()) {
+                    return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
+                }
+        
+                $responseBody = $response->body();
+                $responseData = json_decode($responseBody, true);
+        
+                if (!isset($responseData['choices'][0]['message']['content'])) {
+                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
+                }
+        
+                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                
     
-        try {
-            $response = Http::withHeaders([
-                "Content-Type" => "application/json",
-                "Authorization" => "Bearer " . env('OPENAI_API_KEY')
-            ])
-            ->timeout(300)
-            ->post('https://api.openai.com/v1/chat/completions', [
-                "model" => "gpt-4-turbo",
-                "messages" => [
-                    [
-                        "role" => "user",
-                        "content" => "
-                            You are an AI that helps generate organized study reviewers. A user has uploaded notes, and your task is to analyze the content, identify the subjects, and divide the information accordingly. 
-
-                            Here are the rules for processing:
-                            1. Identify the main subjects/topics in the notes (e.g., Math, Science, English).
-                            2. For each subject, break the content into smaller, logically grouped pieces that fit on individual cards.
-                            3. Each piece should focus on a single concept or subtopic, with no piece being longer than 100 words.
-                            4. If the notes are unclear, use your best judgment to organize the content logically while keeping it concise and easy to understand.
-                            5. Use simple and clear language suitable for a reviewer.
-
-                            Example format for the output:
-                            ---
-                            **Subject:** [Subject Name]
-                            **Card 1:** [Content for Card 1]
-                            **Card 2:** [Content for Card 2]
-                            ...
-
-                            ---
-
-                            Input notes: " . $request->post('content')
-                    ]
-                ],
-                "temperature" => 0.5,
-                "max_tokens" => 4096
-            ]);
+                foreach($content as $item){
+                    $reviewer = new Reviewer;
+                    $reviewer->topic_id = $request->post('topic_id');
+                    $reviewer->reviewer_about = $item['Topic'];
+                    $reviewer->reviewer_text = $item['Description'];
+                    $reviewer->save();
+                }
+                
     
-            if ($response->failed()) {
-                return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
+                return response()->json(['success' => true, 'data' => $content, 'topic_id' => $request->post('topic_id')]);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }
-    
-            $responseBody = $response->body();
-            return response()->json(json_decode($responseBody, true));
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
+        
     }
-
-   
     public function generate_quiz($topic_id, Request $request)
-    {
+    {    set_time_limit(300); // Set the maximum execution time to 300 seconds
+
         Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
     
         $topic = Topic::find($topic_id);
-        
         if (!$topic) {
             Log::error('Topic not found', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'Topic not found.']);
@@ -94,6 +117,16 @@ class OPENAIController extends Controller
     
         $reviewerText = $reviewer->reviewer_text;
         $number = $request->post('number');
+
+        // if($request->post('type') == 'Multiple Choice'){
+        //     return $this->generate_multiple_choice($topic_id, $request, $reviewerText, $number);
+        // }else if($request->post('type') == 'True or false'){
+        //     return $this->generate_true_or_false($topic_id, $request, $reviewerText, $number);
+        // }else if($request->post('type') == 'Identification'){
+        //     return $this->generate_fill_in_the_blank($topic_id, $request, $reviewerText, $number);
+        // }else{
+        //     //return an error
+        // }
     
         try {
             $response = Http::withHeaders([
