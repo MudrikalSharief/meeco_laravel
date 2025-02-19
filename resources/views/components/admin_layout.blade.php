@@ -253,16 +253,8 @@
     <div class="content pl-64 pt-12">
         {{ $slot }}
     </div>
-    <script>
-        document.getElementById('burger').addEventListener('click', function() {
-            document.getElementById('modal_sidebar').style.display = 'block';
-        });
-    
-        document.getElementById('burger_modal').addEventListener('click', function() {
-            document.getElementById('modal_sidebar').style.display = 'none';
-        });
-
-        document.getElementById('admin-logout-form').addEventListener('submit', function() {
+    <script>      
+       document.getElementById('admin-logout-form').addEventListener('submit', function() {
             window.location.href = "{{ route('admin.login') }}";
         });
     </script>

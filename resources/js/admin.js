@@ -1,3 +1,13 @@
+//Sidebar toggle
+document.getElementById('burger').addEventListener('click', function() {
+    document.getElementById('modal_sidebar').style.display = 'block';
+});
+
+document.getElementById('burger_modal').addEventListener('click', function() {
+    document.getElementById('modal_sidebar').style.display = 'none';
+});
+
+
 $(document).ready(function() {
     let table = new DataTable('#myTable');
 
