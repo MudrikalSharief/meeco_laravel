@@ -52,8 +52,8 @@ class QuizController extends Controller
     {
         $id = intval($questionId);
         $questions = multiple_choice::where('question_id', $id)->get();
-        $correctAnswers = multiple_choice::where('question_id', $questionId)->pluck('answer');
-        if ($correctAnswers[0] === null) {
+        $userAnswers = multiple_choice::where('question_id', $questionId)->pluck('user_answer');
+        if ($userAnswers[0] === null) {
             return response()->json(['success' => false, 'message' => 'No Answer Yet']);
         }
         return response()->json(['success' => true, 'questions' => $questions]);

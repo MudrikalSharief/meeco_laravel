@@ -86,14 +86,13 @@
                     }
                 });
 
-
+                const quiz_result = document.getElementById('quiz_result');
                 //this is for the summary of the getQuizResult
                 fetch(`getquizresult/${questionId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         console.log(data);
-                        const quiz_result = document.getElementById('quiz_result');
                         if(quiz_result){ 
                             quiz_result.innerHTML = ''; // Clear previous content
                             data. questions.forEach((question, index) => {
@@ -159,7 +158,8 @@
                         });
                         }
                     } else {
-                        alert('Failed to get quiz result: ' + data.message);
+                        console.log("the user did not take the quiz yet")
+                        quiz_result.innerHTML = `<p class="text-red-500 text-center">You have not taken the quiz yet!</p>`;
                     }
                 });
          });    

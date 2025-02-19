@@ -71,12 +71,12 @@
                     labels.forEach(label => {
                         label.classList.add('shadow-sm');
                         label.classList.remove('shadow-md');
-                        label.classList.remove('bg-blue-200');
+                        label.classList.remove('bg-blue-300');
                         label.classList.add('bg-blue-50');
                     });
                     
                     selectedLabel.classList.add('bg-blue-50');
-                    selectedLabel.classList.add('bg-blue-200');
+                    selectedLabel.classList.add('bg-blue-300');
                     selectedLabel.classList.remove('shadow-sm');
                     selectedLabel.classList.add('shadow-md');
                 }

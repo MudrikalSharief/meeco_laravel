@@ -161,12 +161,12 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
 
-    Route::view('/admin', 'auth.login-admin')->name('admin.login');
-    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 });
+Route::view('/admin', 'auth.login-admin')->name('admin.login');
+Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 
 // Auth admin

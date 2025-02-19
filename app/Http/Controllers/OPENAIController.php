@@ -30,7 +30,7 @@ class OPENAIController extends Controller
                 "Content-Type" => "application/json",
                 "Authorization" => "Bearer " . env('OPENAI_API_KEY')
             ])
-            ->timeout(60)
+            ->timeout(300)
             ->post('https://api.openai.com/v1/chat/completions', [
                 "model" => "gpt-4",
                 "messages" => [
@@ -76,27 +76,31 @@ class OPENAIController extends Controller
    
     public function generate_quiz($topic_id, Request $request)
     {
+        Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
+    
         $topic = Topic::find($topic_id);
         
         if (!$topic) {
+            Log::error('Topic not found', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'Topic not found.']);
         }
     
         // Retrieve reviewer text and check if it exists
         $reviewer = Reviewer::where('topic_id', $topic_id)->first();
         if (!$reviewer) {
+            Log::error('No reviewer found for this topic', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'No reviewer found for this topic.']);
         }
     
         $reviewerText = $reviewer->reviewer_text;
         $number = $request->post('number');
-
+    
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                 'Content-Type'  => 'application/json',
             ])
-            ->timeout(60)
+            ->timeout(120)
             ->post('https://api.openai.com/v1/chat/completions', [
                 'model' => 'gpt-4-turbo',
                 'messages' => [
@@ -118,42 +122,43 @@ class OPENAIController extends Controller
                     ]
                     } 
     
-                    Text: " . $reviewerText]
+                    Text: " . $reviewerText . " the order of the question is not necessarilly the same as the order of the Text you can re arrenge the order of the question."]
                 ],
                 'temperature' => 0.7,
                 'max_tokens' => 4096
             ]);
     
             if ($response->failed()) {
+                Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
                 return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
             }
     
             $responseData = json_decode($response->body(), true);
             Log::info('OpenAI API Response:', ['response' => $responseData]);
-
+    
             if (!isset($responseData['choices'][0]['message']['content'])) {
+                Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                 return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
             }
-
+    
             $content = json_decode($responseData['choices'][0]['message']['content'], true);
             Log::info('Parsed Content:', ['content' => $content]);
-
+    
             if (empty($content['questions'])) {
-                return response()->json(['success' => false, 'message' => 'No questions generated'.$number.'.', 'data' => $content,'raw' => $reviewerText]);
+                Log::error('No questions generated', ['content' => $content, 'reviewerText' => $reviewerText]);
+                return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $reviewerText]);
             }
-
-
-            
+    
             $question = Question::create([
                 'topic_id' => $topic_id,
                 'question_type' => $request->post('type'),
                 'question_title' => $request->post('name'),
                 'number_of_question' => $request->post('number'), // Assuming each question is a single question
             ]);
-
+    
             // Log the created question to check if the id is set
             Log::info('Created Question:', ['question' => $question]);
-
+    
             // Save the questions and multiple choices
             foreach ($content['questions'] as $questionData) {
                 multiple_choice::create([
@@ -166,10 +171,11 @@ class OPENAIController extends Controller
                     'D' => $questionData['choices']['D'],
                 ]);
             }
-
+    
             return response()->json(['success' => true, 'data' => $content]);
     
         } catch (\Exception $e) {
+            Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
