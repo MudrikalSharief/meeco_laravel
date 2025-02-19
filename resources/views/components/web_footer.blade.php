@@ -6,6 +6,7 @@
     <title>Meeco - Study Smart</title>
     @vite(['resources/css/terms.css', 'resources/css/landing-page-style.css', 'resources/css/navbar-style.css',
     'resources/css/footer-style.css','resources/css/faq-style.css', 'resources/js/app.js'])
+    @vite(['resources/css/contact.css'])
 </head>
 <body>
     <nav class="navbar">
