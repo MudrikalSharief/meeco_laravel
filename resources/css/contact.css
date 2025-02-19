@@ -16,12 +16,7 @@
     margin: 0 5px;
 }
 
-h1 {
-    color: #0000FF;
-    text-align: center;
-    font-size: 32px;
-    margin-bottom: 20px;
-}
+
 
 .description {
     text-align: center;
@@ -39,7 +34,7 @@ h1 {
 .service {
     display: flex;
     align-items: flex-start;
-    gap: 15px;
+    gap: 20px;
     max-width: 300px;
 }
 
