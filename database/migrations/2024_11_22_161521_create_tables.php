@@ -102,7 +102,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->text('answer');
-            $table->text('user_answer')->default(null);
+            $table->text('user_answer')->nullable();
             $table->text('A');
             $table->text('B');
             $table->text('C');
@@ -118,7 +118,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->string('answer');
-            $table->string('user_answer')->default(null);;
+            $table->string('user_answer')->nullable();
             $table->timestamps();
         });
 
@@ -130,7 +130,7 @@ return new class extends Migration
             $table->foreign('question_id')->references('question_id')->on('questions')->onDelete('cascade');
             $table->longText('question_text');
             $table->string('answer');
-            $table->string('user_answer')->default(null);;
+            $table->string('user_answer')->nullable();
             $table->timestamps();
         });
     }
