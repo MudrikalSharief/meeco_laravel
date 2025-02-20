@@ -7,6 +7,7 @@
     @vite(['resources/css/terms.css', 'resources/css/landing-page-style.css', 'resources/css/navbar-style.css',
     'resources/css/footer-style.css','resources/css/faq-style.css', 'resources/js/app.js'])
     @vite(['resources/css/contact.css'])
+    @vite(['resources/css/app.css', 'resources/css/terms.css'])
 </head>
 <body class="h-screen w-full">
     <nav class="navbar">
