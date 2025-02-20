@@ -4,36 +4,33 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+return new class extends Migration {
+    public function up()
     {
-        Schema::table('promos', function (Blueprint $table) {
-            $table->dropColumn([
-                'features',
-                'limitations',
-                'created_at',
-                'updated_at',
-                'discount_type',
-                'percent_discount'
-            ]);
+        Schema::create('promos', function (Blueprint $table) {
+            $table->id('promo_id');
+            $table->string('name');
+            $table->decimal('price', 10, 2);
+            $table->text('perks');
+            $table->integer('duration');
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('end_date')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('photo_to_text')->nullable();
+            $table->integer('photo_limit')->nullable();
+            $table->string('reviewer_generator')->nullable();
+            $table->integer('reviewer_limit')->nullable();
+            $table->string('mock_quiz_generator')->nullable();
+            $table->integer('mock_quiz_limit')->nullable();
+            $table->string('save_reviewer')->nullable();
+            $table->integer('save_reviewer_limit')->nullable();
+            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::table('promos', function (Blueprint $table) {
-            $table->text('features')->nullable();
-            $table->text('limitations')->nullable();
-            $table->timestamps(); // This will add both created_at and updated_at columns
-            $table->string('discount_type')->nullable();
-            $table->decimal('percent_discount', 5, 2)->nullable();
-        });
+        Schema::dropIfExists('promos');
     }
 };
