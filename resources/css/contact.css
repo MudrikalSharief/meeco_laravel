@@ -3,38 +3,3 @@
 @tailwind utilities;
 
 
-
-.description {
-    text-align: center;
-    color: #333;
-    margin-bottom: 60px;
-}
-
-.service {
-    display: flex;
-    align-items: flex-start;
-    gap: 40px;
-    max-width: 500px;
-}
-
-.icon {
-    width: 40px;
-    height: 40px;
-}
-
-.service-content h3 {
-    color: #0000FF;
-    margin: 0 0 10px 0;
-    font-size: 18px;
-}
-
-.service-content p {
-    margin: 0;
-    color: #333;
-    line-height: 1.5;
-}
-
-.Contact_Us {
-    width: 100%;
-    text-align: center;
-}
