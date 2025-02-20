@@ -44,20 +44,22 @@ class TOPICcontroller extends Controller
     public function createTopic(Request $request)
     {
         try {
+            $messages = "$request->name, $request->subject_id";
             $request->validate([
                 'name' => 'required|string|max:255|unique:topics,name,NULL,id,subject_id,' . $request->subject_id,
                 'subject_id' => 'required|integer|exists:subjects,subject_id',
             ]);
+            $messages = $messages . "validation passed";
 
             $topic = new Topic();
             $topic->name = $request->name;
             $topic->subject_id = $request->subject_id;
             $topic->save();
-
+            $messages = $messages . "save done";
             return response()->json(['success' => true, 'topic' => $topic]);
         } catch (\Exception $e) {
             Log::error('Error creating topic: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error creating topic'], 500);
+            return response()->json(['success' => false, 'message' => $messages], 500);
         }
     }
 

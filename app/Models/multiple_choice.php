@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class multiple_choice extends Model
 {
-    
+    use HasFactory;
     // Specify the table name if it doesn't follow the convention
     protected $table = 'multiple_choice';
 

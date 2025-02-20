@@ -127,7 +127,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
-                        body: JSON.stringify({ content: extractedTextArea.value })
+                        body: JSON.stringify({ content: extractedTextArea.value, topic_id: topicId })
                     })
                     .then(response => {
                         json = response.json();
@@ -135,40 +135,12 @@
                     })
                     .then(data => {
                         console.log('Success: OpenAi have Created the reviewer');
-                        //==
-                        const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
-                        // Insert the generated reviewer into the database
-                        fetch('/storeReviewer', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                topic_id: topicId,
-                                reviewer_text: data.choices[0].message.content
-                            })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error('Failed to store reviewer: ' + (err.message || 'Unknown error'));
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(storeData => {
-                            if (storeData.success) {
+                        
+                        if (data.success) {
                                 document.getElementById('successModal').classList.remove('hidden');
                             } else {
                                 throw new Error(storeData.message || 'Unknown error');
                             }
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('An error occurred cannot store data: ' + error.message);
-                        });
-                        //==
                     })
                     .catch((error) => {
                         console.error('Error:', error);

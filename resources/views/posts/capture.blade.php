@@ -19,6 +19,7 @@
 
         <!-- Container for Uploaded Images -->
         <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
+   
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
@@ -166,7 +167,7 @@
             </div>
             <div class="flex justify-end mt-4">
                 <button id="cancelTopicButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
-                <button id="saveTopicButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+                <button id="saveTopicButtonCapture" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
             </div>
         </div>
     </div>
