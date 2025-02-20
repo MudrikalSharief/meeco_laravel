@@ -18,7 +18,7 @@ class ContactUsController extends Controller
             'upload.*' => 'nullable|file|mimes:jpg,png,svg|max:3072'
         ]);
 
-        $ticketReference = Str::random(10);
+        $ticketReference = Str::upper(Str::random(3)) . mt_rand(1000000, 9999999);
 
         $contactUs = new ContactUs();
         $contactUs->ticket_reference = $ticketReference;
