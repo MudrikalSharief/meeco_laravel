@@ -2,8 +2,8 @@
     <main class="p-10">
         <div class="max-w-2xl mx-auto">
             <div class="flex items-center gap-3 mb-10">
-                <a href="{{ route('inquiry-history') }}" class="text-blue-600 text-2xl no-underline">←</a>
-                <h1 class="text-blue-600 text-xl font-medium">Inquiry Details</h1>
+                <a href="{{ route('inquiry-history') }}" class="text-blue-600 text-3xl no-underline">←</a>
+                <h1 class="text-blue-600 text-2xl font-medium">Inquiry Details</h1>
             </div>
             <div class="border-2 border-blue-600 rounded-lg p-6 mb-5">
                 <div class="flex items-start gap-3">
@@ -45,7 +45,7 @@
             @endif
     
             <div class="flex justify-end gap-3">
-                <button type="button" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
+                <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
                 <form action="{{ route('inquiry-history') }}" method="GET">
                     <button type="submit" class="bg-transparent border border-gray-300 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-100">Close Question</button>
                 </form>

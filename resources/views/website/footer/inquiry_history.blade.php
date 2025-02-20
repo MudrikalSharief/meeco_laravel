@@ -1,8 +1,8 @@
 <x-web_footer>
     <main class="p-10">
         <div class="flex items-center gap-3 mb-10">
-            <a href="{{ route('contact') }}" class="text-blue-600 text-2xl no-underline">←</a>
-            <h1 class="text-blue-600 text-xl font-medium">Inquiry History</h1>
+            <a href="{{ route('contact') }}" class="text-blue-600 text-3xl no-underline">←</a>
+            <h1 class="text-blue-600 text-2xl font-bold">Inquiry History</h1>
         </div>
 
         <table class="w-full border-collapse">
@@ -25,7 +25,7 @@
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->updated_at }}</td>
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->status }}</td>
                     <td class="p-4 border-b border-gray-200">
-                        <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-400 text-white border-none py-1 px-4 rounded cursor-pointer text-sm">Reply</a>
+                        <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-400 text-white border-none py-2 px-6 rounded cursor-pointer text-sm hover:bg-blue-600">Reply</a>
                     </td>
                 </tr>
                 @endforeach

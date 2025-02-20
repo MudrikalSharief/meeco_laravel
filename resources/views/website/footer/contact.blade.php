@@ -1,6 +1,6 @@
 <x-web_footer>
     <main>
-        <div class="breadcrumb mb-10 pl-6 font-bold text-xl">
+        <div class="breadcrumb mb-10 pl-72 font-bold text-xl">
             <a href="{{ route('landing')}}" class="text-blue-700 no-underline">Home</a>
             <span class="text-blue-700 mx-1">></span>
             <span class="text-blue-700">Help and Support</span>
