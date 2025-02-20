@@ -24,6 +24,7 @@ class ContactUsController extends Controller
         $contactUs->ticket_reference = $ticketReference;
         $contactUs->email = $request->email;
         $contactUs->category = $request->category;
+        $contactUs->subject = $request->subject;
         $contactUs->question = $request->question;
 
         if ($request->hasFile('upload')) {
@@ -38,5 +39,11 @@ class ContactUsController extends Controller
         $contactUs->save();
 
         return redirect()->route('contact')->with('success', 'Your inquiry has been submitted successfully.');
+    }
+
+    public function inquiryHistory()
+    {
+        $inquiries = ContactUs::all();
+        return view('website.footer.inquiry_history', compact('inquiries'));
     }
 }
