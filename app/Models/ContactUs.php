@@ -15,6 +15,7 @@ class ContactUs extends Model
         'ticket_reference',
         'email',
         'category',
+        'subject',
         'question',
         'upload',
         'date_created',
