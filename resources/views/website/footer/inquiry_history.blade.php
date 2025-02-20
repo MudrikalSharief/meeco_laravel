@@ -1,7 +1,7 @@
 <x-web_footer>
     <main class="p-10">
         <div class="flex items-center gap-3 mb-10">
-            <a href="#" class="text-blue-600 text-2xl no-underline">←</a>
+            <a href="{{ route('contact') }}" class="text-blue-600 text-2xl no-underline">←</a>
             <h1 class="text-blue-600 text-xl font-medium">Inquiry History</h1>
         </div>
 
