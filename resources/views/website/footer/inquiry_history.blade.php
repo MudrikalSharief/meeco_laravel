@@ -25,7 +25,7 @@
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->updated_at }}</td>
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->status }}</td>
                     <td class="p-4 border-b border-gray-200">
-                        <button class="bg-blue-400 text-white border-none py-1 px-4 rounded cursor-pointer text-sm">Reply</button>
+                        <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-400 text-white border-none py-1 px-4 rounded cursor-pointer text-sm">Reply</a>
                     </td>
                 </tr>
                 @endforeach

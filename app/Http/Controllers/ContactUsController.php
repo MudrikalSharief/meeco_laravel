@@ -53,4 +53,38 @@ class ContactUsController extends Controller
         $inquiries = ContactUs::all();
         return view('website.footer.inquiry_history', compact('inquiries'));
     }
+
+    public function getInquiryDetails($ticket_reference)
+    {
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+        return view('website.footer.inquiry_history2', compact('inquiry'));
+    }
+
+    public function submitReply(Request $request, $ticket_reference)
+    {
+        $request->validate([
+            'reply' => 'required|string',
+        ]);
+
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+        // Assuming there's a replies column in the ContactUs model to store replies
+        $replies = json_decode($inquiry->replies, true) ?? [];
+        $replies[] = [
+            'reply' => $request->reply,
+            'created_at' => now(),
+        ];
+        $inquiry->replies = json_encode($replies);
+        $inquiry->save();
+
+        return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+    }
+
+    public function closeInquiry($ticket_reference)
+    {
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+        $inquiry->status = 'Closed';
+        $inquiry->save();
+
+        return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
+    }
 }
