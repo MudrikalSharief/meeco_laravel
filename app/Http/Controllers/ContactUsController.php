@@ -15,7 +15,7 @@ class ContactUsController extends Controller
             'category' => 'required',
             'subject' => 'required|string|max:255',
             'question' => 'required|string',
-            'upload.*' => 'nullable|file|mimes:jpg,png,svg|max:3072'
+            'upload.*' => 'nullable|file|mimes:jpg,JPG,png,PNG,svg,SVG|max:5120'
         ]);
 
         $ticketReference = Str::upper(Str::random(3)) . mt_rand(1000000, 9999999);

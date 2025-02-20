@@ -41,7 +41,7 @@
                             <input type="file" name="upload[]" accept=".jpg,.png,.svg" class="w-full">
                         </div>
                     </div>
-                    <p class="file-note text-gray-600 text-xs mt-1">Note: Only jpg, svg, and png format is supported; File size must not exceed 3MB.</p>
+                    <p class="file-note text-gray-600 text-xs mt-1">Note: Only jpg, svg, and png format is supported; File size must not exceed 5MB.</p>
                 </div>
     
                 <div class="button-group flex gap-2 justify-end mt-5">
