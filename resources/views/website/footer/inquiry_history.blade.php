@@ -22,7 +22,9 @@
                     <td class="p-4 text-gray-800 border-b border-gray-200">{{ $inquiry->subject }}</td>
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->ticket_reference }}</td>
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->category }}</td>
-                    <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->updated_at }}</td>
+                    <td class="p-4 text-gray-600 border-b border-gray-200">
+                        {{ $inquiry->replies->last()->created_at ?? $inquiry->updated_at }}
+                    </td>
                     <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->status }}</td>
                     <td class="p-4 border-b border-gray-200">
                         <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-400 text-white border-none py-2 px-6 rounded cursor-pointer text-sm hover:bg-blue-600">Reply</a>
