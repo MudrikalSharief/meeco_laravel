@@ -5,18 +5,10 @@
         <div class="mb-6">
             <h2 class="text-xl font-semibold mb-2">Plan Offers</h2>
             <div class="bg-white shadow-md rounded p-4">
-                <label class="block mb-2">
-                    <input type="radio" name="plan" value="casual" class="mr-2" checked>
-                    Casual
-                </label>
-                <label class="block mb-2">
-                    <input type="radio" name="plan" value="regular" class="mr-2">
-                    Regular
-                </label>
-                <label class="block">
-                    <input type="radio" name="plan" value="vip" class="mr-2">
-                    VIP
-                </label>
+                <p class="text-lg font-semibold">{{ $promo->name }}</p>
+                <p class="text-lg font-normal">Price: ₱{{ $promo->price }}</p>
+                <p class="text-lg font-normal">Duration: {{ $promo->duration }} days</p>
+                <p class="text-lg font-normal">Perks: {{ $promo->perks }}</p>
             </div>
         </div>
         
@@ -30,9 +22,10 @@
             </div>
         </div>
         
-        <a href="{{ route('upgrade.paymentEmail')}}"><button class="bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            Continue
-        </button></a>
+        <a href="{{ route('upgrade.paymentEmail', ['promo_id' => $promo->promo_id]) }}">
+            <button class="bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                Continue
+            </button>
+        </a>
     </div>
-    
 </x-layout>
