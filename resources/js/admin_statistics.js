@@ -99,11 +99,6 @@ if(monthly_labels && monthly_total_amount){
 //Online Users
 
 const selectRev = document.getElementById('select-rev');
-const dailyChart = document.getElementById('dailyChart');
-const monthlyChart = document.getElementById('monthlyChart');
-
-let daily_labels, daily_revenue_data, daily_revenue_data_att, daily_revenue, daily_total_amount;
-let monthly_labels, monthly_revenue_data, monthly_revenue_data_att, monthly_revenue, monthly_total_amount;
 
 daily_labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 daily_revenue_data = document.querySelector('.daily-rev');
