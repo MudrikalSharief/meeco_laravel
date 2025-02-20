@@ -108,12 +108,15 @@ class OPENAIController extends Controller
             Log::error('Topic not found', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'Topic not found.']);
         }
-        
-        $quizname = Question::where('topic_id', $topic_id)->pluck('question_title');
-        if($quizname[0] === $request->post('name')){
-            return response()->json(['success' => false, 'message' => 'Quiz Name Already Take']);
+         
+        $quizname = Question::where('topic_id', $topic['topic_id'])->pluck('question_title');
+        if(!$quizname->isEmpty()){
+            if($quizname[0] === $request->post('name')){
+                return response()->json(['success' => false, 'message' => 'Quiz Name Already Take']);
+            }
         }
-
+        
+        
         // Retrieve reviewer text and check if it exists
         $reviewer = Reviewer::where('topic_id', $topic_id)->get(['reviewer_about', 'reviewer_text']);
         if ($reviewer->isEmpty()) {
@@ -130,7 +133,7 @@ class OPENAIController extends Controller
         }
         // return response()->json(['success' => false, 'message' => $text ]);
         
-    
+        
         $number = $request->post('number');
 
         if($request->post('type') == 'Multiple Choice'){

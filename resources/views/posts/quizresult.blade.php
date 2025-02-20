@@ -72,6 +72,7 @@
                             if (data.success) {
                                 // Redirect to the next page
                                 console.log("quiz started");
+                                console.log(data)
                                 window.location.href = `/takequiz/${button2.id}`;
                             
                             } else {
@@ -95,18 +96,35 @@
                         console.log(data);
                         if(quiz_result){ 
                             quiz_result.innerHTML = ''; // Clear previous content
+
                             data. questions.forEach((question, index) => {
                                 const questionDiv = document.createElement('div');
                                 questionDiv.classList.add('question');
-                                questionDiv.innerHTML = `
-                                    <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
-                                    <ul>
-                                        <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
-                                        <li><label class = "choices${index}B w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="B"> B) ${question.B}</label></li>
-                                        <li><label class = "choices${index}C w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="C"> C) ${question.C}</label></li>
-                                        <li><label class = "choices${index}D w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="D"> D) ${question.D}</label></li>
-                                    </ul>
-                                `;
+                            
+                                if(data.type === 'Multiple Choice'){
+                                    console.log('mulitiple');
+                                    questionDiv.innerHTML = `
+                                        <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                        <ul>
+                                            <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
+                                            <li><label class = "choices${index}B w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="B"> B) ${question.B}</label></li>
+                                            <li><label class = "choices${index}C w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="C"> C) ${question.C}</label></li>
+                                            <li><label class = "choices${index}D w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="D"> D) ${question.D}</label></li>
+                                        </ul>
+                                    `;
+                                }
+                                else if(data.type === 'True or false'){
+                                    console.log('TF?');
+                                    questionDiv.innerHTML = `
+                                        <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                        <ul>
+                                            <li><label class = "choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="True"> A) True </label></li>
+                                            <li><label class = "choices${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="False"> B) Flase </label></li>
+                                        </ul>
+                                    `;
+                                }
+
+                                
                                 quiz_result.appendChild(questionDiv);
         
                                 // Highlight the correct answer
@@ -146,7 +164,7 @@
                                                     
                                                     choice.classList.remove('bg-blue-50');
                                                     choice.classList.remove('bg-red-200');
-                                                    choice.classList.add('bg-green-200');
+                                                    choice.classList.add('bg-green-400');
                                                 }
                                             });
                                         }

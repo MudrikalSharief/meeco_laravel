@@ -194,14 +194,14 @@
                             quizContainer.innerHTML="";
                             data.questions.forEach(quiz => {
                                 const button = document.createElement('button');
-                                button.classList.add('question_button','w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                                button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
                                 button.id = quiz.question_id;
                                 button.innerHTML = `
                                     <p class="w-2/5 ">${quiz.question_title}</p>
                                     <div class="flex justify-between w-3/5">
                                         <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
-                                        <div class="flex justify-between w-1/2 gap-1">
-                                            <p class="w-2/5 flex item-center text-green-400 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
+                                        <div class="flex justify-between w-1/2  gap-1">
+                                            <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
                                             <div class="flex gap-1 items-center w- 3/5">
                                                 <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
                                                 <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete">
@@ -209,7 +209,6 @@
                                         </div>    
                                     </div>
                                 `;
-
                                 quizContainer.appendChild(button);
                             });
                            

@@ -75,10 +75,11 @@ Route::middleware('auth')->group(function (){
     Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
     Route::get('/getquiz/{quizId}',[QuizController::class,'getQuiz'])->name('get.quiz');
     Route::get('/startquiz/{questionId}',[QuizController::class,'startQuiz'])->name('start.quiz');
-    Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take.quiz');
+    Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take-quiz');
     Route::get('/getquizresult/{questionId}',[QuizController::class,'getQuizResult'])->name('get.quizresult');
     Route::post('/submitquiz',[QuizController::class,'submitQuiz'])->name('submit.quiz');
     Route::view('/quiz', 'posts.quiz')->name('quiz');
+    Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
 
 
