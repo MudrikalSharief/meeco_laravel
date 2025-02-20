@@ -66,7 +66,7 @@
             </div>
             <div class="mb-4">
                 <label for="reply_user_upload" class="block text-sm font-medium text-gray-700">Upload</label>
-                <input type="file" id="reply_user_upload" name="reply_user_upload[]" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <input type="file" id="reply_user_upload" name="reply_user_upload[]" multiple accept="image/*" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" class="bg-transparent border border-gray-300 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-100" onclick="toggleModal()">Close</button>
