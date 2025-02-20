@@ -10,11 +10,13 @@
     
                 <div class="form-group mb-5">
                     <label for="category" class="block text-gray-600 mb-2 text-sm">Category</label>
-                    <select id="category" required class="w-full p-3 border border-gray-300 rounded-lg text-sm appearance-none bg-white">
+                    <select id="category" required class="w-full p-3 border border-gray-300 rounded-lg text-sm appearance-none bg-white focus:rounded-none">
                         <option value="" disabled selected>Select</option>
-                        <option value="general">General</option>
-                        <option value="support">Support</option>
-                        <option value="sales">Sales</option>
+                        <option value="general">Login Issue</option>
+                        <option value="support">Conversion Problem</option>
+                        <option value="sales">Reveiwer Problem</option>
+                        <option value="general">Quiz Problem</option>
+                        <option value="support">Others</option>
                     </select>
                 </div>
     
