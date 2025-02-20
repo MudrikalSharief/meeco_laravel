@@ -28,4 +28,9 @@ class ContactUs extends Model
         'date_created' => 'datetime',
         'last_post' => 'datetime'
     ];
+
+    public function replies()
+    {
+        return $this->hasMany(Reply::class, 'ticket_id', 'ticket_id');
+    }
 }

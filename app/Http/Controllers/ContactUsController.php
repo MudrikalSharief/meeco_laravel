@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactUs;
+use App\Models\Reply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
@@ -63,18 +64,26 @@ class ContactUsController extends Controller
     public function submitReply(Request $request, $ticket_reference)
     {
         $request->validate([
-            'reply' => 'required|string',
+            'reply_user_question' => 'required|string',
+            'reply_user_upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
         ]);
 
         $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
-        // Assuming there's a replies column in the ContactUs model to store replies
-        $replies = json_decode($inquiry->replies, true) ?? [];
-        $replies[] = [
-            'reply' => $request->reply,
-            'created_at' => now(),
-        ];
-        $inquiry->replies = json_encode($replies);
-        $inquiry->save();
+
+        $reply = new Reply();
+        $reply->ticket_id = $inquiry->ticket_id;
+        $reply->reply_user_question = $request->reply_user_question;
+
+        if ($request->hasFile('reply_user_upload')) {
+            $uploads = [];
+            foreach ($request->file('reply_user_upload') as $file) {
+                $path = $file->store('uploads', 'public');
+                $uploads[] = $path;
+            }
+            $reply->reply_user_upload = json_encode($uploads);
+        }
+
+        $reply->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }

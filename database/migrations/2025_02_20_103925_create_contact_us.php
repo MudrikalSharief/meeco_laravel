@@ -26,7 +26,7 @@ return new class extends Migration
         });
         Schema::create('replies', function (Blueprint $table) {
             $table->id('reply_id');
-            $table->foreignId('ticket_id')->constrained('contact_us')->onDelete('cascade');
+            $table->foreignId('ticket_id')->constrained('contact_us', 'ticket_id')->onDelete('cascade');
             $table->text('reply_user_question');
             $table->json('reply_user_upload')->nullable();
             $table->timestamps();
@@ -38,6 +38,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('replies');
         Schema::dropIfExists('contact_us');
     }
 };
