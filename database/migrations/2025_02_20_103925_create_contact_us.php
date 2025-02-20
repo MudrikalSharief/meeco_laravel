@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('category', ['Login Issue', 'Conversion Problem', 'Reveiwer Problem', 'Quiz Problem', 'Others']);
             $table->text('question');
             $table->json('upload')->nullable(); // To handle multiple pictures
+            $table->timestamp('date_created')->useCurrent();
+            $table->timestamp('last_post')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
     }
