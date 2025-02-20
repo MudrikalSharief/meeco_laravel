@@ -13,6 +13,7 @@ use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
+use App\Http\Controllers\ContactUsController;
 
 
 
@@ -114,6 +115,7 @@ Route::middleware('guest')->group(function (){
     Route::view('/contact', 'website.footer.contact')->name('contact');
     Route::view('/contact/inquiry', 'website.footer.inquiry')->name('inquiry');
     Route::view('/contact/inquiry-history', 'website.footer.inquiry_history')->name('inquiry-history');
+    Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
 
 });
 
