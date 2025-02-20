@@ -12,27 +12,31 @@
 
         <!-- Cards Section -->
         <div class="flex-grow overflow-auto pb-16">
-            <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 justify-items-center">
-                @foreach($promos as $promo)
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full sm:w-56 mx-1">
-                    <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
-                        <span class="font-semibold text-lg">{{ $promo->name }}</span>
+            @if($promos->isEmpty())
+                <p class="text-center text-gray-600 font-semibold">No Available Offers</p>
+            @else
+                <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 justify-items-center">
+                    @foreach($promos as $promo)
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full sm:w-56 mx-1">
+                        <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
+                            <span class="font-semibold text-lg">{{ $promo->name }}</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-center font-bold text-gray-700">ONLY ₱{{ $promo->price }}</p>
+                            <ul class="mt-2 text-gray-600 list-disc list-inside">
+                                <li>{{ $promo->duration }} days access</li>
+                                <li>{{ $promo->perks }}</li>
+                            </ul>
+                        </div>
+                        <div class="flex justify-center pb-4">
+                            <a href="{{ route('upgrade.payment', ['promo_id' => $promo->promo_id]) }}" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
+                                Subscribe to {{ $promo->name }}
+                            </a>
+                        </div>
                     </div>
-                    <div class="p-4">
-                        <p class="text-center font-bold text-gray-700">ONLY ₱{{ $promo->price }}</p>
-                        <ul class="mt-2 text-gray-600 list-disc list-inside">
-                            <li>{{ $promo->duration }} days access</li>
-                            <li>{{ $promo->perks }}</li>
-                        </ul>
-                    </div>
-                    <div class="flex justify-center pb-4">
-                        <a href="{{ route('upgrade.payment', ['promo_id' => $promo->promo_id]) }}" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
-                            Subscribe to {{ $promo->name }}
-                        </a>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
+            @endif
         </div>
     </div>
 

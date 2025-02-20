@@ -5,9 +5,10 @@
                 {{ isset($promo) ? 'Edit Promo' : 'Add New Promo' }}
             </h1>
             
-            <form method="POST" action="{{ route('promos.store') }}" class="bg-white sm:p-3 md:p-6 rounded-lg shadow-lg">
+            <form method="POST" action="{{ isset($promo) ? route('promos.update', $promo->promo_id) : route('promos.store') }}" class="bg-white sm:p-3 md:p-6 rounded-lg shadow-lg">
                 @csrf
                 @if(isset($promo))
+                    @method('PUT')
                     <input type="hidden" name="id" value="{{ $promo->promo_id }}">
                 @endif
                 
@@ -60,11 +61,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label for="start_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('start_date', $promo->start_date ?? '') }}" required>
+                        <input type="date" id="start_date" name="start_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('start_date', isset($promo->start_date) ? \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') : '') }}" required>
                     </div>
                     <div>
                         <label for="end_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer End Date:</label>
-                        <input type="date" id="end_date" name="end_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('end_date', $promo->end_date ?? '') }}" required>
+                        <input type="date" id="end_date" name="end_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('end_date', isset($promo->end_date) ? \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') : '') }}" required>
                     </div>
                 </div>
                 
