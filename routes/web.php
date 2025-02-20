@@ -114,7 +114,7 @@ Route::middleware('guest')->group(function (){
     //contact us
     Route::view('/contact', 'website.footer.contact')->name('contact');
     Route::view('/contact/inquiry', 'website.footer.inquiry')->name('inquiry');
-    Route::view('/contact/inquiry-history', 'website.footer.inquiry_history')->name('inquiry-history');
+    Route::get('/contact/inquiry-history', [ContactUsController::class, 'inquiryHistory'])->name('inquiry-history');
     Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
 
 });
