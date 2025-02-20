@@ -6,16 +6,21 @@
     <title>Meeco - Study Smart</title>
     @vite(['resources/css/terms.css', 'resources/css/landing-page-style.css', 'resources/css/navbar-style.css',
     'resources/css/footer-style.css','resources/css/faq-style.css', 'resources/js/app.js'])
+    @vite(['resources/css/contact.css'])
+    @vite(['resources/css/app.css', 'resources/css/terms.css'])
 </head>
-<body>
+<body class="h-screen w-full">
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-            <a href="landing_page.php" style="text-decoration: none;"><img src="{{ asset('logo_icons/pictures/meeco-logo-text.png')}}" alt="Meeco Logo"></a>
+            <a href="{{ route('landing')}}" style="text-decoration: none;"><img src="{{ asset('logo_icons/pictures/meeco-logo-text.png')}}" alt="Meeco Logo"></a>
             </div>
             <a href="{{ route('login')}}"><button class="login-btn">Log In</button></a>
         </div>
     </nav>
-    {{ $slot }}
+
+    <div class="content mt-5">
+        {{ $slot }}
+    </div>
 </body>
 </html>

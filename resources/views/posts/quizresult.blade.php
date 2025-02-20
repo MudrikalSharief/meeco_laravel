@@ -149,7 +149,23 @@
                                 }else{
                                     
                                     correctAnswerLabel.forEach(label => {
-                                        if(!data.type === 'Identification'){
+                                        if(data.type === 'Identification'){
+                                            correctanswer = correctAnswer.toLowerCase();
+                                            useranswer = userAnswer.toLowerCase();
+                                            
+                                            const choices = questionDiv.querySelector(`.choices`);
+                                            if(correctanswer === useranswer){
+                                                choices.classList.remove('bg-blue-50');
+                                                choices.classList.remove('bg-red-200');
+                                                choices.classList.add('bg-green-400');
+                                                
+                                             }else{
+                                                choices.classList.remove('bg-blue-50');
+                                                choices.classList.remove('bg-green-400');
+                                                choices.classList.add('bg-red-200');
+                                            }
+                                        }else{
+                                            
                                             if (label.value === userAnswer) {
                                                 // console.log('User :', label.value,' user:', userAnswer);
                                                 let letter = label.value;
@@ -180,24 +196,6 @@
                                                     }
                                                 });
                                             }
-                                        }else{
-                                            correctanswer = correctAnswer.toLowerCase();
-                                            useranswer = userAnswer.toLowerCase();
-                                            
-
-                                            
-                                            const choices = questionDiv.querySelector(`.choices`);
-                                            if(correctanswer === useranswer){
-                                                choices.classList.remove('bg-blue-50');
-                                                choices.classList.remove('bg-red-200');
-                                                choices.classList.add('bg-green-400');
-                                                
-                                             }else{
-                                                choices.classList.remove('bg-blue-50');
-                                                choices.classList.remove('bg-green-400');
-                                                choices.classList.add('bg-red-200');
-                                            }
-                                                
                                             
                                         }
 

@@ -13,6 +13,8 @@ use App\Http\Controllers\ReviewerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
+use App\Http\Controllers\ADMINController;
+use App\Http\Controllers\TransactionController;
 
 
 
@@ -84,13 +86,19 @@ Route::middleware('auth')->group(function (){
 
 
     //for upgrade
-    Route::view('/upgrade/payment', 'subcriptionFolder.payment')->name('upgrade.payment');
-    Route::view('/upgrade/payment/paymentEmail', 'subcriptionFolder.paymentEmail')->name('upgrade.paymentEmail');
-    Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subcriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
-    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subcriptionFolder.authentication')->name('upgrade.authentication');
-    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subcriptionFolder.mpin')->name('upgrade.mpin');
-    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subcriptionFolder.payment1')->name('upgrade.payment1');
-    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subcriptionFolder.receipt')->name('upgrade.receipt');
+    Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
+    Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subscriptionFolder.authentication')->name('upgrade.authentication');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subscriptionFolder.mpin')->name('upgrade.mpin');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subscriptionFolder.payment1')->name('upgrade.payment1');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subscriptionFolder.receipt')->name('upgrade.receipt');
+    Route::get('/upgrade', [PromoController::class, 'showPromos'])->name('upgrade');
+    Route::get('/upgrade/payment1/{promo_id}', [SubscriptionController::class, 'payment1'])->name('upgrade.payment1');
+    Route::get('/upgrade/receipt/{promo_id}', [SubscriptionController::class, 'receipt'])->name('upgrade.receipt');
+    Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
+    Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
+    Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
 });
 
 Route::middleware('guest')->group(function (){
@@ -110,14 +118,22 @@ Route::middleware('guest')->group(function (){
 
     //footer
     Route::view('/terms', 'website.footer.terms')->name('terms');
+    Route::view('/privacy', 'website.footer.privacy')->name('privacy');
+
+
+    //contact us
+    Route::view('/contact', 'website.footer.contact')->name('contact');
+    Route::view('/contact/inquiry', 'website.footer.inquiry')->name('inquiry');
+    Route::view('/contact/inquiry-history', 'website.footer.inquiry_history')->name('inquiry-history');
+
 });
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
     Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    // Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
+    Route::get('/gcash/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('gcash.number');
     Route::post('/subscriptions/store', [SubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::get('/subscriptions/{subscription}/edit', [SubscriptionController::class, 'edit'])->name('subscriptions.edit');
     Route::patch('/subscriptions/{subscription}', [SubscriptionController::class, 'update'])->name('subscriptions.update');
@@ -193,6 +209,14 @@ Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 //     Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
 //     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
 // });
+//Transaction Routes
+Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
+Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+
+
+//Statistic Route
+Route::get('admin/statistics', [TransactionController::class, 'get_sales'])->name('admin.statistics');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 // Redirect to admin login if not authenticated

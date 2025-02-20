@@ -7,7 +7,7 @@
         }
     </style>
     <main>
-        <div class="container mt-5">
+        <div id="adminadmin" class="container mt-5">
             <table id="myTable" class="min-w-full bg-white">
                 <thead>
                     <tr>

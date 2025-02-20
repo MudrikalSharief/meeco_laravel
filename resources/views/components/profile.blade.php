@@ -11,7 +11,10 @@
                         <p class="text-gray-600">Joined August 2024</p>
                     </div>
                 </div>
+                <form action="{{ route('logout') }}" method="POST" class="ml-auto px-4">
+                    @csrf
                 <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Logout</button>
+                </form>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white shadow-md rounded-lg p-6">

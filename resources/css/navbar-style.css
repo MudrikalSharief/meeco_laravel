@@ -6,6 +6,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow below the navbar for depth */
     z-index: 1000; /* Ensures the navbar appears above other elements when overlapping */
     
+    
 }
 
 .navbar .container {
@@ -36,7 +37,6 @@ padding: 0 20px; /* Add padding to the container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px, 0 20px;
     
 }
 
