@@ -26,6 +26,7 @@ class ContactUsController extends Controller
         $contactUs->category = $request->category;
         $contactUs->subject = $request->subject;
         $contactUs->question = $request->question;
+        $contactUs->status = 'Pending';
 
         if ($request->hasFile('upload')) {
             $uploads = [];

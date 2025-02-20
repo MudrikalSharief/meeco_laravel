@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('subject');
             $table->text('question');
             $table->json('upload')->nullable(); // To handle multiple pictures
+            $table->enum('status', ['Pending', 'Responded', 'Closed'])->default('Pending');
             $table->timestamp('date_created')->useCurrent();
             $table->timestamp('last_post')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();

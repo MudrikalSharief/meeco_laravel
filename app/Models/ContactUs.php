@@ -18,6 +18,7 @@ class ContactUs extends Model
         'subject',
         'question',
         'upload',
+        'status',
         'date_created',
         'last_post'
     ];
