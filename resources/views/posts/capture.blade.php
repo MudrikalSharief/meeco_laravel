@@ -1,5 +1,6 @@
 <x-layout>
     <div class=" p-3 w-full h-fullx ">
+
         <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Convert Image</h1>
 
         <div class="flex">
@@ -24,7 +25,6 @@
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
         <button id="extractTextButton" type="button" class=" ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
-        
         
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
