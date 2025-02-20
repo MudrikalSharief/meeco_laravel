@@ -71,8 +71,39 @@
             </div>
         </div>
     </div>
+    
+    {{-- Success Modal --}}
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Success</h2>
+            <p class="text-center mb-4">Quiz created successfully!</p>
+            <div class="flex justify-center">
+                <button id="closeSuccessModalButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+            </div>
+        </div>
+    </div>
 
     </div>
+    
+    {{-- Loader --}}
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="loader"></div>
+    </div>
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -167,6 +198,9 @@
                 return;
             }
 
+            // Show the loader
+            loader.classList.remove('hidden');
+
             fetch(`/generate-quiz/${topicId}`, {
                 method: 'POST',
                 headers: {
@@ -181,9 +215,12 @@
             })
             .then(response => response.json())
             .then(data => {
+                 // Hide the loader
+                 loader.classList.add('hidden');
                 if (data.success) {
                     addQuizModal.classList.add('hidden');
-                    alert('Success to create quiz.');
+                    // Show the success modal
+                    successModal.classList.remove('hidden');
 
                     //generate the quiz card again
                     fetch(`/getquizzes/${topicId}`)
@@ -239,7 +276,10 @@
             }
         });
 
-        
+        const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+        closeSuccessModalButton.addEventListener('click', function() {
+            successModal.classList.add('hidden');
+        });
         
 });
 
