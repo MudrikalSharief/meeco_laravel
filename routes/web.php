@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\ADMINController;
+use App\Http\Controllers\TransactionController;
 
 
 
@@ -110,6 +112,8 @@ Route::middleware('guest')->group(function (){
 
     //footer
     Route::view('/terms', 'website.footer.terms')->name('terms');
+    Route::view('/privacy', 'website.footer.privacy')->name('privacy');
+
 
     //contact us
     Route::view('/contact', 'website.footer.contact')->name('contact');
@@ -122,8 +126,7 @@ Route::middleware('guest')->group(function (){
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
     Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-    Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-    Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    // Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::post('/subscriptions/store', [SubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::get('/subscriptions/{subscription}/edit', [SubscriptionController::class, 'edit'])->name('subscriptions.edit');
@@ -202,6 +205,14 @@ Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 //     Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
 //     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
 // });
+//Transaction Routes
+Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
+Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+
+
+//Statistic Route
+Route::get('admin/statistics', [TransactionController::class, 'get_sales'])->name('admin.statistics');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 // Redirect to admin login if not authenticated

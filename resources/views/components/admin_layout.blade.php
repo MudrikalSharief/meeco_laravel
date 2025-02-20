@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.js"></script>
     <title>{{ env('APP_NAME') }}</title>
-    @vite([ 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])
