@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePromosTable extends Migration
-{
+return new class extends Migration {
     public function up()
     {
         Schema::create('promos', function (Blueprint $table) {
@@ -14,14 +13,19 @@ class CreatePromosTable extends Migration
             $table->decimal('price', 10, 2);
             $table->text('perks');
             $table->integer('duration');
-            $table->longText('features')->nullable();
-            $table->text('limitations')->nullable();
-            $table->timestamps();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
-            $table->enum('discount_type', ['percent', 'fixed'])->nullable();
-            $table->decimal('percent_discount', 5, 2)->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('photo_to_text')->nullable();
+            $table->integer('photo_limit')->nullable();
+            $table->string('reviewer_generator')->nullable();
+            $table->integer('reviewer_limit')->nullable();
+            $table->string('mock_quiz_generator')->nullable();
+            $table->integer('mock_quiz_limit')->nullable();
+            $table->string('save_reviewer')->nullable();
+            $table->integer('save_reviewer_limit')->nullable();
+            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
         });
     }
 
@@ -29,4 +33,4 @@ class CreatePromosTable extends Migration
     {
         Schema::dropIfExists('promos');
     }
-}
+};
