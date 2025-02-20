@@ -5,7 +5,7 @@
                 <a href="{{ route('inquiry-history') }}" class="text-blue-600 text-3xl no-underline">←</a>
                 <h1 class="text-blue-600 text-2xl font-medium">Inquiry Details</h1>
             </div>
-            <div class="border-2 border-blue-600 rounded-lg p-6 mb-5">
+            <div class="custom-border rounded-md p-6 mb-5">
                 <div class="flex items-start gap-3">
                     <div class="bg-blue-100 p-2 rounded-full">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-4 h-4">
@@ -28,7 +28,7 @@
 
             @if($inquiry->replies)
                 @foreach($inquiry->replies as $reply)
-                    <div class="border-2 border-blue-600 rounded-lg p-6 mb-5">
+                    <div class="custom-border rounded-md p-6 mb-5">
                         <div class="flex items-start gap-3">
                             <div class="flex-1">
                                 <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_user_question }}</p>
@@ -56,7 +56,7 @@
 
 <!-- Reply Modal -->
 <div id="replyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <div class="bg-white rounded-md p-6 w-full max-w-md">
         <h2 class="text-xl font-semibold mb-4">Reply to Inquiry</h2>
         <form id="replyForm" action="{{ route('submitReply', ['ticket_reference' => $inquiry->ticket_reference]) }}" method="POST" enctype="multipart/form-data" onsubmit="submitReply(event)">
             @csrf
@@ -101,7 +101,7 @@
 
         if (response.ok) {
             const replySection = document.createElement('div');
-            replySection.className = 'border-2 border-blue-600 rounded-lg p-6 mb-5';
+            replySection.className = 'custom-border rounded-md p-6 mb-5';
 
             const replyContent = document.createElement('div');
             replyContent.className = 'flex items-start gap-3';
@@ -136,3 +136,12 @@
         }
     }
 </script>
+
+<style>
+    .custom-border {
+        border-left: 4px solid #1D4ED8; /* Blue color */
+        border-top: 1px solid #D9D9D9; /* Light gray color */
+        border-right: 1px solid #D9D9D9; /* Light gray color */
+        border-bottom: 1px solid #D9D9D9; /* Light gray color */
+    }
+</style>
