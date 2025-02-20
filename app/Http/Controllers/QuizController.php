@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Identification;
 use App\Models\multiple_choice;
 use App\Models\Question;
 use App\Models\true_or_false;
@@ -48,6 +49,13 @@ class QuizController extends Controller
             }
             return response()->json(['success'=>true,'question' => $questions]);
         }
+        elseif($question_type[0] == 'Identification'){
+            $questions = Identification::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '3No Question Yet']);
+            }
+            return response()->json(['success'=>true,'question' => $questions]);
+        }
     }   
 
     public function takeQuiz($questionId)
@@ -55,6 +63,7 @@ class QuizController extends Controller
         $id = intval($questionId);
 
         $question_type = Question::where('question_id',$id)->pluck('question_type');
+        
         if($question_type[0] == 'Multiple Choice'){
             $questions = multiple_choice::where('question_id', $id)->get();
             if ($questions->isEmpty()) {
@@ -67,6 +76,14 @@ class QuizController extends Controller
             $questions = true_or_false::where('question_id', $id)->get();
             if ($questions->isEmpty()) {
                 return response()->json(['success' => false, 'message' => '2No Question Yet']);
+            }
+            // return response()->json(['success'=>true,'question' => $questions]);
+            return view('posts.takequiz', compact('questions'));
+        }
+        elseif($question_type[0] == 'Identification'){
+            $questions = Identification::where('question_id', $id)->get();
+            if ($questions->isEmpty()) {
+                return response()->json(['success' => false, 'message' => '3No Question Yet']);
             }
             // return response()->json(['success'=>true,'question' => $questions]);
             return view('posts.takequiz', compact('questions'));
@@ -89,6 +106,13 @@ class QuizController extends Controller
         }elseif($question_type[0] == 'True or false'){
             $questions = true_or_false::where('question_id', $id)->get();
             $userAnswers = true_or_false::where('question_id', $questionId)->pluck('user_answer');
+            if ($userAnswers[0] === null) {
+                return response()->json(['success' => false, 'message' => 'No Anaswer Yet', 'type' => $question_type[0]]);
+            }
+            return response()->json(['success' => true, 'questions' => $questions, 'type' => $question_type[0]]);
+        }elseif($question_type[0] == 'Identification'){
+            $questions = Identification::where('question_id', $id)->get();
+            $userAnswers = Identification::where('question_id', $questionId)->pluck('user_answer');
             if ($userAnswers[0] === null) {
                 return response()->json(['success' => false, 'message' => 'No Anaswer Yet', 'type' => $question_type[0]]);
             }
@@ -152,6 +176,25 @@ class QuizController extends Controller
             }
             
         }
+        elseif($question_type[0] == 'Identification'){
+            
+            // Retrieve all answers with the same question_id from the multiple_choice table
+            $correctAnswers = Identification::where('question_id', $questionId)->pluck('answer');
+            $Identification_id = Identification::where('question_id', $questionId)->pluck('Identification_id');
+            
+            
+            //updating the useranswer in the multiple_choice table
+            $index = 0;
+            
+            foreach($Identification_id as $id){
+                if(isset($userAnswers[$index])){
+                    Identification::where('Identification_id', $id)
+                    ->update(['user_answer' => $userAnswers[$index]]);
+                    $index++;
+                }
+            }
+            
+        }
     
 
             // Compare the request answers with the correct answers
@@ -160,6 +203,7 @@ class QuizController extends Controller
                 $score++;
             }
         }
+        
         //updateing the score in the multiple_choice table
         Question::where('question_id', $questionId)->update(['score' => $score]);
 

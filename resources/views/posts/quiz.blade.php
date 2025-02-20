@@ -48,7 +48,7 @@
                     <option value="Multiple Choice">Multiple Choice</option>
                     <option value="Identification">Identification</option>
                     <option value="True or false">True or false</option>
-                    <option value="Mixed">Mixed</option>
+                    {{-- <option value="Mixed">Mixed</option> --}}
                 </select>
             </div>
             <div class="mb-4">

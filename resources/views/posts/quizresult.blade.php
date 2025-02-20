@@ -118,8 +118,19 @@
                                     questionDiv.innerHTML = `
                                         <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                         <ul>
-                                            <li><label class = "choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="True"> A) True </label></li>
-                                            <li><label class = "choices${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="False"> B) Flase </label></li>
+                                            <li><label class = "choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="True">True </label></li>
+                                            <li><label class = "choices${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio" disabled name="question_${index}" value="False"> Flase </label></li>
+                                        </ul>
+                                    `;
+                                }
+                                else if(data.type === 'Identification'){
+                                    const lower = question.user_answer;
+                                    console.log('ID?');
+                                    questionDiv.innerHTML = `
+                                        <p class ="text-blue-500">${index + 1}) ${question.question_text} <span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                        <p class ="text-green-500">Correct Answer : ${question.answer} </p>
+                                        <ul>
+                                            <li><label class = "choices w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center" ><input class = "w-full  px-1" type="text" disabled name="question_${index}" value="${question.user_answer}"> </label></li>
                                         </ul>
                                     `;
                                 }
@@ -138,36 +149,58 @@
                                 }else{
                                     
                                     correctAnswerLabel.forEach(label => {
-                                        if (label.value === userAnswer) {
-                                            // console.log('User :', label.value,' user:', userAnswer);
-                                            let letter = label.value;
-                                            const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
-        
-                                            choices.forEach(choice => {
-                                                // console.log('choices'+index+userAnswer)
-                                                if(choice.classList.contains('choices'+index+userAnswer)){
-                                                    choice.classList.remove('bg-blue-50');
-                                                    choice.classList.add('bg-red-200');
-                                                    label.checked = true;
-                                                }
-                                            });
+                                        if(!data.type === 'Identification'){
+                                            if (label.value === userAnswer) {
+                                                // console.log('User :', label.value,' user:', userAnswer);
+                                                let letter = label.value;
+                                                const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
+            
+                                                choices.forEach(choice => {
+                                                    // console.log('choices'+index+userAnswer)
+                                                    if(choice.classList.contains('choices'+index+userAnswer)){
+                                                        choice.classList.remove('bg-blue-50');
+                                                        choice.classList.add('bg-red-200');
+                                                        label.checked = true;
+                                                    }
+                                                });
+                                            }
+            
+                                            if (label.value === correctAnswer) {
+                                                // console.log('Correct :', label.value,' user:', correctAnswer);
+                                                let letter = label.value;
+                                                const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
+            
+                                                choices.forEach(choice => {
+                                                    // console.log('choices'+index+correctAnswer)
+                                                    if(choice.classList.contains('choices'+index+correctAnswer)){
+                                                        
+                                                        choice.classList.remove('bg-blue-50');
+                                                        choice.classList.remove('bg-red-200');
+                                                        choice.classList.add('bg-green-400');
+                                                    }
+                                                });
+                                            }
+                                        }else{
+                                            correctanswer = correctAnswer.toLowerCase();
+                                            useranswer = userAnswer.toLowerCase();
+                                            
+
+                                            
+                                            const choices = questionDiv.querySelector(`.choices`);
+                                            if(correctanswer === useranswer){
+                                                choices.classList.remove('bg-blue-50');
+                                                choices.classList.remove('bg-red-200');
+                                                choices.classList.add('bg-green-400');
+                                                
+                                             }else{
+                                                choices.classList.remove('bg-blue-50');
+                                                choices.classList.remove('bg-green-400');
+                                                choices.classList.add('bg-red-200');
+                                            }
+                                                
+                                            
                                         }
-        
-                                        if (label.value === correctAnswer) {
-                                            // console.log('Correct :', label.value,' user:', correctAnswer);
-                                            let letter = label.value;
-                                            const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
-        
-                                            choices.forEach(choice => {
-                                                // console.log('choices'+index+correctAnswer)
-                                                if(choice.classList.contains('choices'+index+correctAnswer)){
-                                                    
-                                                    choice.classList.remove('bg-blue-50');
-                                                    choice.classList.remove('bg-red-200');
-                                                    choice.classList.add('bg-green-400');
-                                                }
-                                            });
-                                        }
+
                                     });
                                 }
                             

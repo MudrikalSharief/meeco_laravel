@@ -55,21 +55,36 @@
                         });
                     }
                     else if(quiztype === 'True or false'){
+                        console.log('TF?');
                         questions.forEach((question, index) => {
                             const questionDiv = document.createElement('div');
                             questionDiv.classList.add('question');
                             questionDiv.innerHTML = `
                                 <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                 <ul>
-                                    <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="True"> A) True</label></li>
-                                    <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="False"> B) False</label></li>
+                                    <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="True">  True</label></li>
+                                    <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="False">  False</label></li>
+                                </ul>
+                            `;
+                            quizForm.appendChild(questionDiv);
+                        });
+                    }
+                    else if(quiztype === 'Identification'){
+                        console.log('akwdoadok');
+                        questions.forEach((question, index) => {
+                            const questionDiv = document.createElement('div');
+                            questionDiv.classList.add('question');
+                            questionDiv.innerHTML = `
+                                <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                <ul>
+                                    <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input class = "w-full  px-1" type="text" placeholder="Input Answer" name="question_${index}" > </label></li>
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
                         });
                     }
 
-                    
+    
                     const submitQuizButton = document.getElementById('submitQuizButton');
                     const quizContainer = document.querySelector('.quiz-container');
                     const questionDivs = quizContainer.querySelectorAll('.question');
@@ -81,15 +96,21 @@
                         let index = 0;
                         let clear = 0;
                         let total = 0;
-                        questionDivs.forEach(questionDivs =>{
+
+                        if(quiztype === 'Identification'){
+                            questionDivs.forEach(questionDivs =>{
                             total++;
                             const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
                             let answered = 0;        
                             labels.forEach(label => {
-                                if(label.checked){
+                                
+                                if(label.value.trim() != ""){
                                     answered++;
                                     clear++;
+                                }else{
+                                    label.value = "";
                                 }
+                                
                                 if(answered == 0){
                                     const q = document.getElementById(`q${index+1}`);
                                     q.innerHTML = "Please answer this question";
@@ -102,6 +123,31 @@
                             index++;
                         
                         })
+
+                        }else{
+
+                            questionDivs.forEach(questionDivs =>{
+                                total++;
+                                const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
+                                let answered = 0;        
+                                labels.forEach(label => {
+                                    if(label.checked){
+                                        answered++;
+                                        clear++;
+                                    }
+                                    if(answered == 0){
+                                        const q = document.getElementById(`q${index+1}`);
+                                        q.innerHTML = "Please answer this question";
+                                    }else{
+                                        const q = document.getElementById(`q${index+1}`);
+                                        q.innerHTML = "";
+                                    }
+                                });
+                                console.log(index, answered,clear);
+                                index++;
+                            
+                            })
+                        }
                         
                         if (clear < total) {
                             const ValidateModal = document.createElement('div');

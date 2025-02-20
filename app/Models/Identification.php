@@ -24,6 +24,7 @@ class Identification extends Model
     // Define the fillable attributes
     protected $fillable = [
         'Identification_id', 
+        'question_id', 
         'question_text',
         'answer',
         'user_answer',

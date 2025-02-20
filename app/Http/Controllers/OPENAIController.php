@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Identification;
 use App\Models\multiple_choice;
 use App\Models\Question;
 use App\Models\Reviewer;
@@ -298,9 +299,83 @@ class OPENAIController extends Controller
             }            
 //===============================================================================================================================
         }else if($request->post('type') == 'Identification'){
+
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                    'Content-Type'  => 'application/json',
+                ])
+                ->timeout(120)
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4-turbo',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are an AI that generates Identification quiz questions. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate ". $number ."Identification quiz questions. Each question must have one word answer . Format your response in JSON like this: 
+        
+                        {
+                        \"questions\": [
+                            {
+                            \"question\": \"Question in here?\",
+                            \"correct_answer\": \"Answer\"
+                            }
+                        ]
+                        } 
+        
+                        Text: " . $text . " the order of the question is must be not the same as the order of the Text i gave to you, re arrenge the order of the question."]
+                    ],
+                    'temperature' => 0.7,
+                    'max_tokens' => 4096
+                ]);
+        
+                if ($response->failed()) {
+                    Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
+                    return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
+                }
+        
+                $responseData = json_decode($response->body(), true);
+                Log::info('OpenAI API Response:', ['response' => $responseData]);
+        
+                if (!isset($responseData['choices'][0]['message']['content'])) {
+                    Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
+                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
+                }
+        
+                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                Log::info('Parsed Content:', ['content' => $content]);
+        
+                if (empty($content['questions'])) {
+                    Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
+                    return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
+                }
+                
+                $question = Question::create([
+                    'topic_id' => $topic_id,
+                    'question_type' => $request->post('type'),
+                    'question_title' => $request->post('name'),
+                    'number_of_question' => $request->post('number'), // Assuming each question is a single question
+                ]);
+        
+                // Log the created question to check if the id is set
+                Log::info('Created Question:', ['question' => $question]);
+        
+                // Save the questions and multiple choices
+                foreach ($content['questions'] as $questionData) {
+                    Identification::create([
+                        'question_id' => $question->question_id,
+                        'question_text' => $questionData['question'],
+                        'answer' => $questionData['correct_answer'],
+                    ]);
+                }
+        
+                return response()->json(['success' => true, 'data' => $content]);
+        
+            } catch (\Exception $e) {
+                Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
+                return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            }            
 //===============================================================================================================================
         }else{
-            //return an error
+            return response()->json(['success' => false, 'message' => "Unidentified Question Type"]);
         }
     
        
