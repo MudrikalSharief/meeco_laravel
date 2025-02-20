@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('ticket_reference')->unique();
             $table->string('email');
             $table->enum('category', ['Login Issue', 'Conversion Problem', 'Reveiwer Problem', 'Quiz Problem', 'Others']);
+            $table->string('subject');
             $table->text('question');
             $table->json('upload')->nullable(); // To handle multiple pictures
             $table->timestamp('date_created')->useCurrent();
