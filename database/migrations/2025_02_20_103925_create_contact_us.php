@@ -24,6 +24,13 @@ return new class extends Migration
             $table->timestamp('last_post')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
+        Schema::create('replies', function (Blueprint $table) {
+            $table->id('reply_id');
+            $table->foreignId('ticket_id')->constrained('contact_us')->onDelete('cascade');
+            $table->text('reply_user_question');
+            $table->json('reply_user_upload')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
