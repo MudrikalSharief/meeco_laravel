@@ -25,7 +25,7 @@ Route::get('/', function () {
         return redirect()->route('landing');
     }
 });
-
+    
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
     
@@ -77,10 +77,11 @@ Route::middleware('auth')->group(function (){
     Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
     Route::get('/getquiz/{quizId}',[QuizController::class,'getQuiz'])->name('get.quiz');
     Route::get('/startquiz/{questionId}',[QuizController::class,'startQuiz'])->name('start.quiz');
-    Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take.quiz');
+    Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take-quiz');
     Route::get('/getquizresult/{questionId}',[QuizController::class,'getQuizResult'])->name('get.quizresult');
     Route::post('/submitquiz',[QuizController::class,'submitQuiz'])->name('submit.quiz');
     Route::view('/quiz', 'posts.quiz')->name('quiz');
+    Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
 
 
@@ -170,16 +171,14 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
 
-    
 });
-
-
-// Auth admin
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
 Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
 Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
+
 // Auth admin
 // // Admin Authentication Routes
 // Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');

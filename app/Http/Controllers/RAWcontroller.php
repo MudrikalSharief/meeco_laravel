@@ -57,7 +57,9 @@ class RawController extends Controller
     }
 
     public function extractText(Request $request)
-    {
+    {   
+        set_time_limit(300); // Set the maximum execution time to 300 seconds
+        
         $request->validate([
             'topic_id' => 'required|integer',
         ]);

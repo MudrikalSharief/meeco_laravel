@@ -16,7 +16,7 @@
         </div>
 
         <!-- Scrollable Content Box -->
-        <div class="Reviewer border border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Reviewer border  border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
             {{-- Reviewer  in here --}}
             <h1>Reviewer for Topic: {{ $topic->name }}</h1>
             <h1 class="reviewer_holder"></h1>
@@ -55,24 +55,17 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
-                    reviewerText: reviewerText
+                    topicId: topicId
                 })
             })
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                
+                items = data['data'];
                 let content = '';
 
-                data.forEach((subjectData) => {
-                    //content += `<h2>Subject: ${subjectData.subject}</h2>`;
-                    //This code below will show the name of the card
-                    // subjectData.cards.forEach((card, index) => {
-                    //     content += `<p>Card ${index + 1}: ${card}</p>`;
-                    // });
-                    subjectData.cards.forEach((card) => {
-                        content += `<p><br>- ${card},</p>`;
-                    });
+                items.forEach((item) => {
+                    content += `<h2 class="font-bold">${item[0]}  <span class=" font-normal"> ${item[1]}<br><br></span></h2>`;
                 });
 
                 document.querySelector('.reviewer_holder').innerHTML = content;
