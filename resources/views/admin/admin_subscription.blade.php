@@ -1,22 +1,22 @@
 <x-admin_layout>
-    <main class="py-3">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold text-left mb-5">Subscription</h1>
+    <main class="py-1 px-0">
+        <div class="container mx-auto px-0 sm:px-4 flex-grow">
+            <h1 class="text-2xl font-bold text-left mb-5">Subscription</h1>
 
             <!-- Subscription Stats -->
-            <div class="flex justify-between mb-4 px-2">
+            <div class="flex flex-wrap justify-between gap-2 mb-4 px-0">
                 <!-- Promo Counters -->
-                <div class="flex space-x-2 w-1/4">
-                    <div class="flex flex-col items-center bg-white text-blue-500 border border-blue-700 font-bold py-1 px-2 rounded-lg shadow-md text-center w-1/2">
+                <div class="flex w-full sm:w-1/2 lg:w-1/4 gap-2">
+                    <div class="flex flex-col items-center bg-white text-blue-500 border border-blue-700 font-bold py-1 px-0 rounded-lg shadow-md text-center flex-1">
                         <h2 class="py-1 text-l font-bold">Active Promos</h2>
                         <p class="text-l font-bold mt-0">{{ $activePromosCount }}</p>
                     </div>
-                    <div class="flex flex-col items-center bg-white text-blue-500 border border-blue-700 font-bold py-1 px-2 rounded-lg shadow-md text-center w-1/2">
+                    <div class="flex flex-col items-center bg-white text-blue-500 border border-blue-700 font-bold py-1 px-0 rounded-lg shadow-md text-center flex-1">
                         <h2 class="py-1 text-l font-bold">Inactive Promos</h2>
                         <p class="text-l font-bold mt-0">{{ $inactivePromosCount }}</p>
                     </div>
                 </div>
-            
+                
                 <!-- Add New Offer Button -->
                 <div class="w-full sm:w-1/3 lg:w-1/5">
                     <a href="{{ route('admin.addPromo') }}" class="flex flex-col items-center bg-white text-blue-500 border border-blue-700 font-bold py-2 px-2 rounded-lg shadow-md text-center">
@@ -31,15 +31,15 @@
             <!-- Existing Promos Table -->
             <div class="mt-8">
                 <div class="flex flex-wrap justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">Existing Promos</h2>
+                    <h2 class="text-1xl font-bold">Promos</h2>
                     <!-- Search Form -->
                     <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center w-full sm:w-auto mt-2 sm:mt-0">
                         <input type="text" name="search" placeholder="Search Promos" class="w-full sm:w-48 p-2 border border-gray-300 rounded-lg" value="{{ request('search') }}">
                         <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
                     </form>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                <div class="overflow-x-auto px-2">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg text-sm">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="py-2 px-4 border-b">Promo Name</th>
