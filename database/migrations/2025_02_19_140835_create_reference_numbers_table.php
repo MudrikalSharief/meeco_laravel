@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('reference_numbers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('last_number')->default(0);
+            $table->unsignedBigInteger('last_number')->default(0)->after('id');
             $table->timestamps();
         });
     }
