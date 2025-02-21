@@ -18,7 +18,6 @@
         <!-- Scrollable Content Box -->
         <div class="Reviewer border  border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
             {{-- Reviewer  in here --}}
-            <h1>Reviewer for Topic: {{ $topic->name }}</h1>
             <h1 class="reviewer_holder"></h1>
         </div>
 
