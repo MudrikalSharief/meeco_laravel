@@ -8,7 +8,6 @@
             </div>
             <h1 class="text-3xl font-extrabold mb-6 text-green-600">Payment Success!</h1>
             <p class="mb-2">Amount Paid: Php {{ $promo->price }}</p>
-            <p class="mb-2">Reference Number: {{ $referenceNumberValue }}</p>
             <p class="mb-2">Payment Time: {{ now()->format('d-m-Y, H:i') }}</p>
             <p class="mb-2">Payment Method: Gcash</p>
             <p class="mb-2">Sender Name: {{ $userName }}</p>
