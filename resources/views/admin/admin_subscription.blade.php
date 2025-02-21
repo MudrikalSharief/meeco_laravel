@@ -1,7 +1,7 @@
 <x-admin_layout>
     <main class="py-1 px-0">
         <div class="container mx-auto px-0 sm:px-4 flex-grow">
-            <h1 class="text-2xl font-bold text-left mb-5">Subscription</h1>
+            <h1 class="text-2xl font-bold text-left mb-5">Promos</h1>
 
             <!-- Subscription Stats -->
             <div class="flex flex-wrap justify-between gap-2 mb-4 px-0">
