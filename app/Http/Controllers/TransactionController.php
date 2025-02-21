@@ -1,10 +1,9 @@
 <?php 
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
-use App\Models\Transaction;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -17,13 +16,13 @@ class TransactionController extends Controller
         $status = session('status');
         $sort = session('sort');
         
-        $query = Transaction::with('user', 'promo')
-            ->leftJoin('users', 'transactions.user_id', '=', 'users.user_id')
-            ->leftJoin('promos', 'transactions.promo_id', '=', 'promos.promo_id')
-            ->select('transactions.*');
+        $query = Subscription::with('user', 'promo')
+            ->leftJoin('users', 'subscriptions.user_id', '=', 'users.user_id')
+            ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+            ->select('subscriptions.*');
     
         if (!empty($status) && $status != 'All') {
-            $query->where('status', $status);
+            $query->where('subscription_type', $status);
         }
         if (!empty($sort) && $sort != 'Sort By') {
             $query->orderBy($sort, 'asc');
@@ -43,7 +42,7 @@ class TransactionController extends Controller
 
     public function sort_transactions(Request $request){
         if($request->input('sortValue')== 'Users'){
-            $sort = 'users.name';
+            $sort = 'users.lastname';
         }
         if($request->input('sortValue')== 'Date'){
             $sort = 'start_date';
@@ -67,12 +66,14 @@ class TransactionController extends Controller
         $recent_monday = Carbon::now()->startOfWeek();
         $recent_january = Carbon::now()->startOfMonth();
 
-        $daily_rev = Transaction::selectRaw('DATE(start_date) as date, SUM(amount) as total_amount')
+        $daily_rev = Subscription::selectRaw('DATE(start_date) as date, SUM(price) as total_amount')
+        ->Join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
         ->where('start_date', '>=', $recent_monday)
         ->groupBy('date')
         ->get();
 
-        $monthly_rev = Transaction::selectRaw('DATE(start_date) as date, SUM(amount) as total_amount')
+        $monthly_rev =  Subscription::selectRaw('DATE(start_date) as date, SUM(price) as total_amount')
+        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
         ->where('start_date', '>=', $recent_january)
         ->groupBy('date')
         ->get();
