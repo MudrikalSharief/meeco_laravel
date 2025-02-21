@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('promos', function (Blueprint $table) {
-            $table->id('promo_id');
+            $table->id('promo_id')->primary();
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->text('perks');
