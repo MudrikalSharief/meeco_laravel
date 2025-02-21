@@ -55,6 +55,12 @@ class ContactUsController extends Controller
         return view('website.footer.inquiry_history', compact('inquiries'));
     }
 
+    public function SupportTicketAdmin()
+    {
+        $InquiriesAdmin = ContactUs::all();
+        return view('admin.admin_support', compact('InquiriesAdmin'));
+    }
+
     public function getInquiryDetails($ticket_reference)
     {
         $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
@@ -95,5 +101,16 @@ class ContactUsController extends Controller
         $inquiry->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
+    }
+
+    public function filterInquiriesByStatus(Request $request)
+    {
+        $status = $request->input('status');
+        if ($status) {
+            $InquiriesAdmin = ContactUs::where('status', $status)->get();
+        } else {
+            $InquiriesAdmin = ContactUs::all();
+        }
+        return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 }

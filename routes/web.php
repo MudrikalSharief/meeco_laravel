@@ -146,7 +146,6 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
-    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
@@ -183,6 +182,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
+
+    //Support Ticket Routes
+    Route::get('/admin/support', [ContactUsController::class, 'SupportTicketAdmin'])->name('admin.support');
+    Route::get('/admin/support/filter', [ContactUsController::class, 'filterInquiriesByStatus'])->name('filter.inquiries');
+    
 
 });
 Route::view('/admin', 'auth.login-admin')->name('admin.login');

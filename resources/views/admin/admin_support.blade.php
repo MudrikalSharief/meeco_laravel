@@ -1,222 +1,69 @@
 <x-admin_layout>
-    <main>
-          <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
-            <div class="layout-container flex h-full grow flex-col">
-              <div class="px-3 flex flex-1 justify-center py-5">
-                <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-                  <div class="flex flex-wrap justify-between gap-3 p-4">
-                    <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight min-w-72">Tickets</p>
-                    
-                  </div>
-                  <div class="px-4 py-3">
-                    <label class="flex flex-col min-w-40 h-12 w-full">
-                      <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
-                        <div
-                          class="text-[#4e7397] flex border-none bg-[#e7edf3] items-center justify-center pl-4 rounded-l-xl border-r-0"
-                          data-icon="MagnifyingGlass"
-                          data-size="24px"
-                          data-weight="regular"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                            <path
-                              d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                            ></path>
-                          </svg>
-                        </div>
-                        <input
-                          placeholder="Search tickets"
-                          class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border-none bg-[#e7edf3] focus:border-none h-full placeholder:text-[#4e7397] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                          value=""
-                        />
-                      </div>
-                    </label>
-                  </div>
-                  <div class="px-4 py-3 @container">
-                    <div class="flex overflow-hidden rounded-xl border border-[#d0dbe7] bg-slate-50">
-                      <table class="flex-1">
-                        <thead>
-                          <tr class="bg-slate-50">
-                            <th class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">
-                              Ticket #
-                            </th>
-                            <th class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">Gmail</th>
-                            <th class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">
-                              Create Date
-                            </th>
-                            <th class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">
-                              Last Post
-                            </th>
-                            <th class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 px-4 py-3 text-left text-[#0e141b] w-60 text-sm font-medium leading-normal">Status</th>
-                            <th
-                              class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 px-4 py-3 text-left text-[#0e141b] w-60 text-[#4e7397] text-sm font-medium leading-normal"
-                            ></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#101</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              johndoe@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              2 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#102</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              janedoe@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              3 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#103</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              billgates@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              4 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#104</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              elonmusk@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              5 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#105</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              timcook@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              6 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#106</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              markzuckerberg@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              7 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                          <tr class="border-t border-t-[#d0dbe7]">
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">#107</td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              sundarpichai@gmail.com
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              8 days ago
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-480 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                              Agent: Hi there, How can I help you?
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                              <button
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 bg-[#e7edf3] text-[#0e141b] text-sm font-medium leading-normal w-full"
-                              >
-                                <span class="truncate">Closed</span>
-                              </button>
-                            </td>
-                            <td class="table-d4a53a41-b16d-457f-a02b-cf255da88737-column-720 h-[72px] px-4 py-2 w-60 text-[#4e7397] text-sm font-bold leading-normal tracking-[0.015em]">
-                              View
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                   
-                  </div>
-                </div>
-              </div>
-            </div>
+  <main class="p-5">
+    <div class="min-w-full mx-auto bg-white rounded-lg p-5 shadow-sm border border-gray-150">
+      <form method="GET" action="{{ route('filter.inquiries') }}">
+        <div class="flex flex-wrap gap-4 mb-5 items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-800">Status</span>
+            <select class="p-2 border border-gray-200 rounded-md bg-white text-sm appearance-none bg-no-repeat bg-right-2 bg-center bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e')] min-w-[100px]" name="status" onchange="this.form.submit()">
+              <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
+              <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+              <option value="Responded" {{ request('status') == 'Responded' ? 'selected' : '' }}>Responded</option>
+              <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+            </select>
           </div>
+          <div class="ml-auto flex gap-2 flex-1 max-w-md">
+            <input type="text" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search">
+            <button class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
+          </div>
+        </div>
+      </form>
 
-       {{-- //============================================================== --}}
-    </main>
+      <table class="w-full border-collapse mb-5">
+        <thead>
+          <tr>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Ticket No.</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Reference Id.</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Email</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Create Date</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Last Post</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Status</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($InquiriesAdmin as $inquiry)
+          <tr>
+            <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_id}}</td>
+            <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_reference}}</td>
+            <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->email }}</td>
+            <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->created_at }}</td>
+            <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->updated_at }}</td>
+            <td class="p-3 border-b border-gray-200 text-sm font-medium 
+                @if($inquiry->status == 'Pending') status-pending 
+                @elseif($inquiry->status == 'Responded') status-responded 
+                @elseif($inquiry->status == 'Closed') status-closed 
+                @endif">
+                {{ $inquiry->status }}
+            </td>
+            <td class="p-3 border-b border-gray-200 text-sm">
+                <a href="{{ route('inquiry.details', $inquiry->ticket_reference) }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+
+      <div class="flex justify-end items-center gap-3">
+        <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10">←</button>
+        <span class="text-sm text-gray-600 font-medium">1 / 1</span>
+        <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10">→</button>
+      </div>
+    </div>
+  </main>
 </x-admin_layout>
