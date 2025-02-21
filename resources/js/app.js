@@ -820,7 +820,7 @@ if (captureImage) {
                         imageContainer.innerHTML = '';
                         data.images.forEach((url, index) => {
                             const imgWrapper = document.createElement('div');
-                            imgWrapper.className = 'm-2 img-wrapper ';
+                            imgWrapper.className = 'm-2 img-wrapper';
 
                             const img = document.createElement('img');
                             img.src = url;
