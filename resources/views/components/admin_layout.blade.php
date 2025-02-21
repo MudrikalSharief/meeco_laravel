@@ -8,6 +8,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.js"></script>
     <title>{{ env('APP_NAME') }}</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
@@ -17,7 +24,7 @@
 <body class="h-screen w-full">
 
     {{-- Upper Navigation --}}
-    <div id="upper_nav" class="fixed pl-3 pr-3 bg-gray-100 h-12 w-full flex items-center justify-end md:pl-64">
+    <div id="upper_nav" class="fixed pl-3 z-10 pr-3 bg-gray-100 h-12 w-full flex items-center justify-end md:pl-64">
         <a href="{{ route('profile') }}" class="flex items-center">
             @auth('admin')
                 <p class="name mr-1">{{ auth('admin')->user()->firstname }} {{ auth('admin')->user()->lastname }}</p>
@@ -29,7 +36,7 @@
     </div>
 
     
-    <nav class="sidebar fixed h-full">
+    <nav class="sidebar fixed h-full z-20">
         <div class="logo_burger_holder flex justify-between items-center w-full mb-4">
             <div class="logo_holder flex justify-start items-center gap-6 w-full md:w-auto">
                 <img class="max-w-12" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
@@ -252,7 +259,7 @@
         </div>
     </div>
 
-    <div class="content pl-64 pt-12 md:pl-18 lg:pl-100">
+    <div class="content pl-52 pt-12 md:pl-18 lg:pl-100">
         {{ $slot }}
     </div>
     <script>      
