@@ -1,6 +1,5 @@
 <x-admin_layout>
     <main>
-        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
           <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
             <div class="layout-container flex h-full grow flex-col">
               <div class="px-3 flex flex-1 justify-center py-5">
