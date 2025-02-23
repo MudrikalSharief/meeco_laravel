@@ -52,7 +52,7 @@
           {{ $inquiry->status }}
           </td>
           <td class="p-3 border-b border-gray-200 text-sm">
-          <a href="{{ route('inquiry.details', $inquiry->ticket_reference) }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
+          <a href="{{ route('admin.reply') }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
             <circle cx="12" cy="12" r="3"/>
