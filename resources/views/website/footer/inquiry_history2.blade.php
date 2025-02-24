@@ -43,6 +43,24 @@
                     </div>
                 @endforeach
             @endif
+            
+            @if($inquiry->adminReplies)
+        @foreach($inquiry->adminReplies as $reply)
+            <div class="custom-border-admin rounded-md p-6 mb-5 ml-48">
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_admin_question }}</p>
+                        <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
+                        @if($reply->reply_admin_upload)
+                            @foreach(json_decode($reply->reply_admin_upload) as $upload)
+                                <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
     
             <div class="flex justify-end gap-3">
                 <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
