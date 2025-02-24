@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\Promo;
-use App\Models\ReferenceNumber;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
@@ -41,98 +42,117 @@ class SubscriptionController extends Controller
 
     public function payment($promo_id)
     {
-        $promo = Promo::findOrFail($promo_id);
+        Log::info('Payment method called with promo_id: ' . $promo_id);
+
+        $promo = Promo::find($promo_id);
+
+        if (!$promo) {
+            Log::error('Promo not found with promo_id: ' . $promo_id);
+            return redirect()->route('upgrade.paymentEmail', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+        }
+
+        Log::info('Promo found: ' . $promo->name);
+
         return view('subscriptionFolder.payment', compact('promo'));
     }
 
     public function paymentEmail($promo_id)
     {
-        $promo = Promo::findOrFail($promo_id);
-        return view('subscriptionFolder.paymentEmail', compact('promo'));
-    }
-    
-
-    public function gcashNumber($promo_id)
-    {
-        // Debugging statement to check the promo_id
-        \Log::info('gcashNumber method called with promo_id: ' . $promo_id);
+        Log::info('PaymentEmail method called with promo_id: ' . $promo_id);
 
         $promo = Promo::find($promo_id);
 
-        // Debugging statement to check if the promo exists
         if (!$promo) {
-            \Log::error('Promo not found with promo_id: ' . $promo_id);
+            Log::error('Promo not found with promo_id: ' . $promo_id);
+            return redirect()->route('upgrade.payment', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+        }
+
+        Log::info('Promo found: ' . $promo->name);
+
+        return view('subscriptionFolder.paymentEmail', compact('promo'));
+    }
+
+    public function gcashNumber($promo_id)
+    {
+        Log::info('GcashNumber method called with promo_id: ' . $promo_id);
+
+        $promo = Promo::find($promo_id);
+
+        if (!$promo) {
+            Log::error('Promo not found with promo_id: ' . $promo_id);
             return redirect()->route('upgrade.paymentEmail', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
         }
 
-        \Log::info('Promo found: ' . $promo->name);
+        Log::info('Promo found: ' . $promo->name);
 
         return view('subscriptionFolder.gcashNumber', compact('promo'));
     }
 
     public function mpin($promo_id)
     {
-        // Debugging statement to check the promo_id
-        \Log::info('mpin method called with promo_id: ' . $promo_id);
+        Log::info('Mpin method called with promo_id: ' . $promo_id);
 
         $promo = Promo::find($promo_id);
 
-        // Debugging statement to check if the promo exists
         if (!$promo) {
-            \Log::error('Promo not found with promo_id: ' . $promo_id);
+            Log::error('Promo not found with promo_id: ' . $promo_id);
             return redirect()->route('upgrade.gcashNumber', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
         }
 
-        \Log::info('Promo found: ' . $promo->name);
+        Log::info('Promo found: ' . $promo->name);
 
         return view('subscriptionFolder.mpin', compact('promo'));
     }
 
     public function payment1($promo_id)
     {
-        // Debugging statement to check the promo_id
-        \Log::info('payment1 method called with promo_id: ' . $promo_id);
+        Log::info('Payment1 method called with promo_id: ' . $promo_id);
 
         $promo = Promo::find($promo_id);
 
-        // Debugging statement to check if the promo exists
         if (!$promo) {
-            \Log::error('Promo not found with promo_id: ' . $promo_id);
+            Log::error('Promo not found with promo_id: ' . $promo_id);
             return redirect()->route('upgrade.mpin', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
         }
 
-        \Log::info('Promo found: ' . $promo->name);
+        Log::info('Promo found: ' . $promo->name);
 
-        // Pass the promo data to the view
         return view('subscriptionFolder.payment1', compact('promo'));
     }
 
     public function receipt($promo_id)
     {
-        // Debugging statement to check the promo_id
-        \Log::info('receipt method called with promo_id: ' . $promo_id);
+        Log::info('Receipt method called with promo_id: ' . $promo_id);
 
         $promo = Promo::find($promo_id);
 
-        // Debugging statement to check if the promo exists
         if (!$promo) {
-            \Log::error('Promo not found with promo_id: ' . $promo_id);
+            Log::error('Promo not found with promo_id: ' . $promo_id);
             return redirect()->route('upgrade.payment1', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
         }
 
-        \Log::info('Promo found: ' . $promo->name);
+        Log::info('Promo found: ' . $promo->name);
 
-        // Generate the reference number
-        $referenceNumber = ReferenceNumber::firstOrCreate([]);
-        $referenceNumber->last_number += 1;
-        $referenceNumber->save();
+        $user = Auth::user();
+        $userName = "{$user->firstname} {$user->middlename} {$user->lastname}";
+        $startDate = Carbon::now();
+        $endDate = $startDate->copy()->addDays($promo->duration);
 
-        $referenceNumberValue = str_pad($referenceNumber->last_number, 10, '0', STR_PAD_LEFT);
+        // Ensure name is always set
+        $subscription = Subscription::create([
+            'promo_id' => $promo_id,
+            'user_id' => Auth::id(),
+            'name' => $userName, // Set the name to the authenticated user's name
+            'pricing' => $promo->price,
+            'duration' => $promo->duration,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => 'active', // Set the status to active
+            'reference_number' => Subscription::max('reference_number') + 1, // Ensure reference_number is auto-incrementing
+        ]);
 
-        // Get the authenticated user's name
-        $userName = Auth::user()->name;
+        Log::info('Subscription created with ID: ' . $subscription->subscription_id);
 
-        // Pass the promo data, reference number, and user name to the view
-        return view('subscriptionFolder.receipt', compact('promo', 'referenceNumberValue', 'userName'));
+        return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
     }
 }

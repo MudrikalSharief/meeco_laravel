@@ -7,11 +7,12 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-extrabold mb-6 text-green-600">Payment Success!</h1>
-            <p class="mb-2">Amount Paid: Php {{ $promo->price }}</p>
-            <p class="mb-2">Reference Number: {{ $referenceNumberValue }}</p>
+            <p class="mb-2">Amount Paid: Php {{ $promo->price ?? 'N/A' }}</p>
+            <p class="mb-2">Reference Number: {{ $subscription->reference_number }}</p>
             <p class="mb-2">Payment Time: {{ now()->format('d-m-Y, H:i') }}</p>
             <p class="mb-2">Payment Method: Gcash</p>
-            <p class="mb-2">Sender Name: {{ $userName }}</p>
+            <p class="mb-2">Sender Name: {{ $userName ?? 'Unknown' }}</p>
+
             <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-6" onclick="redirectToCapture()">Finish Transaction</button>
             
             <!-- Modal -->
@@ -23,8 +24,8 @@
                         </svg>
                     </div>
                     <h2 class="text-2xl font-extrabold mb-4 text-blue-800">Premium</h2>
-                    <div class="text-lg font-semibold mb-2">{{ $promo->name }}</div>
-                    <div class="text-base mb-4">You've got upgraded to {{ $promo->name }}!</div>
+                    <div class="text-lg font-semibold mb-2">{{ $promo->name ?? 'Unknown Plan' }}</div>
+                    <div class="text-base mb-4">You've got upgraded to {{ $promo->name ?? 'Unknown Plan' }}!</div>
                     <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="hideModal()">Close</button>
                 </div>
             </div>
