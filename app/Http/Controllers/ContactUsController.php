@@ -8,6 +8,7 @@ use App\Models\Reply;
 use App\Models\AdminReply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ContactUsController extends Controller
 {
@@ -15,7 +16,6 @@ class ContactUsController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'category' => 'required',
             'subject' => 'required|string|max:255',
             'question' => 'required|string',
             'upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
@@ -122,8 +122,11 @@ class ContactUsController extends Controller
             }
             $reply->reply_admin_upload = json_encode($uploads);
         }
-
+        
         $reply->save();
+
+        // Update the status to "Responded"
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Responded']);
 
         return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }

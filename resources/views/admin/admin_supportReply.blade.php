@@ -90,9 +90,7 @@
     </div>
   </main>
 </x-admin_layout>
-<style>
-    
-</style>
+
 <script>
     function toggleModal() {
         const modal = document.getElementById('replyModal');

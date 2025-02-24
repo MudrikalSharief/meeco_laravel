@@ -17,8 +17,6 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\ADMINController;
 use App\Http\Controllers\TransactionController;
 
-
-
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('capture');
