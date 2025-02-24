@@ -33,4 +33,9 @@ class ContactUs extends Model
     {
         return $this->hasMany(Reply::class, 'ticket_id', 'ticket_id');
     }
+
+    public function adminReplies()
+    {
+        return $this->hasMany(AdminReply::class, 'ticket_id', 'ticket_id');
+    }
 }
