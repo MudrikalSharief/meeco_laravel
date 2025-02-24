@@ -67,6 +67,14 @@ class ContactUsController extends Controller
         return view('website.footer.inquiry_history2', compact('inquiry'));
     }
 
+    public function getAdminInquiryDetails($ticket_reference)
+    {
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+        return view('admin.admin_supportReply', compact('inquiry'));
+        // $inquiry = ContactUs::findOrFail($ticket_reference);
+        // return view('admin.admin_supportReply', compact('inquiry'));
+    }
+
     public function submitReply(Request $request, $ticket_reference)
     {
         $request->validate([
