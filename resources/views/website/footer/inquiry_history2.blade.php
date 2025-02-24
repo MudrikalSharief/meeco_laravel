@@ -19,15 +19,33 @@
                         <div class="text-xs text-gray-500 mb-2">{{ $inquiry->created_at }}</div>
                         @if($inquiry->upload)
                             @foreach(json_decode($inquiry->upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
+                                <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                             @endforeach
                         @endif
                     </div>
                 </div>
             </div>
 
-            @if($inquiry->replies)
-                @foreach($inquiry->replies as $reply)
+            @php
+                $allReplies = collect($inquiry->replies)->merge($inquiry->adminReplies)->sortBy('created_at');
+            @endphp
+
+            @foreach($allReplies as $reply)
+                @if(isset($reply->reply_admin_question))
+                    <div class="custom-border-admin rounded-md p-6 mb-5 ml-48">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-1">
+                                <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_admin_question }}</p>
+                                <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
+                                @if($reply->reply_admin_upload)
+                                    @foreach(json_decode($reply->reply_admin_upload) as $upload)
+                                        <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @else
                     <div class="custom-border rounded-md p-6 mb-5">
                         <div class="flex items-start gap-3">
                             <div class="flex-1">
@@ -35,32 +53,14 @@
                                 <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
                                 @if($reply->reply_user_upload)
                                     @foreach(json_decode($reply->reply_user_upload) as $upload)
-                                        <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
+                                        <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                                     @endforeach
                                 @endif
                             </div>
                         </div>
                     </div>
-                @endforeach
-            @endif
-            
-            @if($inquiry->adminReplies)
-        @foreach($inquiry->adminReplies as $reply)
-            <div class="custom-border-admin rounded-md p-6 mb-5 ml-48">
-                <div class="flex items-start gap-3">
-                    <div class="flex-1">
-                        <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_admin_question }}</p>
-                        <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
-                        @if($reply->reply_admin_upload)
-                            @foreach(json_decode($reply->reply_admin_upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    @endif
+                @endif
+            @endforeach
     
             <div class="flex justify-end gap-3">
                 <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
@@ -76,7 +76,7 @@
 <div id="replyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-md p-6 w-full max-w-md">
         <h2 class="text-xl font-semibold mb-4">Reply to Inquiry</h2>
-        <form id="replyForm" action="{{ route('submitReply', ['ticket_reference' => $inquiry->ticket_reference]) }}" method="POST" enctype="multipart/form-data" onsubmit="submitReply(event)">
+        <form id="replyForm" action="{{ route('submitReply', ['ticket_reference' => $inquiry->ticket_reference]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-4">
                 <label for="reply_user_question" class="block text-sm font-medium text-gray-700">Reply</label>
@@ -84,7 +84,7 @@
             </div>
             <div class="mb-4">
                 <label for="reply_user_upload" class="block text-sm font-medium text-gray-700">Upload</label>
-                <input type="file" id="reply_user_upload" name="reply_user_upload[]" multiple accept="image/*" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <input type="file" id="reply_user_upload" name="reply_user_upload[]" multiple accept="image/png, image/jpeg, image/jpg, image/svg+xml" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             </div>
             <div class="flex justify-end gap-3">
                 <button type="button" class="bg-transparent border border-gray-300 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-100" onclick="toggleModal()">Close</button>
@@ -100,59 +100,9 @@
         modal.classList.toggle('hidden');
     }
 
-    async function submitReply(event) {
-        event.preventDefault();
-        const replyForm = document.getElementById('replyForm');
-        const formData = new FormData(replyForm);
-        const replyUserQuestion = formData.get('reply_user_question');
-        const replyUserUpload = formData.getAll('reply_user_upload[]');
-        const currentTime = new Date().toLocaleString();
-
-        // Add reply to the database
-        const response = await fetch(replyForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-
-        if (response.ok) {
-            const replySection = document.createElement('div');
-            replySection.className = 'custom-border rounded-md p-6 mb-5';
-
-            const replyContent = document.createElement('div');
-            replyContent.className = 'flex items-start gap-3';
-
-            const replyText = document.createElement('div');
-            replyText.className = 'flex-1';
-            replyText.innerHTML = `<p class="text-sm leading-6 text-gray-600 mb-2">${replyUserQuestion}</p>
-                                   <div class="text-xs text-gray-500 mb-2">${currentTime}</div>`;
-
-            if (replyUserUpload.length > 0) {
-                const uploadList = document.createElement('div');
-                uploadList.className = 'text-sm text-blue-600';
-                replyUserUpload.forEach(upload => {
-                    const uploadLink = document.createElement('a');
-                    uploadLink.href = URL.createObjectURL(upload);
-                    uploadLink.className = 'hover:opacity-90';
-                    uploadLink.textContent = upload.name;
-                    uploadList.appendChild(uploadLink);
-                });
-                replyText.appendChild(uploadList);
-            }
-
-            replyContent.appendChild(replyText);
-            replySection.appendChild(replyContent);
-
-            const mainContent = document.querySelector('main .max-w-2xl');
-            mainContent.insertBefore(replySection, mainContent.lastElementChild);
-
-            toggleModal();
-        } else {
-            console.error('Failed to submit reply');
-        }
-    }
+    document.getElementById('replyForm').addEventListener('submit', function() {
+        toggleModal();
+    });
 </script>
 
 <style>

@@ -18,33 +18,19 @@
                 <div class="text-xs text-gray-500 mb-2">{{ $inquiry->created_at }}</div>
                 @if($inquiry->upload)
                     @foreach(json_decode($inquiry->upload) as $upload)
-                        <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
+                        <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                     @endforeach
                 @endif
             </div>
         </div>
     </div>
 
-    @if($inquiry->replies)
-        @foreach($inquiry->replies as $reply)
-            <div class="custom-border rounded-md p-6 mb-5">
-                <div class="flex items-start gap-3">
-                    <div class="flex-1">
-                        <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_user_question }}</p>
-                        <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
-                        @if($reply->reply_user_upload)
-                            @foreach(json_decode($reply->reply_user_upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    @endif
+    @php
+        $allReplies = collect($inquiry->replies)->merge($inquiry->adminReplies)->sortBy('created_at');
+    @endphp
 
-    @if($inquiry->adminReplies)
-        @foreach($inquiry->adminReplies as $reply)
+    @foreach($allReplies as $reply)
+        @if(isset($reply->reply_admin_question))
             <div class="custom-border-admin rounded-md p-6 mb-5 ml-48">
                 <div class="flex items-start gap-3">
                     <div class="flex-1">
@@ -52,14 +38,28 @@
                         <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
                         @if($reply->reply_admin_upload)
                             @foreach(json_decode($reply->reply_admin_upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" class="text-blue-600 text-sm hover:opacity-90">{{ $upload }}</a>
+                                <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                             @endforeach
                         @endif
                     </div>
                 </div>
             </div>
-        @endforeach
-    @endif
+        @else
+            <div class="custom-border rounded-md p-6 mb-5">
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <p class="text-sm leading-6 text-gray-600 mb-2">{{ $reply->reply_user_question }}</p>
+                        <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
+                        @if($reply->reply_user_upload)
+                            @foreach(json_decode($reply->reply_user_upload) as $upload)
+                                <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
 
     <div class="flex justify-end gap-3">
         <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="reply_admin_upload" class="block text-sm font-medium text-gray-700">Upload</label>
-                    <input type="file" id="reply_admin_upload" name="reply_admin_upload[]" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <input type="file" id="reply_admin_upload" name="reply_admin_upload[]" multiple accept="image/png, image/jpeg, image/jpg, image/svg+xml" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
                 <div class="flex justify-end gap-3">
                     <button type="button" class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400" onclick="toggleModal()">Cancel</button>
