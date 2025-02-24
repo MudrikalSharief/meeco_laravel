@@ -11,17 +11,5 @@
             <canvas id="monthlyChart" style = "display:none;"></canvas>
             <div>Sales</div>
         </div>
-
-        <div class="flex justify-center container bg-gray-100">
-            <div class="daily-ol" data-daily-rev='{!! json_encode($daily_ol) !!}'></div>
-            <div class="monthly-ol" data-monthly-rev='{!! json_encode($monthly_ol) !!}'></div>
-            <select id="select-ol">
-                <option value="opt-daily-ol">Daily Online Users</option>
-                <option value="opt-monthly-ol">Monthly Online Users</option>
-            </select>
-            <canvas id="dailyOlChart"></canvas>
-            <canvas id="monthlyOlChart" style = "display:none;"></canvas>
-            <div>Sales</div>
-        </div>
     </main>
 </x-admin_layout>

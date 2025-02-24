@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User; // Add this line to import the User model
-
+use App\Models\ContactUs; // Add this line to import the ContactUs model
 class AUTHadminController extends Controller
 {
     // Show Login Form
@@ -207,4 +207,6 @@ class AUTHadminController extends Controller
 
         return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
     }
+    
+
 }

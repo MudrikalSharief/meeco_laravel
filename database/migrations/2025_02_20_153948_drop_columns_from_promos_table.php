@@ -8,13 +8,11 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('promos', function (Blueprint $table) {
-            $table->id('promo_id');
+            $table->id('promo_id')->primary();
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->text('perks');
             $table->integer('duration');
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('photo_to_text')->nullable();
             $table->integer('photo_limit')->nullable();
@@ -29,8 +27,8 @@ return new class extends Migration {
         });
     }
 
-    public function down()
-    {
-        Schema::dropIfExists('promos');
-    }
+    // public function down()
+    // {
+    //     Schema::dropIfExists('promos');
+    // }
 };

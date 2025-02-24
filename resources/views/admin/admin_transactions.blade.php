@@ -29,7 +29,7 @@
             <tbody>
                 @foreach ($transactions as $transaction)
                     <tr>
-                        <td>{{ $transaction->user->name }}</td>
+                        <td>{{ $transaction->user->firstname }} {{ $transaction->user->lastname }}</td>
                         <td>{{ $transaction->promo->name }}</td>
                         <td>{{ $transaction->reference_no }}</td>
                         <td>{{ $transaction->start_date }}</td>

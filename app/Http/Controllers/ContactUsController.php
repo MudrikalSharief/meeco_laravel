@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ContactUs;
 use App\Models\Reply;
+use App\Models\AdminReply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ContactUsController extends Controller
 {
@@ -14,7 +16,6 @@ class ContactUsController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'category' => 'required',
             'subject' => 'required|string|max:255',
             'question' => 'required|string',
             'upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
@@ -55,10 +56,22 @@ class ContactUsController extends Controller
         return view('website.footer.inquiry_history', compact('inquiries'));
     }
 
+    public function SupportTicketAdmin()
+    {
+        $InquiriesAdmin = ContactUs::all();
+        return view('admin.admin_support', compact('InquiriesAdmin'));
+    }
+
     public function getInquiryDetails($ticket_reference)
     {
         $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
         return view('website.footer.inquiry_history2', compact('inquiry'));
+    }
+
+    public function getAdminInquiryDetails($ticket_reference)
+    {
+        $inquiry = ContactUs::with('replies', 'adminReplies')->where('ticket_reference', $ticket_reference)->firstOrFail();
+        return view('admin.admin_supportReply', compact('inquiry'));
     }
 
     public function submitReply(Request $request, $ticket_reference)
@@ -85,7 +98,40 @@ class ContactUsController extends Controller
 
         $reply->save();
 
+        // Update the status to "Responded"
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Pending']);
+
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+    }
+
+    public function submitAdminReply(Request $request, $ticket_reference)
+    {
+        $request->validate([
+            'reply_admin_question' => 'required|string',
+            'reply_admin_upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
+        ]);
+
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+
+        $reply = new AdminReply();
+        $reply->ticket_id = $inquiry->ticket_id;
+        $reply->reply_admin_question = $request->reply_admin_question;
+
+        if ($request->hasFile('reply_admin_upload')) {
+            $uploads = [];
+            foreach ($request->file('reply_admin_upload') as $file) {
+                $path = $file->store('uploads', 'public');
+                $uploads[] = $path;
+            }
+            $reply->reply_admin_upload = json_encode($uploads);
+        }
+        
+        $reply->save();
+
+        // Update the status to "Responded"
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Responded']);
+
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }
 
     public function closeInquiry($ticket_reference)
@@ -95,5 +141,16 @@ class ContactUsController extends Controller
         $inquiry->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
+    }
+
+    public function filterInquiriesByStatus(Request $request)
+    {
+        $status = $request->input('status');
+        if ($status) {
+            $InquiriesAdmin = ContactUs::where('status', $status)->get();
+        } else {
+            $InquiriesAdmin = ContactUs::all();
+        }
+        return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 }
