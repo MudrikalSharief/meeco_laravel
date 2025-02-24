@@ -188,6 +188,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/support/filter', [ContactUsController::class, 'filterInquiriesByStatus'])->name('filter.inquiries');
     Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
+    Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
     
 
 });
