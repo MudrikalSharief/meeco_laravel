@@ -19,6 +19,7 @@
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])
+    @vite(['resources/css/contact.css'])
     
 </head>
 <body class="h-screen w-full">
