@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ContactUs;
 use App\Models\Reply;
+use App\Models\AdminReply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
@@ -69,10 +70,8 @@ class ContactUsController extends Controller
 
     public function getAdminInquiryDetails($ticket_reference)
     {
-        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+        $inquiry = ContactUs::with('replies', 'adminReplies')->where('ticket_reference', $ticket_reference)->firstOrFail();
         return view('admin.admin_supportReply', compact('inquiry'));
-        // $inquiry = ContactUs::findOrFail($ticket_reference);
-        // return view('admin.admin_supportReply', compact('inquiry'));
     }
 
     public function submitReply(Request $request, $ticket_reference)
@@ -100,6 +99,33 @@ class ContactUsController extends Controller
         $reply->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+    }
+
+    public function submitAdminReply(Request $request, $ticket_reference)
+    {
+        $request->validate([
+            'reply_admin_question' => 'required|string',
+            'reply_admin_upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
+        ]);
+
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+
+        $reply = new AdminReply();
+        $reply->ticket_id = $inquiry->ticket_id;
+        $reply->reply_admin_question = $request->reply_admin_question;
+
+        if ($request->hasFile('reply_admin_upload')) {
+            $uploads = [];
+            foreach ($request->file('reply_admin_upload') as $file) {
+                $path = $file->store('uploads', 'public');
+                $uploads[] = $path;
+            }
+            $reply->reply_admin_upload = json_encode($uploads);
+        }
+
+        $reply->save();
+
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }
 
     public function closeInquiry($ticket_reference)
