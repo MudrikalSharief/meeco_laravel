@@ -98,6 +98,9 @@ class ContactUsController extends Controller
 
         $reply->save();
 
+        // Update the status to "Responded"
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Pending']);
+
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }
 
