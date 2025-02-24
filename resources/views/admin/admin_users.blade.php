@@ -7,6 +7,7 @@
                 <thead>
                     <tr>
                         <th>First Name</th>
+                        <th>Middle Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
                         <th>Date Joined</th>
@@ -17,6 +18,7 @@
                     @foreach($users as $user)
                         <tr>
                             <td>{{ $user->firstname }}</td>
+                            <td>{{ $user->middlename ?? 'N/A' }}</td>
                             <td>{{ $user->lastname }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->created_at->format('Y-m-d') }}</td>

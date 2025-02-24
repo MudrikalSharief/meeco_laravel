@@ -1,8 +1,8 @@
 <!-- resources/views/posts/takequiz.blade.php -->
 <x-layout>
 
-    <div class=" z-50 sticky top-12 bg-white px-6 py-3 w-full shadow-lg">
-        <p id="title" class=" text-blue-500"></p>
+    <div class=" z-50 sticky top-12 bg-white px-6 py-3 w-full shadow-lg flex items-center justify-center">
+        <p id="title" class=" text-blue-500 w-full max-w-2xl items-center lg:px-16 md:px-16 sm:px-10  px-5 py-1"></p>
     </div>
     <div class="max-w-2xl h-full mx-auto bg-white rounded-lg">
         
@@ -34,16 +34,16 @@
                 if(data.success){
                     const title = document.getElementById('title');
                     title.classList.add('cursor-pointer','font-medium');
-                    title.innerHTML = `<span>&#129120</span> ${data.question.question_title}`;
+                    title.innerHTML = `<span>&#129120</span> ${data.question.question_type} quiz for  ${data.question.question_title}`;
                     topicId = data.question.question_id;
                     quiztype = data.question.question_type;
 
                     if(quiztype === 'Multiple Choice'){
                         questions.forEach((question, index) => {
                             const questionDiv = document.createElement('div');
-                            questionDiv.classList.add('question');
+                            questionDiv.classList.add('question','py-2');
                             questionDiv.innerHTML = `
-                                <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                <p class ="-4 text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                 <ul>
                                     <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A) ${question.A}</label></li>
                                     <li><label class = "w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B) ${question.B}</label></li>

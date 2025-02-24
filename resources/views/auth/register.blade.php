@@ -29,6 +29,15 @@
                 <p class="error">{{ $message }}</p>
             @enderror
           </div>
+          <!-- Middlename Field -->
+          <div>
+            <label for="middlename" class="block text-xs font-medium text-gray-700">Middlename (optional)</label>
+            <input type="text" name="middlename" id="middlename" placeholder="Enter your middlename" value="{{ old('middlename')}}" 
+            class="text-sm mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            @error('middlename')
+                <p class="error">{{ $message }}</p>
+            @enderror
+          </div>
           <!-- Lastname Field -->
           <div>
             <label for="lastname" class="block text-xs font-medium text-gray-700">Lastname</label>

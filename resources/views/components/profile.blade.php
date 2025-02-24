@@ -1,7 +1,7 @@
 <x-layout>
     <script src="//unpkg.com/alpinejs" defer></script>
     <div x-data="{ openModal: false }" class="container mx-auto p-6 h-screen flex flex-col">
-        <div class="flex-grow overflow-auto pb-16">
+        <div class="flex-grow overflow-hidden pb-16">
             <div class="bg-white shadow-md rounded-lg p-6 mb-6">
                 <div class="flex items-center mb-6">
                     <img class="w-16 h-16 rounded-full border-2 border-gray-300" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile Picture">
