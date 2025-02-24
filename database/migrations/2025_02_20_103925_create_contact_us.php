@@ -24,11 +24,20 @@ return new class extends Migration
             $table->timestamp('last_post')->useCurrent()->useCurrentOnUpdate();
             $table->timestamps();
         });
+
         Schema::create('replies', function (Blueprint $table) {
             $table->id('reply_id');
             $table->foreignId('ticket_id')->constrained('contact_us', 'ticket_id')->onDelete('cascade');
             $table->text('reply_user_question');
             $table->json('reply_user_upload')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('admin_replies', function (Blueprint $table) {
+            $table->id('admin_reply_id');
+            $table->foreignId('ticket_id')->constrained('contact_us', 'ticket_id')->onDelete('cascade');
+            $table->text('reply_admin_question');
+            $table->json('reply_admin_upload')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +47,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('admin_replies');
         Schema::dropIfExists('replies');
         Schema::dropIfExists('contact_us');
     }
