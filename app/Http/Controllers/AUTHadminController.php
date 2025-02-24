@@ -38,6 +38,9 @@ class AUTHadminController extends Controller
         Auth::guard('admin')->login($admin);
 
         // Redirect
+        if ($request->has('redirect_to')) {
+            return redirect($request->input('redirect_to'));
+        }
         return redirect()->route('admin.dashboard');
     }
 
