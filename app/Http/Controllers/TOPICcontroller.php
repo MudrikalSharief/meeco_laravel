@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,22 @@ class TOPICcontroller extends Controller
         $topics = Topic::all();
         // return view('posts.topics', compact('topics'));
         return response()->json(['topics' => $topics]);
+    }
+
+
+    public function getTopicByTopicId($topic_id){
+        $id = intval($topic_id);
+
+        if(!$id){
+            return response()->json(['message'=>false, 'error' => 'problem in validation']);
+        }
+
+        $topic = Topic::where('topic_id', $topic_id)->pluck('name');
+        if(!$topic){
+            return response()->json(['message'=>false, 'error' => 'problem in query']);
+        }
+        
+        return response()->json(['message'=>true, 'name' => $topic[0]]);
     }
 
     public function getTopicsBySubject($subjectId)

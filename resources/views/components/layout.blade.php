@@ -8,6 +8,18 @@
     <title>{{ env('APP_NAME') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/navbar-style.css'])
     {{-- , 'resources/js/openai.js' --}}
+    <style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        body::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* Optional: just to hide the scrollbar */
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+    </style>
 </head>
 <body class="relative min-h-screen flex flex-col">
 
@@ -60,7 +72,7 @@
         </ul>
     </nav>
 
-    <div class="pt-.5 w-full flex-grow mb-20 mt-12">
+    <div class=" pt-1 w-full flex-grow mb-20 mt-12">
         {{ $slot ?? '' }}
     </div>
 

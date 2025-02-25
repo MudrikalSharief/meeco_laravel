@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
+    Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
@@ -61,6 +62,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
+    //for reviewer
     Route::post('/get-raw-text', [RawController::class, 'getRawText']);
     Route::post('/UpdateAndGet_RawText', [RawController::class, 'UpdateAndGet_RawText']);
     Route::post('/extract-text', [RawController::class, 'extractText']);
@@ -70,7 +72,10 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    
+   //this is for download
+    Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
+    Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
+
     //for quiz
     Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
     Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
@@ -196,31 +201,6 @@ Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
 Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
-
-// Auth admin
-// // Admin Authentication Routes
-// Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
-// Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
-// Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
-// Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
-// Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
-
-// // Middleware for redirection based on authentication status
-// Route::middleware(['auth:admin'])->group(function () {
-//     Route::view('/admin/dashboard', 'admin.admin_view')->name('admin.dashboard');
-//     Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-//     Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-//     Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-//     Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
-//     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
-//     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
-//     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
-//     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
-    
-//     Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
-//     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
-// });
-//Transaction Routes
 Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
 Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
 Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');

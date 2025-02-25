@@ -7,7 +7,8 @@ use App\Models\Raw;
 use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use App\Models\Topic;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class ReviewerController extends Controller
 {
@@ -63,4 +64,37 @@ class ReviewerController extends Controller
         
     }
     //=======================================================================================================
+
+    public function downloadReviewer(Request $request)
+    {
+        try {
+            $topicId = $request->input('topicId');
+            $content = $request->input('content');
+            $topicName = Topic::where('topic_id', $topicId)->pluck('name')->first();
+            if (empty($content)) {
+                return response()->json(['success' => false, 'message' => 'No reviewer content found for this topic.']);
+            }
+    
+            $fileName = $topicName . '.txt';
+            Storage::disk('local')->put($fileName, $content);
+    
+            return response()->json(['success' => true, 'file' => $fileName]);
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes
+            \Log::error('Error downloading reviewer: ' . $e->getMessage());
+    
+            // Return a JSON response with the error message
+            return response()->json(['success' => false, 'message' => 'An error occurred while downloading the reviewer. Please try again later.']);
+        }
+    }
+
+    public function serveFile($fileName)
+    {
+        $filePath = storage_path('app/' . $fileName);
+        if (file_exists($filePath)) {
+            return response()->download($filePath)->deleteFileAfterSend(true);
+        } else {
+            return response()->json(['success' => false, 'message' => 'File not found.']);
+        }
+    }
 }

@@ -1,27 +1,31 @@
 <x-layout>
     
-    <div class="max-w-2xl mx-auto pt-6 bg-white  rounded-lg">
+    <div class="reviewer_whole_content max-w-2xl mx-auto pt-2 bg-white  rounded-lg">
    
-        <!-- Buttons -->
-        <div class="flex gap-2 space-x-4 mb-6">
-            <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
-            <button id="quiz" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Quizzes</button>
-        </div>
-
+        
         <!-- Content Header -->
-        <hr class="my-3">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="TITLE text-xl font-bold text-gray-800">Topic Name: {{ $topic->name }}</h1>
-            <button id="toggleButton" class="text-blue-500 text-sm font-medium rounded-lg hover:underline">Raw text</button>
+        <div class="flex items-center justify-between mb-4 mx-5">
+            <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : {{ $topic->name }}</h1>
+        </div>
+    
+        <!-- Buttons -->
+        <div class="flex space-x-2 mx-5 ">
+            <button class="px-2 py-1 bg-blue-100 font-semibold text-blue-700 text-sm rounded-sm hover:bg-blue-300">Reviewer</button>
+            <button id="quiz" class=" px-2 py-1 bg-gray-100 text-sm text-gray-700  rounded-sm  hover:bg-gray-300">Quizzes</button>
+        </div>
+        {{-- rawtext-reviewer --}}
+        <div class="w-full mx-5 flex justify-between">
+            <button id="toggleButton" class="mt-1 text-blue-300 text-sm font-medium rounded-lg hover:underline">View raw text</button>
+            <button id="downloadReviewer" class="px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300">Download Reviewer</button>
         </div>
 
         <!-- Scrollable Content Box -->
-        <div class="Reviewer border  border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Reviewer mx-5 my-3 rounded-lg";>
             {{-- Reviewer  in here --}}
             <h1 class="reviewer_holder"></h1>
         </div>
 
-        <div class="Rawtext  border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Rawtext hidden Reviewer mx-5 my-3 rounded-lg overflow-y-scroll";>
             {{-- Raw text in here --}}
             <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
@@ -80,7 +84,7 @@
 
             toggleButton.addEventListener('click', function() {
                 reviewer.classList.toggle('hidden');
-                toggleButton.textContent = reviewer.classList.contains('hidden') ? 'Reviewer' : 'Raw Text';
+                toggleButton.textContent = reviewer.classList.contains('hidden') ? 'back' : 'Raw Text';
                 rawtext.classList.toggle('hidden');
                 toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
             });
@@ -90,7 +94,23 @@
                 window.location.href=`/quiz?topicId=${topicId}`;
             });
 
+            // This handles the download Reviewer
+            const downloadButton = document.getElementById('downloadReviewer');
+            downloadButton.addEventListener('click', function() {
+                const reviewerContent = document.querySelector('.reviewer_holder').innerText;
+                const topicId = @json($topic->topic_id);
 
+                const blob = new Blob([reviewerContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `${topicId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+         
         });
     </script>
 </x-layout>

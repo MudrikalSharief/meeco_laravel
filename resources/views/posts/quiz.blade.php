@@ -1,14 +1,18 @@
 <x-layout>
     
-    <div class="max-w-2xl h-full mx-auto pt-6 bg-white  rounded-lg">
+    <div class="max-w-2xl h-full mx-auto pt-2 bg-white  rounded-lg">
         
         <div class="w-full max-w-2xl w">
-
-            <div class="flex gap-2 space-x-4 mb-6">
-                <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
-                <button id="quiz" class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Quizzes</button>
+            <!-- Content Header -->
+            <div class="flex items-center justify-between mb-4 mx-5">
+              <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : <span id="topic_name"></span></h1>
             </div>
-            <hr class="my-3">
+            
+             <!-- Buttons -->
+            <div class="flex space-x-2 mx-5">
+                <button id="reviewer" class="px-2 py-1 bg-gray-100 font-semibold text-gray-700 text-sm rounded-sm hover:bg-gray-300">Reviewer</button>
+                <button id="quiz" class=" px-2 py-1  bg-blue-100 text-sm text-blue-700  rounded-sm  hover:bg-blue-300">Quizzes</button>
+            </div>
 
             {{-- This code will show the quiz menu AND DROPDOWN --}}
             <div id="quiz_menu_holder" class="bg-white h-full w-full px-6 py-3">
@@ -111,6 +115,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         const topicId = urlParams.get('topicId');
 
+        const topic_name_container = document.getElementById('topic_name');
+
+    fetch(`/getTopicByTopicId/${topicId}`)
+    .then(response => response.json())
+    .then( data => {
+        $name = data.name;
+        topic_name_container.innerHTML = $name;
+    }).catch(error => console.error('error :: ', error));
+    
     // this code is esponsible for getting all the quiz
     const quizContainer = document.getElementById('quizContainer');
     if (!quizContainer) {
