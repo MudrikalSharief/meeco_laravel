@@ -3,7 +3,6 @@
         <!-- Header Section -->
         <div class="flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md rounded-lg px-6 py-4 mb-6">
             <div class="flex items-center gap-2">
-                
                 <span class="flex items-center text-xl font-semibold">
                     PREMIUM OFFERS
                 </span>
@@ -15,13 +14,13 @@
             @if($promos->isEmpty())
                 <p class="text-center text-gray-600 font-semibold">No Available Offers</p>
             @else
-                <div class="flex flex-wrap gap-4 py-2  justify-items-start items-center ">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-2">
                     @foreach($promos as $promo)
-                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-56 mx-1 ">
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 flex flex-col">
                         <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
                             <span class="font-semibold text-lg px-1 text-sm">{{ $promo->name }}</span>
                         </div>
-                        <div class="p-4">
+                        <div class="p-4 flex-grow">
                             <p class="text-center font-bold text-gray-700">ONLY ₱{{ $promo->price }}</p>
                             <ul class="mt-2 text-gray-600 list-disc list-inside">
                                 <li>{{ $promo->duration }} days access</li>
