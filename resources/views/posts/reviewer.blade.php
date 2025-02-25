@@ -14,9 +14,11 @@
             <button id="quiz" class=" px-2 py-1 bg-gray-100 text-sm text-gray-700  rounded-sm  hover:bg-gray-300">Quizzes</button>
         </div>
         {{-- rawtext-reviewer --}}
-        <div class="w-full mx-5 flex justify-between">
+        <div class="mx-5 flex justify-between">
             <button id="toggleButton" class="mt-1 text-blue-300 text-sm font-medium rounded-lg hover:underline">View raw text</button>
-            <button id="downloadReviewer" class="px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300">Download Reviewer</button>
+            <button id="downloadReviewer" class="px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300">
+                <img class="max-w-3" src="{{ asset('logo_icons/download.svg') }}" alt="Logo">    
+            </button>
         </div>
 
         <!-- Scrollable Content Box -->
@@ -51,6 +53,12 @@
             const reviewerText = @json($reviewerText);
             const rawText = @json($rawText);
 
+            const toggleButton = document.getElementById('toggleButton');
+            const reviewer = document.querySelector('.Reviewer');
+            const rawtext = document.querySelector('.Rawtext');
+            const downloadButton = document.getElementById('downloadReviewer');
+            const quizbutton = document.getElementById('quiz');
+
             fetch('/disect_reviewer', {
                 method: 'POST',
                 headers: {
@@ -63,24 +71,33 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
-                items = data['data'];
                 let content = '';
+                if(data.success){
 
-                items.forEach((item) => {
-                    content += `<h2 class="font-bold">${item[0]}  <span class=" font-normal"> ${item[1]}<br><br></span></h2>`;
-                });
-
-                document.querySelector('.reviewer_holder').innerHTML = content;
+                    console.log('Success:', data);
+                    items = data['data'];
+                    
+    
+                    items.forEach((item) => {
+                        content += `<h2 class="font-bold">${item[0]}  <span class=" font-normal"> ${item[1]}<br><br></span></h2>`;
+                    });
+    
+                    document.querySelector('.reviewer_holder').innerHTML = content;
+                }else{
+                    toggleButton.classList.add('pointer-events-none'); // Works for <a> too
+                    downloadButton.setAttribute('disabled', 'true');
+                    downloadButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    quizbutton.setAttribute('disabled', 'true');
+                    quizbutton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    content += `<h2 class="font-semibold text-red-500 text-center mt-10">${data.message} </h2>`;
+                    document.querySelector('.reviewer_holder').innerHTML = content;
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
 
             // Handle switching between raw text and reviewer text
-            const toggleButton = document.getElementById('toggleButton');
-            const reviewer = document.querySelector('.Reviewer');
-            const rawtext = document.querySelector('.Rawtext');
 
             toggleButton.addEventListener('click', function() {
                 reviewer.classList.toggle('hidden');
@@ -89,13 +106,12 @@
                 toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
             });
 
-            const quizbutton = document.getElementById('quiz');
+            //for quiz button
             quizbutton.addEventListener('click', function(){
                 window.location.href=`/quiz?topicId=${topicId}`;
             });
 
             // This handles the download Reviewer
-            const downloadButton = document.getElementById('downloadReviewer');
             downloadButton.addEventListener('click', function() {
                 const reviewerContent = document.querySelector('.reviewer_holder').innerText;
                 const topicId = @json($topic->topic_id);

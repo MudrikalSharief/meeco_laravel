@@ -56,8 +56,15 @@ class ReviewerController extends Controller
         $data = [];
 
         $reviewer = Reviewer::where(['topic_id' => $topic_id])->get();
-        foreach($reviewer as $item){
-            $data[] = [$item->reviewer_about, $item->reviewer_text];
+        if(empty($reviewer)){
+            return response()->json(['success' => false, 'message' => 'There are no reviewers for this topic.']);
+        }else{
+            foreach($reviewer as $item){
+                $data[] = [$item->reviewer_about, $item->reviewer_text];
+            }
+        }
+        if($data == null){
+            return response()->json(['success' => false, 'message' => 'There are no reviewers for this topic.']);
         }
 
         return response()->json(['success' => true,'data' => $data]);
