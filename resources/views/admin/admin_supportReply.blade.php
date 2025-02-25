@@ -18,7 +18,7 @@
                 <div class="text-xs text-gray-500 mb-2">{{ $inquiry->created_at }}</div>
                 @if($inquiry->upload)
                     @foreach(json_decode($inquiry->upload) as $upload)
-                        <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
+                        <a href="{{ asset('storage/' . $upload) }}" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                     @endforeach
                 @endif
             </div>
@@ -38,7 +38,7 @@
                         <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
                         @if($reply->reply_admin_upload)
                             @foreach(json_decode($reply->reply_admin_upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
+                                <a href="{{ asset('storage/' . $upload) }}" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                             @endforeach
                         @endif
                     </div>
@@ -52,7 +52,7 @@
                         <div class="text-xs text-gray-500 mb-2">{{ $reply->created_at }}</div>
                         @if($reply->reply_user_upload)
                             @foreach(json_decode($reply->reply_user_upload) as $upload)
-                                <a href="{{ asset('storage/' . $upload) }}" target="_blank" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
+                                <a href="{{ asset('storage/' . $upload) }}" class="bg-transparent border border-gray-400 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-100 inline-block mb-1">Check Image</a>
                             @endforeach
                         @endif
                     </div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="reply_admin_upload" class="block text-sm font-medium text-gray-700">Upload</label>
-                    <input type="file" id="reply_admin_upload" name="reply_admin_upload[]" multiple accept="image/png, image/jpeg, image/jpg, image/svg+xml" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <input type="file" id="reply_admin_upload" name="reply_admin_upload[]" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
                 <div class="flex justify-end gap-3">
                     <button type="button" class="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400" onclick="toggleModal()">Cancel</button>
