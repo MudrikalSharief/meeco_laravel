@@ -9,17 +9,24 @@
         </div>
     
         <!-- Buttons -->
-        <div class="flex space-x-2 mx-5 ">
-            <button class="px-2 py-1 bg-blue-100 font-semibold text-blue-700 text-sm rounded-sm hover:bg-blue-300">Reviewer</button>
+        <div class="flex space-x-2 mx-5 mb-2 ">
+            <button class="px-2 py-1 bg-blue-400 font-medium text-sm text-gray-50 rounded-sm cursor-default">Reviewer</button>
             <button id="quiz" class=" px-2 py-1 bg-gray-100 text-sm text-gray-700  rounded-sm  hover:bg-gray-300">Quizzes</button>
         </div>
+        <hr class="mb-2">
         {{-- rawtext-reviewer --}}
         <div class="mx-5 flex justify-end gap-2 items-center">
-            <button id="toggleButton" class="px-2 py-1 bg-blue-300 text-sm  rounded-sm  hover:underline items-center">
-                <img class="max-w-4 eye1" src="{{ asset('logo_icons/eye1.svg') }}" alt="view">    
-                <img class="max-w-4 hidden eye2" src="{{ asset('logo_icons/eye2.svg') }}" alt="view">  
+            <button id="toggleButton" class="px-2 py-1 bg-blue-200 text-sm flex gap-1  rounded-sm hover:bg-blue-400  items-center">
+                <span id="viewRawOrRev" class="text-black-500">Reviewer</span>
+                <div>
+                    <img class="max-w-4 eye1" src="{{ asset('logo_icons/eye1.svg') }}" alt="view">    
+                    <img class="max-w-4 hidden eye2" src="{{ asset('logo_icons/eye2.svg') }}" alt="view">  
+                </div>
             </button>
-            <button id="downloadReviewer" class="flex px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300 items-center">
+            <button id="cardReviwe" class="flex px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300 items-center">
+                <img class="max-w-4" src="{{ asset('logo_icons/memo.svg') }}" alt="download">    
+            </button>
+            <button id="downloadReviewer" class="flex px-2 py-1 bg-gray-100 text-smrounded-sm hover:bg-gray-300 items-center">
                 <img class="max-w-4" src="{{ asset('logo_icons/download.svg') }}" alt="download">    
             </button>
         </div>
@@ -30,7 +37,7 @@
             <h1 class="reviewer_holder"></h1>
         </div>
 
-        <div class="Rawtext hidden Reviewer mx-5 my-3 rounded-lg overflow-y-scroll";>
+        <div class="Rawtext hidden mx-5 my-3 rounded-lg";>
             {{-- Raw text in here --}}
             <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
@@ -60,7 +67,9 @@
             const reviewer = document.querySelector('.Reviewer');
             const rawtext = document.querySelector('.Rawtext');
             const downloadButton = document.getElementById('downloadReviewer');
+            const cardReviwe = document.getElementById('cardReviwe');
             const quizbutton = document.getElementById('quiz');
+            const viewRawOrRev = document.getElementById('viewRawOrRev');
             const eye1 = document.querySelector('.eye1');
             const eye2 = document.querySelector('.eye2');
 
@@ -94,6 +103,9 @@
                     downloadButton.classList.add('bg-gray-400', 'cursor-not-allowed');
                     quizbutton.setAttribute('disabled', 'true');
                     quizbutton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    cardReviwe.setAttribute('disabled', 'true');
+                    cardReviwe.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    
                     content += `<h2 class="font-semibold text-red-500 text-center mt-10">${data.message} </h2>`;
                     document.querySelector('.reviewer_holder').innerHTML = content;
                 }
@@ -110,9 +122,11 @@
                 if(reviewer.classList.contains('hidden')){
                     eye1.classList.add('hidden');
                     eye2.classList.remove('hidden');
+                    viewRawOrRev.innerText = 'Raw Text';
                 }else{
                     eye2.classList.add('hidden');
                     eye1.classList.remove('hidden');
+                    viewRawOrRev.innerText = 'Reviewer';
                 }
                 
             });

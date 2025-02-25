@@ -9,11 +9,11 @@
             </div>
             
              <!-- Buttons -->
-            <div class="flex space-x-2 mx-5">
+            <div class="flex space-x-2 mx-5 mb-2">
                 <button id="reviewer" class="px-2 py-1 bg-gray-100 font-semibold text-gray-700 text-sm rounded-sm hover:bg-gray-300">Reviewer</button>
                 <button id="quiz" class=" px-2 py-1  bg-blue-100 text-sm text-blue-700  rounded-sm  hover:bg-blue-300">Quizzes</button>
             </div>
-
+            <hr class="mb-2">
             {{-- This code will show the quiz menu AND DROPDOWN --}}
             <div id="quiz_menu_holder" class="bg-white h-full w-full px-6 py-3">
                     <div class="flex justify-between items-center">
