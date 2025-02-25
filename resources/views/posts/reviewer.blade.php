@@ -14,10 +14,13 @@
             <button id="quiz" class=" px-2 py-1 bg-gray-100 text-sm text-gray-700  rounded-sm  hover:bg-gray-300">Quizzes</button>
         </div>
         {{-- rawtext-reviewer --}}
-        <div class="mx-5 flex justify-between">
-            <button id="toggleButton" class="mt-1 text-blue-300 text-sm font-medium rounded-lg hover:underline">View raw text</button>
-            <button id="downloadReviewer" class="px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300">
-                <img class="max-w-3" src="{{ asset('logo_icons/download.svg') }}" alt="Logo">    
+        <div class="mx-5 flex justify-end gap-2 items-center">
+            <button id="toggleButton" class="px-2 py-1 bg-blue-300 text-sm  rounded-sm  hover:underline items-center">
+                <img class="max-w-4 eye1" src="{{ asset('logo_icons/eye1.svg') }}" alt="view">    
+                <img class="max-w-4 hidden eye2" src="{{ asset('logo_icons/eye2.svg') }}" alt="view">  
+            </button>
+            <button id="downloadReviewer" class="flex px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300 items-center">
+                <img class="max-w-4" src="{{ asset('logo_icons/download.svg') }}" alt="download">    
             </button>
         </div>
 
@@ -58,6 +61,8 @@
             const rawtext = document.querySelector('.Rawtext');
             const downloadButton = document.getElementById('downloadReviewer');
             const quizbutton = document.getElementById('quiz');
+            const eye1 = document.querySelector('.eye1');
+            const eye2 = document.querySelector('.eye2');
 
             fetch('/disect_reviewer', {
                 method: 'POST',
@@ -101,9 +106,15 @@
 
             toggleButton.addEventListener('click', function() {
                 reviewer.classList.toggle('hidden');
-                toggleButton.textContent = reviewer.classList.contains('hidden') ? 'back' : 'Raw Text';
                 rawtext.classList.toggle('hidden');
-                toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
+                if(reviewer.classList.contains('hidden')){
+                    eye1.classList.add('hidden');
+                    eye2.classList.remove('hidden');
+                }else{
+                    eye2.classList.add('hidden');
+                    eye1.classList.remove('hidden');
+                }
+                
             });
 
             //for quiz button
