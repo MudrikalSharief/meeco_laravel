@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
-use App\Http\Controllers\ADMINController;
 use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
@@ -195,6 +194,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
     
+    // Remove or comment out these redundant routes since they are now handled by ContactUsController
+    // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
+    // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
+
+    // Make sure you have these routes defined:
 
 });
 Route::view('/admin', 'auth.login-admin')->name('admin.login');

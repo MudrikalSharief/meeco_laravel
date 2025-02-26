@@ -13,8 +13,8 @@
             </select>
           </div>
           <div class="ml-auto flex gap-2 flex-1 max-w-md">
-            <input type="text" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search">
-            <button class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
+            <input type="text" name="search" value="{{ request('search') }}" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search by email or reference ID">
+            <button type="submit" class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
           </div>
         </div>
       </form>
@@ -22,55 +22,64 @@
       <table class="w-full border-collapse mb-5">
         <thead>
           <tr>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Ticket No.</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Reference Id.</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Email</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Create Date</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Last Post</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Status</th>
-        <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Action</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Ticket No.</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Reference Id.</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Email</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Create Date</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Last Post</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Status</th>
+            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Action</th>
           </tr>
         </thead>
         <tbody>
           @if($InquiriesAdmin->isEmpty())
-        <tr>
-          <td colspan="7" class="text-center text-gray-600 py-5">No data available</td>
-        </tr>
+            <tr>
+              <td colspan="7" class="text-center text-gray-600 py-5">No data available</td>
+            </tr>
           @else
-        @foreach($InquiriesAdmin as $inquiry)
-        <tr>
-          <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_id}}</td>
-          <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_reference}}</td>
-          <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->email }}</td>
-          <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->created_at }}</td>
-          <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->updated_at }}</td>
-          <td class="p-3 border-b border-gray-200 text-sm font-medium 
-          @if($inquiry->status == 'Pending') status-pending 
-          @elseif($inquiry->status == 'Responded') status-responded 
-          @elseif($inquiry->status == 'Closed') status-closed 
-          @endif">
-          {{ $inquiry->status }}
-          </td>
-          <td class="p-3 border-b border-gray-200 text-sm">
-            <a href="{{ route('admin.reply', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </a>
-          </td>
-        </tr>
-        @endforeach
+            @foreach($InquiriesAdmin as $inquiry)
+              <tr>
+                <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_id}}</td>
+                <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_reference}}</td>
+                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->email }}</td>
+                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->created_at }}</td>
+                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->updated_at }}</td>
+                <td class="p-3 border-b border-gray-200 text-sm font-medium 
+                @if($inquiry->status == 'Pending') status-pending 
+                @elseif($inquiry->status == 'Responded') status-responded 
+                @elseif($inquiry->status == 'Closed') status-closed 
+                @endif">
+                  {{ $inquiry->status }}
+                </td>
+                <td class="p-3 border-b border-gray-200 text-sm">
+                  <a href="{{ route('admin.reply', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </a>
+                </td>
+              </tr>
+            @endforeach
           @endif
         </tbody>
       </table>
 
       <div class="flex justify-end items-center gap-3">
-        <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10">←</button>
-        <span class="text-sm text-gray-600 font-medium">1 / 1</span>
-        <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10">→</button>
+        @if($InquiriesAdmin->currentPage() > 1)
+          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->previousPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">←</a>
+        @else
+          <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">←</button>
+        @endif
+        
+        <span class="text-sm text-gray-600 font-medium">{{ $InquiriesAdmin->currentPage() }} / {{ max(1, $InquiriesAdmin->lastPage()) }}</span>
+        
+        @if($InquiriesAdmin->hasMorePages())
+          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->nextPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">→</a>
+        @else
+          <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">→</button>
+        @endif
       </div>
     </div>
   </main>
-  
 </x-admin_layout>

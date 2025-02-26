@@ -14,6 +14,7 @@
             </div>
             <div class="flex-1">
                 <h2 class="font-semibold mb-2 text-gray-800">{{ $inquiry->subject }}</h2>
+                <p class="text-base leading-6 text-gray-800 mb-2">{{ $inquiry->email }}</p>
                 <p class="text-sm leading-6 text-gray-600 mb-2">{{ $inquiry->question }}</p>
                 <div class="text-xs text-gray-500 mb-2">{{ $inquiry->created_at }}</div>
                 @if($inquiry->upload)
