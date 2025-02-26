@@ -56,9 +56,12 @@ class ContactUsController extends Controller
         return view('website.footer.inquiry_history', compact('inquiries'));
     }
 
+    /**
+     * Display a listing of support tickets for admin
+     */
     public function SupportTicketAdmin()
     {
-        $InquiriesAdmin = ContactUs::all();
+        $InquiriesAdmin = ContactUs::latest()->paginate(10);
         return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 
@@ -143,14 +146,28 @@ class ContactUsController extends Controller
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
     }
 
+    /**
+     * Filter inquiries by status and search for admin
+     */
     public function filterInquiriesByStatus(Request $request)
     {
-        $status = $request->input('status');
-        if ($status) {
-            $InquiriesAdmin = ContactUs::where('status', $status)->get();
-        } else {
-            $InquiriesAdmin = ContactUs::all();
+        $query = ContactUs::query();
+        
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
         }
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'like', "%{$search}%")
+                  ->orWhere('ticket_id', 'like', "%{$search}%")
+                  ->orWhere('ticket_reference', 'like', "%{$search}%");
+            });
+        }
+        
+        $InquiriesAdmin = $query->latest()->paginate(10);
+        
         return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 }
