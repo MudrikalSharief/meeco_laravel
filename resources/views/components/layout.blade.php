@@ -72,7 +72,7 @@
         </ul>
     </nav>
 
-    <div class=" pt-1 w-full flex-grow mb-20 mt-12">
+    <div class=" pt-1 w-full flex-grow mb-20 mt-12 ">
         {{ $slot ?? '' }}
     </div>
 

@@ -114,6 +114,11 @@
                 console.error('Error:', error);
             });
 
+            //click event for cards
+            cardReviwe.addEventListener('click', function(){
+                window.location.href=`/cards?topicId=${topicId}`;
+            });
+
             // Handle switching between raw text and reviewer text
 
             toggleButton.addEventListener('click', function() {

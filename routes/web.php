@@ -72,6 +72,8 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
+    Route::view('/cards','posts.cards')->name('card');
+
    //this is for download
     Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
     Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
