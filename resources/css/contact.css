@@ -1,6 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 .custom-border {
     border-left: 4px solid #1D4ED8; /* Blue color */
