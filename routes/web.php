@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
-use App\Http\Controllers\ADMINController;
 use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
@@ -198,8 +197,6 @@ Route::middleware(['auth:admin'])->group(function () {
     // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
     // Make sure you have these routes defined:
-    Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
-    Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
 });
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
