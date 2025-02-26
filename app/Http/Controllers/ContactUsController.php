@@ -161,12 +161,14 @@ class ContactUsController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('email', 'like', "%{$search}%")
-                  ->orWhere('ticket_id', 'like', "%{$search}%")
                   ->orWhere('ticket_reference', 'like', "%{$search}%");
             });
         }
         
-        $InquiriesAdmin = $query->latest()->paginate(10);
+        $InquiriesAdmin = $query->latest()->paginate(10)->appends([
+            'status' => $request->status,
+            'search' => $request->search
+        ]);
         
         return view('admin.admin_support', compact('InquiriesAdmin'));
     }

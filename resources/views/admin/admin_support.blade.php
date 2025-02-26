@@ -13,8 +13,8 @@
             </select>
           </div>
           <div class="ml-auto flex gap-2 flex-1 max-w-md">
-            <input type="text" name="search" value="{{ request('search') }}" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search">
-            <button class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
+            <input type="text" name="search" value="{{ request('search') }}" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search by email or reference ID">
+            <button type="submit" class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
           </div>
         </div>
       </form>
@@ -67,7 +67,7 @@
 
       <div class="flex justify-end items-center gap-3">
         @if($InquiriesAdmin->currentPage() > 1)
-          <a href="{{ $InquiriesAdmin->previousPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">←</a>
+          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->previousPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">←</a>
         @else
           <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">←</button>
         @endif
@@ -75,7 +75,7 @@
         <span class="text-sm text-gray-600 font-medium">{{ $InquiriesAdmin->currentPage() }} / {{ max(1, $InquiriesAdmin->lastPage()) }}</span>
         
         @if($InquiriesAdmin->hasMorePages())
-          <a href="{{ $InquiriesAdmin->nextPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">→</a>
+          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->nextPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">→</a>
         @else
           <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">→</button>
         @endif
