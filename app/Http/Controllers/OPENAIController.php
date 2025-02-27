@@ -52,7 +52,8 @@ class OPENAIController extends Controller
                                 2. Break the topics content into smaller, logically grouped pieces that fit on individual cards.
                                 3. Each piece should focus on a single concept or subtopic, with no piece being longer than 100 words.
                                 4. If the notes are unclear, use your best judgment to organize the content logically while keeping it concise and easy to understand.
-                                5. Use simple and clear language suitable for a reviewer.
+                                5. If there are term that you dont really know just disregard it and focus only on what you understand. do not create a reviewer in a specific topic if you doesnt know it.
+                                7. Use simple and clear language suitable for a reviewer.
         
                                 Example format for the output:
                                 [
@@ -374,6 +375,8 @@ class OPENAIController extends Controller
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }            
 //===============================================================================================================================
+        }else if($request->post('type') == 'mixed'){
+
         }else{
             return response()->json(['success' => false, 'message' => "Unidentified Question Type"]);
         }

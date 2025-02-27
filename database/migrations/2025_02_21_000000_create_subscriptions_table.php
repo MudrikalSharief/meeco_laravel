@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('promo_id');
             $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade'); 
-            $table->string('reference_no'); 
+            $table->string('reference_number')->unique()->nullable();
             $table->string('duration');
             $table->date('start_date')->nullable(); 
             $table->date('end_date')->nullable(); 
