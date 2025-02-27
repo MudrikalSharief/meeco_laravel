@@ -32,11 +32,21 @@
             <div class="mt-8">
                 <div class="flex flex-wrap justify-between items-center mb-4">
                     <h2 class="text-1xl font-bold">Promos</h2>
-                    <!-- Search Form -->
-                    <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center w-full sm:w-auto mt-2 sm:mt-0">
-                        <input type="text" name="search" placeholder="Search Promos" class="w-full sm:w-48 p-2 border border-gray-300 rounded-lg" value="{{ request('search') }}">
-                        <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
-                    </form>
+                    <div class="flex items-center w-full sm:w-auto mt-2 sm:mt-0 ml-auto">
+                        <!-- Status Filter Dropdown -->
+                        <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center w-full sm:w-auto mt-2 sm:mt-0">
+                            <select name="status" class="w-full sm:w-48 p-2 border border-gray-300 rounded-lg" onchange="this.form.submit()">
+                                <option value="">All Status</option>
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </form>
+                        <!-- Search Form -->
+                        <form method="GET" action="{{ route('admin.subscription') }}" class="flex items-center w-full sm:w-auto mt-2 sm:mt-0 ml-4">
+                            <input type="text" name="search" placeholder="Search Promos" class="w-full sm:w-48 p-2 border border-gray-300 rounded-lg" value="{{ request('search') }}">
+                            <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="overflow-x-auto px-2">
                     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg text-sm">
@@ -53,26 +63,28 @@
                         </thead>
                         <tbody>
                             @foreach($promos as $promo)
-                            <tr class="hover:bg-gray-50">
-                                <td class="py-2 px-4 border-b">{{ $promo->name }}</td>
-                                <td class="py-2 px-4 border-b">{{ $promo->price }}</td>
-                                <td class="py-2 px-4 border-b">{{ $promo->duration }}</td>
-                                <td class="py-2 px-4 border-b">{{ $promo->start_date }}</td>
-                                <td class="py-2 px-4 border-b">{{ $promo->end_date }}</td>
-                                <td class="py-2 px-4 border-b">{{ $promo->status }}</td>
-                                <td class="py-2 px-4 border-b text-center">
-                                    <a href="{{ route('admin.editPromo', $promo->promo_id) }}" class="inline-block">
-                                        <img src="{{ asset('logo_icons/edit.png') }}" alt="Edit" class="w-4 h-4 mx-1">
-                                    </a>
-                                    <form action="{{ route('admin.deletePromo', $promo->promo_id) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="inline-block">
-                                            <img src="{{ asset('logo_icons/trash.png') }}" alt="Delete" class="w-4 h-4 mx-1">
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
+                                @if(request('status') == '' || request('status') == $promo->status)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b">{{ $promo->name }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->price }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->duration }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->start_date }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->end_date }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->status }}</td>
+                                    <td class="py-2 px-4 border-b text-center">
+                                        <a href="{{ route('admin.editPromo', $promo->promo_id) }}" class="inline-block">
+                                            <img src="{{ asset('logo_icons/edit.png') }}" alt="Edit" class="w-4 h-4 mx-1">
+                                        </a>
+                                        <form action="{{ route('admin.deletePromo', $promo->promo_id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-block">
+                                                <img src="{{ asset('logo_icons/trash.png') }}" alt="Delete" class="w-4 h-4 mx-1">
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

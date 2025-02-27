@@ -89,4 +89,10 @@
             </form>
         </div>
     </main>
+    <script>
+        document.getElementById('start_date').addEventListener('change', function() {
+            var startDate = this.value;
+            document.getElementById('end_date').setAttribute('min', startDate);
+        });
+    </script>
 </x-admin_layout>
