@@ -61,6 +61,16 @@ Route::middleware('auth')->group(function (){
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
+    //contact us
+    Route::view('/contact', 'Contact.contact')->name('contact');
+    Route::view('/contact/inquiry', 'Contact.inquiry')->name('inquiry');
+    Route::get('/contact/inquiry-history', [ContactUsController::class, 'inquiryHistory'])->name('inquiry-history');
+    Route::view('/contact/inquiry-history/second', 'Contact.inquiry_history2')->name('inquiry-history2');
+    Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
+    Route::get('/contact/inquiry-history/{ticket_reference}', [ContactUsController::class, 'getInquiryDetails'])->name('inquiry.details');
+    Route::post('/contact/inquiry-history/{ticket_reference}/reply', [ContactUsController::class, 'submitReply'])->name('submitReply');
+    Route::post('/contact/inquiry-history/{ticket_reference}/close', [ContactUsController::class, 'closeInquiry'])->name('closeInquiry');
+
     //for reviewer
     Route::post('/get-raw-text', [RawController::class, 'getRawText']);
     Route::post('/UpdateAndGet_RawText', [RawController::class, 'UpdateAndGet_RawText']);
@@ -126,15 +136,6 @@ Route::middleware('guest')->group(function (){
     Route::view('/privacy', 'website.footer.privacy')->name('privacy');
 
 
-    //contact us
-    Route::view('/contact', 'website.footer.contact')->name('contact');
-    Route::view('/contact/inquiry', 'website.footer.inquiry')->name('inquiry');
-    Route::get('/contact/inquiry-history', [ContactUsController::class, 'inquiryHistory'])->name('inquiry-history');
-    Route::view('/contact/inquiry-history/second', 'website.footer.inquiry_history2')->name('inquiry-history2');
-    Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
-    Route::get('/contact/inquiry-history/{ticket_reference}', [ContactUsController::class, 'getInquiryDetails'])->name('inquiry.details');
-    Route::post('/contact/inquiry-history/{ticket_reference}/reply', [ContactUsController::class, 'submitReply'])->name('submitReply');
-    Route::post('/contact/inquiry-history/{ticket_reference}/close', [ContactUsController::class, 'closeInquiry'])->name('closeInquiry');
 
 });
 

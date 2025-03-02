@@ -1,4 +1,4 @@
-<x-web_footer>
+<x-contact_layout>
     <main>
         <div class="breadcrumb mb-10 pl-72 font-bold text-xl">
             <a href="{{ route('landing')}}" class="text-blue-700 no-underline">Home</a>
@@ -31,4 +31,4 @@
             </a>
         </div>
     </main>
-</x-web_footer>
+</x-contact_layout>

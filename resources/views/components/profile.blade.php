@@ -11,10 +11,13 @@
                         <p class="text-gray-600">Joined August 2024</p>
                     </div>
                 </div>
-                <form action="{{ route('logout') }}" method="POST" class="ml-auto px-4">
-                    @csrf
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Logout</button>
-                </form>
+                <div class="flex justify-start">
+                    <a href="{{ route('contact') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Help</a>
+                    <form action="{{ route('logout') }}" method="POST" class="ml-2">
+                        @csrf
+                        <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300">Logout</button>
+                    </form>
+                </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white shadow-md rounded-lg p-6">

@@ -4,18 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactUs;
+use App\Models\User;
 use App\Models\Reply;
 use App\Models\AdminReply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class ContactUsController extends Controller
 {
     public function submitInquiry(Request $request)
     {
+        // Check if user is authenticated 
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please login to submit an inquiry.');
+        }
+        
         $request->validate([
-            'email' => 'required|email',
             'subject' => 'required|string|max:255',
             'question' => 'required|string',
             'upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
@@ -26,7 +32,7 @@ class ContactUsController extends Controller
 
             $contactUs = new ContactUs();
             $contactUs->ticket_reference = $ticketReference;
-            $contactUs->email = $request->email;
+            $contactUs->email = Auth::user()->email; // Use authenticated user's email
             $contactUs->category = $request->category;
             $contactUs->subject = $request->subject;
             $contactUs->question = $request->question;
@@ -50,10 +56,29 @@ class ContactUsController extends Controller
         }
     }
 
+    /**
+     * Display the inquiry history for the authenticated user.
+     *
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+     */
     public function inquiryHistory()
     {
-        $inquiries = ContactUs::all();
-        return view('website.footer.inquiry_history', compact('inquiries'));
+        $user = Auth::user(); // Get the authenticated user
+        
+        // If user is authenticated, get their email, otherwise redirect to login
+        if ($user) {
+            $email = $user->email;
+            
+            // Fetch only inquiries that match the logged-in user's email
+            $inquiries = ContactUs::where('email', $email)
+                               ->orderBy('created_at', 'desc')
+                               ->get();
+                               
+            return view('Contact.inquiry_history', compact('inquiries'));
+        }
+        
+        // If not authenticated, redirect to login page
+        return redirect()->route('login')->with('error', 'Please login to view your inquiry history');
     }
 
     /**
@@ -68,7 +93,7 @@ class ContactUsController extends Controller
     public function getInquiryDetails($ticket_reference)
     {
         $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
-        return view('website.footer.inquiry_history2', compact('inquiry'));
+        return view('Contact.inquiry_history2', compact('inquiry'));
     }
 
     public function getAdminInquiryDetails($ticket_reference)
