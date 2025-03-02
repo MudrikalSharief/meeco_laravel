@@ -46,22 +46,24 @@
     <div id="addQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center  ">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
             <h2 class=" text-center text-lg font-semibold mb-4 text-blue-700">Setup Quiz</h2>
+
             <div class="mb-4">
-                <label for="quiztype" class="block text-sm font-medium text-gray-700 mb-1">Select Quiz Type</label>
+                <label for="newQuizName" class="block text-xs  text-gray-600 mb-1">Quiz Name</label>
+                <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="py-1 px-2 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="quiztype" class="block text-xs  text-gray-600 mb-1">Select Quiz Type</label>
                 <select name="quiztype" id="quiztype" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
                     <option value="Multiple Choice">Multiple Choice</option>
                     <option value="Identification">Identification</option>
                     <option value="True or false">True or false</option>
-                    {{-- <option value="Mixed">Mixed</option> --}}
+                    <option value="Mixed">Mixed</option>
                 </select>
-            </div>
-            <div class="mb-4">
-                <label for="newQuizName" class="block text-sm font-medium text-gray-700 mb-1">Quiz Name</label>
-                <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="p-1 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
             
             <div class="mb-4">
-                <label for="quiznumber" class=" block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+                <label for="quiznumber" class="quiznumber_label block text-xs  text-gray-600 mb-1">Number of Questions</label>
                 <select name="quiznumber" id="quiznumber" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -69,6 +71,40 @@
                     <option value="40">40</option>
                 </select>
             </div>
+
+            <div id="quiznumber_multiple_holder" class="mb-4 hidden">
+                <label for="quiznumber_multiple" class="block text-xs  text-gray-600 mb-1">Multiple Choice</label>
+                <select name="quiznumber_multiple" id="quiznumber_multiple" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+
+            <div id="quiznumber_true_or_false_holder" class="mb-4 hidden">
+                <label for="quiznumber_true_or_false" class="block text-xs  text-gray-600 mb-1">True or False</label>
+                <select name="quiznumber_true_or_false" id="quiznumber_true_or_false" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                    
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+
+            <div id="quiznumber_identification_holder" class="mb-4 hidden">
+                <label for="quiznumber_identification" class="block text-xs  text-gray-600 mb-1">Identifcation</label>
+                <select name="quiznumber_identification" id="quiznumber_identification" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                    
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+
             <div class="flex justify-end mt-4">
                 <button id="cancelQuizButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
                 <button id="saveQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
@@ -198,13 +234,43 @@
         const newQuizName = document.getElementById('newQuizName');
         const quiztype = document.getElementById('quiztype');
         const quiznumber = document.getElementById('quiznumber');
-
-        
+        const quiznumber_label = document.querySelector(".quiznumber_label");
+        const quiznumber_multiple_holder = document.getElementById('quiznumber_multiple_holder');
+        const quiznumber_true_or_false_holder = document.getElementById('quiznumber_true_or_false_holder');
+        const quiznumber_identification_holder = document.getElementById('quiznumber_identification_holder');
+        const quiznumber_multiple = document.getElementById('quiznumber_multiple');
+        const quiznumber_true_or_false = document.getElementById('quiznumber_true_or_false');
+        const quiznumber_identification= document.getElementById('quiznumber_identification');
+        //show the mixed creation of quiz
+        quiztype.addEventListener('change',  function(){
+                if(quiztype.value == "Mixed"){
+                    quiznumber.classList.add('hidden');
+                    quiznumber.getAttribute('disabled');
+                    quiznumber_label.classList.remove('text-xs');
+                    quiznumber_label.classList.add('text-sm');
+                    quiznumber_label.classList.add('font-semibold');
+                    quiznumber_multiple_holder.classList.remove('hidden');
+                    quiznumber_true_or_false_holder.classList.remove('hidden');
+                    quiznumber_identification_holder.classList.remove('hidden');
+                }else{
+                    quiznumber.classList.remove('hidden');
+                    quiznumber.getAttribute('enable');
+                    quiznumber_label.classList.remove('text-sm');
+                    quiznumber_label.classList.add('text-xs');
+                    quiznumber_label.classList.remove('font-semibold');
+                    quiznumber_multiple_holder.classList.add('hidden');
+                    quiznumber_true_or_false_holder.classList.add('hidden');
+                    quiznumber_identification_holder.classList.add('hidden');
+                }
+            });
 
         saveQuizButton.addEventListener('click', function() {
             const QuizName = newQuizName.value.trim();
             const QuizType = quiztype.value;
             const QuizNumber = quiznumber.value;
+            const quiznumber_multiple_value = quiznumber_multiple.value;
+            const quiznumber_true_or_false_value = quiznumber_true_or_false.value;
+            const quiznumber_identification_value = quiznumber_identification.value;
 
             if (!QuizName) {
                 alert('Please enter a name for the quiz.');
@@ -224,6 +290,9 @@
                     name: QuizName,
                     type: QuizType,
                     number: QuizNumber,
+                    multiple: quiznumber_multiple_value,
+                    true_or_false: quiznumber_true_or_false_value,  
+                    identification: quiznumber_identification_value
                 }),
             })
             .then(response => response.json())
