@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ env('APP_NAME') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/navbar-style.css'])
+    @vite(['resources/css/contact.css'])
     {{-- , 'resources/js/openai.js' --}}
     <style>
         /* Hide scrollbar for Chrome, Safari and Opera */
