@@ -1,6 +1,6 @@
 <x-contact_layout>
-    <main>
-        <div class="breadcrumb mb-10 pl-72 font-bold text-xl">
+    <main class="px-4 md:px-10">
+        <div class="breadcrumb mb-10 px-4 md:px-10 lg:px-20 xl:pl-72 font-bold text-xl">
             <a href="{{ route('landing')}}" class="text-blue-700 no-underline">Home</a>
             <span class="text-blue-700 mx-1">></span>
             <span class="text-blue-700">Help</span>
