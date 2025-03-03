@@ -20,23 +20,28 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Subscription Status -->
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h3 class="text-xl font-bold text-blue-700 mb-4">Subscription Status</h3>
-                @if($subscription)
-                    <p class="text-gray-700"><strong>Subscription:</strong> {{ $subscription->promo->name }}</p>
-                    <p class="text-gray-700"><strong>Duration:</strong> {{ $subscription->duration }} days</p>
-                    <p class="text-gray-700"><strong>Start Date:</strong> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y') }}</p>
-                    <p class="text-gray-700"><strong>End Date:</strong> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y') }}</p>
-                    <button id="openModal" class="mt-4 w-full bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 shadow-md">
+         <!-- Subscription Status (Same Size as User Info) -->
+         <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-blue-700">Subscription Status</h3>
+            </div>
+            @if($subscription)
+                <div class="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p class="text-gray-700"><span class="font-semibold">Subscription:</span> {{ $subscription->promo->name }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Duration:</span> {{ $subscription->duration }} days</p>
+                    <p class="text-gray-700"><span class="font-semibold">Start Date:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y') }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">End Date:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y') }}</p>
+                </div>
+                <form action="{{ route('profile.cancelSubscription') }}" method="POST" class="flex justify-end mt-4">
+                    @csrf
+                    <button id="openModal" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
                         Cancel Subscription
                     </button>
-                @else
-                    <p class="text-gray-600">No active subscription.</p>
-                @endif
-            </div>
-
+                </form>
+            @else
+                <p class="text-gray-500 mt-4">No active subscription.</p>
+            @endif
+        </div>
 
     <!-- Modal -->
     <div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

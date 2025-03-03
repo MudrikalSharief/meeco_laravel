@@ -17,7 +17,7 @@ class ProfileController extends Controller
                     ->with('promo')
                     ->first();
 
-        return view('profile', compact('user', 'subscription'));
+        return view('components.profile', compact('user', 'subscription'));
     }
 
     public function uploadProfilePicture(Request $request)

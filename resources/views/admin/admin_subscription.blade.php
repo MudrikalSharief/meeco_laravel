@@ -75,13 +75,9 @@
                                         <a href="{{ route('admin.editPromo', $promo->promo_id) }}" class="inline-block">
                                             <img src="{{ asset('logo_icons/edit.png') }}" alt="Edit" class="w-4 h-4 mx-1">
                                         </a>
-                                        <form action="{{ route('admin.deletePromo', $promo->promo_id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="inline-block">
-                                                <img src="{{ asset('logo_icons/trash.png') }}" alt="Delete" class="w-4 h-4 mx-1">
-                                            </button>
-                                        </form>
+                                        <button type="button" class="inline-block" onclick="openDeleteModal({{ $promo->promo_id }})">
+                                            <img src="{{ asset('logo_icons/trash.png') }}" alt="Delete" class="w-4 h-4 mx-1">
+                                        </button>
                                     </td>
                                 </tr>
                                 @endif
@@ -92,4 +88,35 @@
             </div>
         </div>
     </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Confirm Deletion</h2>
+            <p class="text-gray-600 mb-6">Are you sure you want to delete this promo?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="closeDeleteModal" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md shadow hover:bg-gray-400 transition duration-300">
+                    Cancel
+                </button>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 shadow-md">
+                        Confirm
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal(promoId) {
+            document.getElementById('deleteForm').action = '/admin/deletePromo/' + promoId;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        document.getElementById('closeDeleteModal').addEventListener('click', function () {
+            document.getElementById('deleteModal').classList.add('hidden');
+        });
+    </script>
 </x-admin_layout>
