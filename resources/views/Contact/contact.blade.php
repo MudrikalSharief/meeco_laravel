@@ -3,7 +3,7 @@
         <div class="breadcrumb mb-10 pl-72 font-bold text-xl">
             <a href="{{ route('landing')}}" class="text-blue-700 no-underline">Home</a>
             <span class="text-blue-700 mx-1">></span>
-            <span class="text-blue-700">Help and Support</span>
+            <span class="text-blue-700">Help</span>
         </div>
     
         <h2 class="Contact_Us w-full text-center text-blue-700 text-4xl font-bold mb-5">Contact Us</h2>
