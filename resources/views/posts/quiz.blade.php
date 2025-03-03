@@ -75,7 +75,7 @@
             <div id="quiznumber_multiple_holder" class="mb-4 hidden">
                 <label for="quiznumber_multiple" class="block text-xs  text-gray-600 mb-1">Multiple Choice</label>
                 <select name="quiznumber_multiple" id="quiznumber_multiple" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-
+                    <option value="0">0</option>
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -86,7 +86,7 @@
             <div id="quiznumber_true_or_false_holder" class="mb-4 hidden">
                 <label for="quiznumber_true_or_false" class="block text-xs  text-gray-600 mb-1">True or False</label>
                 <select name="quiznumber_true_or_false" id="quiznumber_true_or_false" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-                    
+                    <option value="0">0</option>
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -97,7 +97,7 @@
             <div id="quiznumber_identification_holder" class="mb-4 hidden">
                 <label for="quiznumber_identification" class="block text-xs  text-gray-600 mb-1">Identifcation</label>
                 <select name="quiznumber_identification" id="quiznumber_identification" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-                    
+                    <option value="0">0</option>
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>

@@ -64,6 +64,30 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                            const savedAnswer = localStorage.getItem(`question_${index}`);
+                            if (savedAnswer) {
+                                const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                if (input) {
+                                    input.checked = true;
+                                    const selectedLabel = input.closest('label');
+                                    const labels = questionDiv.querySelectorAll('label');
+                                    
+                                    labels.forEach(label => {
+                                        label.classList.add('shadow-sm');
+                                        label.classList.remove('shadow-md');
+                                        label.classList.remove('bg-blue-300');
+                                        label.classList.add('bg-blue-50');
+                                    });
+                                    
+                                    selectedLabel.classList.remove('bg-blue-50');
+                                    selectedLabel.classList.add('bg-blue-300');
+                                    selectedLabel.classList.remove('shadow-sm');
+                                    selectedLabel.classList.add('shadow-md');
+                                }
+                            }
+                                
                             questionCounter++;
                         });
                     }
@@ -80,6 +104,30 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                            const savedAnswer = localStorage.getItem(`question_${index}`);
+                            if (savedAnswer) {
+                                const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                if (input) {
+                                    input.checked = true;
+                                    const selectedLabel = input.closest('label');
+                                    const labels = questionDiv.querySelectorAll('label');
+                                    
+                                    labels.forEach(label => {
+                                        label.classList.add('shadow-sm');
+                                        label.classList.remove('shadow-md');
+                                        label.classList.remove('bg-blue-300');
+                                        label.classList.add('bg-blue-50');
+                                    });
+                                    
+                                    selectedLabel.classList.remove('bg-blue-50');
+                                    selectedLabel.classList.add('bg-blue-300');
+                                    selectedLabel.classList.remove('shadow-sm');
+                                    selectedLabel.classList.add('shadow-md');
+                                }
+                            }
+
                             questionCounter++;
                         });
                     }
@@ -95,6 +143,16 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                                const savedAnswer = localStorage.getItem(`question_${index}`);
+                                if (savedAnswer) {
+                                    const input = questionDiv.querySelector('input');
+                                    if (input) {
+                                        input.value = savedAnswer;
+                                    }
+                                }
+
                             questionCounter++;
                         });
                     }
@@ -137,17 +195,63 @@
                                 }
 
                                 quizForm.appendChild(questionDiv);
+
+                                // Retrieve saved answers from localStorage
+                                const savedAnswer = localStorage.getItem(`question_${questionCounter}`);
+                                if (savedAnswer) {
+                                    if (type === 'multiple_choice' || type === 'true_or_false') {
+                                        const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                        if (input) {
+                                            input.checked = true;
+                                            const selectedLabel = input.closest('label');
+                                            const labels = questionDiv.querySelectorAll('label');
+                                            
+                                            labels.forEach(label => {
+                                                label.classList.add('shadow-sm');
+                                                label.classList.remove('shadow-md');
+                                                label.classList.remove('bg-blue-300');
+                                                label.classList.add('bg-blue-50');
+                                            });
+                                            
+                                            selectedLabel.classList.remove('bg-blue-50');
+                                            selectedLabel.classList.add('bg-blue-300');
+                                            selectedLabel.classList.remove('shadow-sm');
+                                            selectedLabel.classList.add('shadow-md');
+                                        }
+                                    } else if (type === 'identification') {
+                                        const input = questionDiv.querySelector('input');
+                                        if (input) {
+                                            input.value = savedAnswer;
+                                        }
+                                    }
+                                }
                                 questionCounter++;
                             });
                         }
                     });
+
                 }
 
-    
+                   
                     const submitQuizButton = document.getElementById('submitQuizButton');
                     const quizContainer = document.querySelector('.quiz-container');
                     const questionDivs = quizContainer.querySelectorAll('.question');
                     
+
+                    // show the errror if the brower is refresh
+                    questionDivs.forEach((questionDiv, index) => {
+                            const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                            if (localStorage.getItem(`unanswered_${index}`) === 'true') {
+                                if (errorSpan) {
+                                    errorSpan.textContent = 'Please answer this question';
+                                }
+                            } else {
+                                if (errorSpan) {
+                                    errorSpan.textContent = '';
+                                }
+                            }
+                        });
+
                     questionCounter = 1; // Initialize questionCounter for validation
 
                     submitQuizButton.addEventListener('click', function(event) {
@@ -180,7 +284,24 @@
                             }
                         });
 
+
+
                         if (!allAnswered) {
+                            // Save the unanswered questions state in localStorage
+                            questionDivs.forEach((questionDiv, index) => {
+                                    const inputs = questionDiv.querySelectorAll('input');
+                                    let answered = false;
+                                    inputs.forEach(input => {
+                                        if ((input.type === 'radio' && input.checked) || (input.type === 'text' && input.value.trim() !== '')) {
+                                            answered = true;
+                                        }
+                                    });
+                                    if (!answered) {
+                                        localStorage.setItem(`unanswered_${index}`, 'true');
+                                    } else {
+                                        localStorage.removeItem(`unanswered_${index}`);
+                                    }
+                                });
                             // alert('Please answer all questions before submitting the quiz.');
                            // Show modal instead of alert
                             const validateModal = document.createElement('div');
@@ -201,6 +322,7 @@
                             });
                             return;
                         }
+
 
 
                         //if validaten continue
@@ -317,7 +439,34 @@
                 }
             });
 
+            //saving the answer in the browser local storage
+            quizForm.addEventListener('change', function(event) {
+                if (event.target.type === 'radio' || event.target.type === 'text') {
+                    const questionId = event.target.name;
+                    const answer = event.target.value;
+                    localStorage.setItem(questionId, answer);
 
-        });
+                    if (event.target.type === 'radio') {
+                        const selectedLabel = event.target.closest('label');
+                        const questionGroup = selectedLabel.closest('.question');
+                        const labels = questionGroup.querySelectorAll('label');
+                        
+                        labels.forEach(label => {
+                            label.classList.add('shadow-sm');
+                            label.classList.remove('shadow-md');
+                            label.classList.remove('bg-blue-300');
+                            label.classList.add('bg-blue-50');
+                        });
+                        
+                        selectedLabel.classList.remove('bg-blue-50');
+                        selectedLabel.classList.add('bg-blue-300');
+                        selectedLabel.classList.remove('shadow-sm');
+                        selectedLabel.classList.add('shadow-md');
+                    }
+                }
+            });
+
+
+});
     </script>
 </x-layout>
