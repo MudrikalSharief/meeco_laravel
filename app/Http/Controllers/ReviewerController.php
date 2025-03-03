@@ -88,7 +88,7 @@ class ReviewerController extends Controller
             return response()->json(['success' => true, 'file' => $fileName]);
         } catch (\Exception $e) {
             // Log the error for debugging purposes
-            \Log::error('Error downloading reviewer: ' . $e->getMessage());
+            Log::error('Error downloading reviewer: ' . $e->getMessage());
     
             // Return a JSON response with the error message
             return response()->json(['success' => false, 'message' => 'An error occurred while downloading the reviewer. Please try again later.']);

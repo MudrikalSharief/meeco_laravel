@@ -15,6 +15,7 @@ use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\StatisticsController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -214,7 +215,8 @@ Route::post('admin/sort-transaction', [TransactionController::class, 'sort_trans
 
 
 //Statistic Route
-Route::get('admin/statistics', [TransactionController::class, 'get_sales'])->name('admin.statistics');
+Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 // Redirect to admin login if not authenticated
