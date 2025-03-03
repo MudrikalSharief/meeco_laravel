@@ -2,7 +2,7 @@
     
     <div class="max-w-2xl h-full mx-auto pt-6 bg-white  rounded-lg">
         
-        <div class="w-full max-w-2xl">
+        <div class="w-full max-w-2xl w">
 
             <div class="flex gap-2 space-x-4 mb-6">
                 <button id="reviewer" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Reviewer</button>
@@ -19,10 +19,13 @@
         
                     {{-- this is for the title,type,and score --}}
                     <div class="px-2 flex justify-between mb-2">
-                        <p class=" text-gray-500 font-semibold text-sm">Title</p>
+                        <p class=" text-gray-500 font-semibold text-sm w-2/5" >Title</p>
                         <div class="flex justify-between w-3/5">
                             <p class=" text-gray-500 font-semibold text-sm">Type</p>
-                            <p class=" text-gray-500 font-semibold text-sm">Score</p>
+                            <div class="flex justify-between w-1/2 gap-1">
+                                <p class=" text-gray-500 font-semibold text-sm">Score</p>
+                                <p class=" text-gray-500 font-semibold text-sm">Action</p>
+                            </div>
                         </div>
                     </div>
         
@@ -45,7 +48,7 @@
                     <option value="Multiple Choice">Multiple Choice</option>
                     <option value="Identification">Identification</option>
                     <option value="True or false">True or false</option>
-                    <option value="Mixed">Mixed</option>
+                    {{-- <option value="Mixed">Mixed</option> --}}
                 </select>
             </div>
             <div class="mb-4">
@@ -68,8 +71,39 @@
             </div>
         </div>
     </div>
+    
+    {{-- Success Modal --}}
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Success</h2>
+            <p class="text-center mb-4">Quiz created successfully!</p>
+            <div class="flex justify-center">
+                <button id="closeSuccessModalButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+            </div>
+        </div>
+    </div>
 
     </div>
+    
+    {{-- Loader --}}
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="loader"></div>
+    </div>
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -90,13 +124,19 @@
                 
                 data.questions.forEach(quiz => {
                     const button = document.createElement('button');
-                    button.classList.add('question_button','w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                    button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
                     button.id = quiz.question_id;
                     button.innerHTML = `
-                        <p class=" ">${quiz.question_title}</p>
+                        <p class="w-2/5 ">${quiz.question_title}</p>
                         <div class="flex justify-between w-3/5">
-                            <p class=" text-sm">${quiz.question_type}</p>
-                            <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
+                            <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
+                            <div class="flex justify-between w-1/2  gap-1">
+                                <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
+                                <div class="flex gap-1 items-center w- 3/5">
+                                    <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
+                                    <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete">
+                                </div>
+                            </div>    
                         </div>
                     `;
                     quizContainer.appendChild(button);
@@ -158,6 +198,9 @@
                 return;
             }
 
+            // Show the loader
+            loader.classList.remove('hidden');
+
             fetch(`/generate-quiz/${topicId}`, {
                 method: 'POST',
                 headers: {
@@ -172,9 +215,12 @@
             })
             .then(response => response.json())
             .then(data => {
+                 // Hide the loader
+                 loader.classList.add('hidden');
                 if (data.success) {
                     addQuizModal.classList.add('hidden');
-                    alert('Success to create quiz.');
+                    // Show the success modal
+                    successModal.classList.remove('hidden');
 
                     //generate the quiz card again
                     fetch(`/getquizzes/${topicId}`)
@@ -185,12 +231,19 @@
                             quizContainer.innerHTML="";
                             data.questions.forEach(quiz => {
                                 const button = document.createElement('button');
-                                button.classList.add('w-full', 'text-start', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                                button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75', 'hover:transform', 'hover:-translate-y-1', 'hover:shadow-lg', 'transition', 'duration-300');
+                                button.id = quiz.question_id;
                                 button.innerHTML = `
-                                    <p class=" ">${quiz.question_title}</p>
-                                    <div class="flex justify-between w-1/2">
-                                        <p class="text-sm">${quiz.question_type}</p>
-                                        <p class=""> ${quiz.score} / ${quiz.number_of_question}</p>
+                                    <p class="w-2/5 ">${quiz.question_title}</p>
+                                    <div class="flex justify-between w-3/5">
+                                        <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
+                                        <div class="flex justify-between w-1/2  gap-1">
+                                            <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
+                                            <div class="flex gap-1 items-center w- 3/5">
+                                                <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
+                                                <img class="w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete">
+                                            </div>
+                                        </div>    
                                     </div>
                                 `;
                                 quizContainer.appendChild(button);
@@ -223,7 +276,10 @@
             }
         });
 
-        
+        const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+        closeSuccessModalButton.addEventListener('click', function() {
+            successModal.classList.add('hidden');
+        });
         
 });
 

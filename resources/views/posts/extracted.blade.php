@@ -7,6 +7,14 @@
      $rawText = Raw::where('topic_id', request('topic_id'))->first()->raw_text ?? '';
 ?>
 <x-layout>
+    <div id="loading_modal" class="hidden z-50  flex flex-col absolute top-0 left-0 h-screen w-screen bg-gray-300 bg-opacity-70 flex items-center justify-center ">
+        <video class="z-10 w-36 filter-blue" autoplay loop muted>
+            <source src="{{ asset('logo_icons/ExtractingText.webm') }}" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+        <p class="text-blue-600">Extracting Text</p>
+        
+    </div>
     <div class="p-6 h-full  md:overflow-hidden">
         <h1 class="pb-3 text-xl font-bold text-blue-500">Extracted Text for Topic: {{ request('topic_name') }}</h1>
         <div class="flex flex-col md:flex-row h-full">
@@ -56,11 +64,36 @@
         </div>
     </div>
 
+
+    {{-- Loader --}}
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="loader"></div>
+    </div>
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const extractedTextForm = document.getElementById('extractedTextForm');
             const extractedTextArea = extractedTextForm.querySelector('textarea[name="raw_text"]');
             const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
+
+
+            const loader = document.getElementById('loader');
+            
+           
 
             fetch('/get-raw-text', {
                 method: 'POST',
@@ -75,6 +108,9 @@
                 if (data.raw_text.trim() !== '') {
                     extractedTextArea.value = data.raw_text;
                 } else {
+                     // Show the loader
+                    loader.classList.remove('hidden');
+                    
                     fetch('/extract-text', {
                         method: 'POST',
                         headers: {
@@ -95,6 +131,9 @@
                         }
                     })
                     .then(data => {
+                         // Hide the loader
+                        loader.classList.add('hidden');
+                        
                         console.log('Success:', data);
                         // Display the returned raw_text in the textarea
                         extractedTextArea.value = data.raw_text;
@@ -107,6 +146,7 @@
             .catch((error) => {
                 console.error('Error:', error);
             });
+
 
             //======= the reviewer genereate button is clicked here ==================================================================
             extractedTextForm.addEventListener('submit', function(event) {
@@ -121,54 +161,28 @@
                 })
                 .then(response => response.json())
                 .then(() => {
+                    loader.classList.remove('hidden');
                     fetch('/openai/chat', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         },
-                        body: JSON.stringify({ content: extractedTextArea.value })
+                        body: JSON.stringify({ content: extractedTextArea.value, topic_id: topicId })
                     })
                     .then(response => {
                         json = response.json();
                         return json;
                     })
                     .then(data => {
+                        loader.classList.add('hidden');
                         console.log('Success: OpenAi have Created the reviewer');
-                        //==
-                        const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
-                        // Insert the generated reviewer into the database
-                        fetch('/storeReviewer', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                topic_id: topicId,
-                                reviewer_text: data.choices[0].message.content
-                            })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error('Failed to store reviewer: ' + (err.message || 'Unknown error'));
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(storeData => {
-                            if (storeData.success) {
+                        
+                        if (data.success) {
                                 document.getElementById('successModal').classList.remove('hidden');
                             } else {
                                 throw new Error(storeData.message || 'Unknown error');
                             }
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('An error occurred cannot store data: ' + error.message);
-                        });
-                        //==
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -197,5 +211,7 @@
                 document.getElementById('successModal').classList.add('hidden');
             }
         });
+
+        
     </script>
 </x-layout>

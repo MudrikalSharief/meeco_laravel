@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 imageContainer.innerHTML = '';
                                 data.images.forEach((url, index) => {
                                     const imgWrapper = document.createElement('div');
-                                    imgWrapper.className = 'm-2 img-wrapper relative';
+                                    imgWrapper.className = 'm-2 img-wrapper ';
 
                                     const img = document.createElement('img');
                                     img.src = url;
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageContainer.innerHTML = '';
                 data.images.forEach((url, index) => {
                     const imgWrapper = document.createElement('div');
-                    imgWrapper.className = 'm-2 img-wrapper relative';
+                    imgWrapper.className = 'm-2 img-wrapper';
 
                     const img = document.createElement('img');
                     img.src = url;
@@ -820,7 +820,7 @@ if (captureImage) {
                         imageContainer.innerHTML = '';
                         data.images.forEach((url, index) => {
                             const imgWrapper = document.createElement('div');
-                            imgWrapper.className = 'm-2 img-wrapper relative';
+                            imgWrapper.className = 'm-2 img-wrapper ';
 
                             const img = document.createElement('img');
                             img.src = url;
@@ -894,9 +894,9 @@ if (closeCaptureConfirm) {
     
 
     let subjectDropdownListenerAdded = false;
-
+    let  selectedSubjectId = null;
     function handleSubjectDropdownChange() {
-        const selectedSubjectId = subjectDropdown.value;
+         selectedSubjectId = subjectDropdown.value;
         if (!selectedSubjectId) {
             subjectReminder.classList.remove('hidden');
             topicsContainer.classList.add('hidden');
@@ -905,7 +905,7 @@ if (closeCaptureConfirm) {
         } else {
             subjectReminder.classList.add('hidden');
             addTopicButton.classList.remove('hidden');
-            fetch(`/topics/subject/${selectedSubjectId}`)
+            fetch(`/subject/topics/${selectedSubjectId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.topics && data.topics.length > 0) {
@@ -926,6 +926,43 @@ if (closeCaptureConfirm) {
                 .catch(error => console.error('Error fetching topics:', error));
         }
     }
+
+    
+
+    if (saveSubjectButton) {
+        saveSubjectButton.addEventListener('click', () => {
+            const subjectName = newSubjectName.value.trim();
+            if (subjectName) {
+                fetch('/subjects/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: subjectName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const option = document.createElement('option');
+                        option.value = data.subject.subject_id;
+                        option.textContent = data.subject.name;
+                        subjectDropdown.appendChild(option);
+                        subjectDropdown.value = data.subject.subject_id; // Select the newly added subject
+                        subjectDropdown.dispatchEvent(new Event('change')); // Simulate a change event
+                        handleSubjectDropdownChange();
+                        addSubjectModal.classList.add('hidden');
+                        newSubjectName.value = '';
+                        subjectConfirmModal.classList.remove('hidden');
+                    } else {
+                        alert('Error adding subject: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error adding subject:', error));
+            }
+        });
+    }
+
 
     if (extractTextButton) {
         extractTextButton.addEventListener('click', () => {
@@ -987,7 +1024,7 @@ if (closeCaptureConfirm) {
         });
     }
     
-    if (saveTopicButton) {
+   
         
             if (addSubjectButton) {
                 addSubjectButton.addEventListener('click', () => {
@@ -1124,7 +1161,7 @@ if (closeCaptureConfirm) {
                 });
             }
 
-    }
+            
 
     if (closeTopicConfirm) {
         closeTopicConfirm.addEventListener('click', () => {
@@ -1138,8 +1175,72 @@ if (closeCaptureConfirm) {
         });
     }
 
+    const saveTopicButtonCapture = document.getElementById('saveTopicButtonCapture');
+    if (saveTopicButtonCapture) {
+        saveTopicButtonCapture.addEventListener('click', () => {
+            const topicName = newTopicName.value.trim();
+            const selectedSubjectId = subjectDropdown ? subjectDropdown.value : document.querySelector('.subject_id_in_topics').dataset.subjectId;
 
+            if (topicName && selectedSubjectId) {
+                fetch('/topics/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ name: topicName, subject_id: selectedSubjectId })
+                })
+                .then(response => response.json().catch(() => {
+                    return response.text().then(text => { throw new Error(text); });
+                }))
+                .then(data => {
+                    if (data.success) {
+                        const option = document.createElement('option');
+                        if (topicDropdown) {
+                          
+                            if (topicsContainer) {
+                              
+                                topicDropdown.dispatchEvent(new Event('change')); // Simulate a change event    
+                                handleSubjectDropdownChange();
+                                option.value = data.topic.topic_id;
+                                option.textContent = data.topic.name;
+                                topicDropdown.appendChild(option);
+                                topicDropdown.value = data.topic.id; // Select the newly added topic
+                            }
+                           
+                            noTopicsMessage.classList.add('hidden');
+                            addTopicModal.classList.add('hidden');
+                            newTopicName.value = '';
+                            topicConfirmModal.classList.remove('hidden');
+                        }else{
+                            const topicButton = document.createElement('a');
+                            topicButton.value = data.topic.topic_id;
+                            topicButton.textContent = data.topic.name;
+                            topicButton.innerHTML = `<button class="max-w-2xl w-full border text-start py-2 px-3 my-2 shadow-md rounded-md">${topicName}</button>`;
+                            topics_container.appendChild(topicButton);
+                            noTopicsMessage.classList.add('hidden');
+                            addTopicModal.classList.add('hidden');
+                            topicConfirmModal.classList.remove('hidden');
+                            newTopicName.value = '';
+                        }
+                         
+                       
+                    } else {
+                        if (data.message.includes('unique')) {
+                            topicExistsModal.classList.remove('hidden');
+                        } else {
+                            alert('Error adding topic: ' + data.message);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding topic:', error);
+                    alert('Error adding topic: ' + error.message);
+                });
+            }
 
+        });
+    }    
   
     
     // ...existing code...

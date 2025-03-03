@@ -48,49 +48,19 @@ class ReviewerController extends Controller
     //=======================================================================================================
     public function disectReviewer(Request $request)
     {
-        $request->validate([
-            'reviewerText' => 'required|string',
+        $topic_id = $request->validate([
+            'topicId' => 'required|int',
         ]);
     
-        $response = $request->reviewerText;
-        $response = preg_replace('/^---$/m', '', $response);
-    
-        // Match subjects and their associated cards
-        preg_match_all('/\*\*Subject:\*\* (.*?)\s*(?=\*\*Subject:|\z)/s', $response, $matches, PREG_SET_ORDER);
-    
         $data = [];
-    
-        foreach ($matches as $match) {
-            $subject = trim($match[1]); // Extract the subject
-            Log::info('Subject: ' . $subject);
-    
-            $cards = [];
-            // Now, extract the content after subject to get all card content correctly
-            preg_match_all('/\*\*Card (\d+):\*\*\s*(.*?)(?=\*\*Card (\d+):|\*\*Subject:|\z)/s', $match[0], $cardMatches);
-    
-            Log::info('Card Matches Count: ' . count($cardMatches[1]));
-            Log::info('Card Matches: ' . json_encode($cardMatches[2])); // This should be card contents
-    
-            // Loop through the matched cards
-            foreach ($cardMatches[2] as $cardContent) {
-                Log::info('Extracted Card: ' . $cardContent);
-                $cards[] = trim($cardContent); // Add the card content
-            }
-    
-            $data[] = [
-                'subject' => $subject,
-                'cards' => $cards,
-            ];
+
+        $reviewer = Reviewer::where(['topic_id' => $topic_id])->get();
+        foreach($reviewer as $item){
+            $data[] = [$item->reviewer_about, $item->reviewer_text];
         }
-    
-        // If no matches found, return an error message
-        if (empty($matches)) {
-            return response()->json(['message' => 'No subjects or cards found.', 'input' => $request->reviewerText], 400);
-        }
-    
-        return response()->json($data);
+
+        return response()->json(['success' => true,'data' => $data]);
+        
     }
-    
-    
     //=======================================================================================================
 }

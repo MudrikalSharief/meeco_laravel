@@ -6,6 +6,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow below the navbar for depth */
     z-index: 1000; /* Ensures the navbar appears above other elements when overlapping */
     
+    
 }
 
 .navbar .container {
@@ -13,7 +14,6 @@
     justify-content: space-between;
     align-items: center;
     height: 80px;
-    
 }
 
 .navbar .menu-icon {
