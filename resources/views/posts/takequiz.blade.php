@@ -154,87 +154,55 @@
                         // Prevent the default form submission
                         event.preventDefault();
 
-                        //validation
-                        // let index = 0;
-                        // let clear = 0;
-                        // let total = 0;
+                        //validation here
+                        
+                        let allAnswered = true;
+                        const questionDivs = quizContainer.querySelectorAll('.question');
+                        questionDivs.forEach((questionDiv, index) => {
+                            const inputs = questionDiv.querySelectorAll('input');
+                            let answered = false;
+                            inputs.forEach(input => {
+                                if ((input.type === 'radio' && input.checked) || (input.type === 'text' && input.value.trim() !== '')) {
+                                    answered = true;
+                                }
+                            });
+                            if (!answered) {
+                                allAnswered = false;
+                                const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                                if (errorSpan) {
+                                    errorSpan.textContent = 'Please answer this question';
+                                }
+                            } else {
+                                const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                                if (errorSpan) {
+                                    errorSpan.textContent = '';
+                                }
+                            }
+                        });
 
-                        // if(quiztype === 'Identification'){
-                        //     questionDivs.forEach(questionDivs =>{
-                        //     total++;
-                        //     const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
-                        //     let answered = 0;        
-                        //     labels.forEach(label => {
-                                
-                        //         if(label.value.trim() != ""){
-                        //             answered++;
-                        //             clear++;
-                        //         }else{
-                        //             label.value = "";
-                        //         }
-                                
-                        //         if(answered == 0){
-                        //             const q = document.getElementById(`q${questionCounter}`);
-                        //             q.innerHTML = "Please answer this question";
-                        //         }else{
-                        //             const q = document.getElementById(`q${questionCounter}`);
-                        //             q.innerHTML = "";
-                        //         }
-                        //     });
-                        //     console.log(index, answered,clear);
-                        //     index++;
-                        //     questionCounter++; // Increment questionCounter
-                        
-                        // })
-                        // }
-                        // else{
+                        if (!allAnswered) {
+                            // alert('Please answer all questions before submitting the quiz.');
+                           // Show modal instead of alert
+                            const validateModal = document.createElement('div');
+                            validateModal.id = 'validateModal';
+                            validateModal.classList.add('z-50', 'fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                            validateModal.innerHTML = `
+                                <div class="bg-white p-6 rounded-lg shadow-lg">
+                                    <h2 class="text-2xl mb-4">Oh No!</h2>
+                                    <p id="scoreText" class="text-lg">Please answer all questions before submitting the quiz.</p>
+                                    <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+                                </div>
+                            `;
+                            document.body.appendChild(validateModal);
 
-                        //     questionDivs.forEach(questionDivs =>{
-                        //         total++;
-                        //         const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
-                        //         let answered = 0;        
-                        //         labels.forEach(label => {
-                        //             if(label.checked){
-                        //                 answered++;
-                        //                 clear++;
-                        //             }
-                        //             if(answered == 0){
-                        //                 const q = document.getElementById(`q${questionCounter}`);
-                        //                 q.innerHTML = "Please answer this question";
-                        //             }else{
-                        //                 const q = document.getElementById(`q${questionCounter}`);
-                        //                 q.innerHTML = "";
-                        //             }
-                        //         });
-                        //         console.log(index, answered,clear);
-                        //         index++;
-                        //         questionCounter++; // Increment questionCounter
-                            
-                        //     })
-                        // }
-                        
-                        // if (clear < total) {
-                        //     const ValidateModal = document.createElement('div');
-                        //     ValidateModal.id = 'ValidateModal';
-                        //     ValidateModal.classList.add('z-50','fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
-                        //     ValidateModal.innerHTML = `
-                        //             <div class="bg-white p-6 rounded-lg shadow-lg">
-                        //                 <h2 class="text-2xl mb-4">Oh No!</h2>
-                        //                 <p id="scoreText" class="text-lg">Please Answer all Questions</p>
-                        //                 <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
-                        //             </div>
-                        //         `;
-                        //         document.body.appendChild(ValidateModal);
-                                
-                        //         const closeModalButton = document.getElementById('closeModalButton');
-                        //         if(closeModalButton){
-                        //             closeModalButton.addEventListener('click', function() {
-                        //                 ValidateModal.remove();
-                        //             });
-                        //         }
-                        //         return;
-                        // }
-                        
+                            const closeModalButton = document.getElementById('closeModalButton');
+                            closeModalButton.addEventListener('click', function() {
+                                validateModal.remove();
+                            });
+                            return;
+                        }
+
+
                         //if validaten continue
                         const formData = new FormData(quizForm);
                         quiztype = data.question.question_type;

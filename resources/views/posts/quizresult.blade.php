@@ -171,6 +171,7 @@
                                                                     choice.classList.remove('bg-blue-50');
                                                                     choice.classList.add('bg-red-200');
                                                                     if(correctAnswer == userAnswer){
+                                                                        choice.classList.remove('bg-red-200');
                                                                         choice.classList.add('bg-green-200');
                                                                     }
                                                                     label.checked = true;

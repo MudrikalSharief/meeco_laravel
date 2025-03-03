@@ -164,7 +164,7 @@ class QuizController extends Controller
         public function submitQuiz(Request $request)
         {
             
-            // return response()->json(['success' => false, 'request' => $request->all()]);
+            return response()->json(['success' => false, 'request' => $request->all()]);
             $score = 0;
             
             $validatedData = $request->validate([
