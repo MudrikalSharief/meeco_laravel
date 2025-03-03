@@ -15,6 +15,7 @@ use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -104,6 +105,10 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+    Route::post('/profile/cancelSubscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 });
 
 Route::middleware('guest')->group(function (){
@@ -222,3 +227,11 @@ Route::middleware(['auth:admin/login'])->group(function () {
         return redirect()->route('admin.login');
     })->where('any', '.*');
 });
+
+//profile
+Route::get('/profile/cancelled', function () {
+    return view('profile.cancelled');
+})->name('profile.cancelled');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+
