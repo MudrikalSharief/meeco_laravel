@@ -17,6 +17,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
+
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('capture');
