@@ -10,12 +10,13 @@
                         <p class="text-gray-600 text-sm">Joined {{ $user->created_at->format('F Y') }}</p>
                     </div>
                 </div>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 shadow-md">
-                        Logout
-                    </button>
-                </form>
+                <div class="flex justify-start">
+                    <a href="{{ route('contact') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Help</a>
+                    <form action="{{ route('logout') }}" method="POST" class="ml-2">
+                        @csrf
+                        <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
 

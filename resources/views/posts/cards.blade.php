@@ -1,7 +1,7 @@
 <x-layout>
     
-    <div  class=" px-5 pt-16 overflow-hidden flex flex-col justify-between  h-screen absolute top-0 ">
-        <div class=" relative text-base sm:text-lg md:text-xl overflow-x-hidden shadow-lg bg-blue-50 w-full p-5 rounded-3xl ">
+    <div  class=" px-5 pt-16 w-full items-center overflow-hidden flex flex-col justify-between  h-screen absolute top-0 ">
+        <div class=" relative max-w-3xl text-base sm:text-lg md:text-xl overflow-x-hidden shadow-lg bg-blue-50 w-full p-5 rounded-3xl ">
             <div id="back_to_reviewer" class="absolute top-2 right-5 w-4 h-4 p-1 rounded-lg bg-red-200 cursor-pointer hover:bg-red-400">
                 <img class="w-3" src="{{asset('logo_icons/x.svg')}}" alt="close">
             </div>

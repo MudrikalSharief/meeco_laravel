@@ -1,4 +1,4 @@
-<x-web_footer>
+<x-contact_layout>
     <main class="p-10">
         <div class="max-w-2xl mx-auto">
             <div class="flex items-center gap-3 mb-10">
@@ -77,7 +77,7 @@
             </div>
         </div>
     </main>
-</x-web_footer>
+</x-contact_layout>
 
 <!-- Reply Modal -->
 <div id="replyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">

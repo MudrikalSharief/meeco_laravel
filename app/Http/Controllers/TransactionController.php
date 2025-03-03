@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
     //In bash, enter: tail -f storage/logs/laravel.log to monitor logs
 
@@ -61,24 +62,4 @@ class TransactionController extends Controller
         return redirect()->route('admin.transactions');
     }
 
-    public function get_sales(Request $request){
-
-        $recent_monday = Carbon::now()->startOfWeek();
-        $recent_january = Carbon::now()->startOfMonth();
-
-        $daily_rev = Subscription::selectRaw('DATE(start_date) as date, SUM(price) as total_amount')
-        ->Join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('start_date', '>=', $recent_monday)
-        ->groupBy('date')
-        ->get();
-
-        $monthly_rev =  Subscription::selectRaw('DATE(start_date) as date, SUM(price) as total_amount')
-        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('start_date', '>=', $recent_january)
-        ->groupBy('date')
-        ->get();
-        Log::info($monthly_rev . "hey monthly_rev");
-
-        return view('admin.admin_statistics', compact('daily_rev', 'monthly_rev'));
-    }
 }

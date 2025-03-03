@@ -17,7 +17,7 @@
         {{-- rawtext-reviewer --}}
         <div class="mx-5 flex justify-end gap-2 items-center">
             <button id="toggleButton" class="px-2 py-1 bg-blue-200 text-sm flex gap-1  rounded-sm hover:bg-blue-400  items-center">
-                <span id="viewRawOrRev" class="text-black-500">Reviewer</span>
+                <span id="viewRawOrRev" class="text-black-500 text-xs">Reviewer</span>
                 <div>
                     <img class="max-w-4 eye1" src="{{ asset('logo_icons/eye1.svg') }}" alt="view">    
                     <img class="max-w-4 hidden eye2" src="{{ asset('logo_icons/eye2.svg') }}" alt="view">  

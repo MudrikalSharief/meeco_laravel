@@ -44,31 +44,76 @@
    
     {{-- Select quiz type Modal --}}
     <div id="addQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center  ">
-        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px; max-width: 400px;">
             <h2 class=" text-center text-lg font-semibold mb-4 text-blue-700">Setup Quiz</h2>
+
             <div class="mb-4">
-                <label for="quiztype" class="block text-sm font-medium text-gray-700 mb-1">Select Quiz Type</label>
+                <label for="newQuizName" class="block text-xs  text-gray-600 mb-1">Quiz Name</label>
+                <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="py-1 px-2 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="mb-4">
+                <label for="quiztype" class="block text-xs  text-gray-600 mb-1">Select Quiz Type</label>
                 <select name="quiztype" id="quiztype" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
                     <option value="Multiple Choice">Multiple Choice</option>
                     <option value="Identification">Identification</option>
                     <option value="True or false">True or false</option>
-                    {{-- <option value="Mixed">Mixed</option> --}}
+                    <option value="Mixed">Mixed</option>
                 </select>
-            </div>
-            <div class="mb-4">
-                <label for="newQuizName" class="block text-sm font-medium text-gray-700 mb-1">Quiz Name</label>
-                <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="p-1 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
             
             <div class="mb-4">
-                <label for="quiznumber" class=" block text-sm font-medium text-gray-700 mb-1">Number of Questions</label>
+                <label for="quiznumber" class="quiznumber_label block text-xs  text-gray-600 mb-1">Number of Questions</label>
                 <select name="quiznumber" id="quiznumber" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="40">40</option>
+                    <option value="10">10 Questions</option>
+                    <option value="20">20 Questions</option>
+                    <option value="30">30 Questions</option>
+                    <option value="40">40 Questions</option>
                 </select>
             </div>
+
+            <div id="quiznumber_multiple_holder" class="mb-4 hidden">
+                <label for="quiznumber_multiple" class="block text-xs text-gray-600 mb-1">Multiple Choice</label>
+                <div class="flex gap-2">
+                    <select name="quiznumber_multiple" id="quiznumber_multiple" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="5">5 Questions</option>
+                        <option value="10">10 Questions</option>
+                        <option value="15">15 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                    <button id="removeMultipleChoice" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+                </div>
+            </div>
+            
+            <div id="quiznumber_true_or_false_holder" class="mb-4 hidden">
+                <label for="quiznumber_true_or_false" class="block text-xs text-gray-600 mb-1">True or False</label>
+                <div class="flex gap-2">
+                    <select name="quiznumber_true_or_false" id="quiznumber_true_or_false" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="5">5 Questions</option>
+                        <option value="10">10 Questions</option>
+                        <option value="15">15 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                    <button id="removeTrueOrFalse" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+                </div>
+            </div>
+            
+            <div id="quiznumber_identification_holder" class="mb-4 hidden">
+                <label for="quiznumber_identification" class="block text-xs text-gray-600 mb-1">Identification</label>
+                <div class="flex gap-2">
+                    <select name="quiznumber_identification" id="quiznumber_identification" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="5">5 Questions</option>
+                        <option value="10">10 Questions</option>
+                        <option value="15">15 Questions</option>
+                        <option value="20">20 Questions</option>
+                    </select>
+                    <button id="removeIdentification" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+                </div>    
+            </div>
+
+            {{-- //ad quiztype button --}}
+            <button id="addQuizTypeButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">Add Quiz Type</button>
+
             <div class="flex justify-end mt-4">
                 <button id="cancelQuizButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
                 <button id="saveQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
@@ -76,6 +121,22 @@
         </div>
     </div>
     
+
+    {{-- this is the modal when slecting a quiz type in --}}
+    <div id="selectQuizTypeModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Select Quiz Type</h2>
+            <div class="flex flex-col space-y-2">
+                <button id="selectMultipleChoice" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Multiple Choice</button>
+                <button id="selectTrueOrFalse" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">True or False</button>
+                <button id="selectIdentification" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Identification</button>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="closeSelectQuizTypeModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
+            </div>
+        </div>
+    </div>
+
     {{-- Success Modal --}}
     <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
@@ -86,6 +147,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-red-700">Error</h2>
+            <p id="errorMessage" class="text-center mb-4"></p>
+            <div class="flex justify-center">
+                <button id="closeErrorModalButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Close</button>
+            </div>
+        </div>
+    </div>    
 
     </div>
     
@@ -198,18 +270,174 @@
         const newQuizName = document.getElementById('newQuizName');
         const quiztype = document.getElementById('quiztype');
         const quiznumber = document.getElementById('quiznumber');
+        const quiznumber_label = document.querySelector(".quiznumber_label");
+        const quiznumber_multiple_holder = document.getElementById('quiznumber_multiple_holder');
+        const quiznumber_true_or_false_holder = document.getElementById('quiznumber_true_or_false_holder');
+        const quiznumber_identification_holder = document.getElementById('quiznumber_identification_holder');
+        const quiznumber_multiple = document.getElementById('quiznumber_multiple');
+        const quiznumber_true_or_false = document.getElementById('quiznumber_true_or_false');
+        const quiznumber_identification= document.getElementById('quiznumber_identification');
 
+
+
+        //show the mixed creation of quiz
+        quiztype.addEventListener('change', function() {
+            if (quiztype.value == "Mixed") {
+                quiznumber.classList.add('hidden');
+                quiznumber.setAttribute('disabled', 'true');
+                // quiznumber_label.classList.remove('text-xs');
+                // quiznumber_label.classList.add('text-sm');
+                // quiznumber_label.classList.add('font-semibold');
+                quiznumber_label.classList.add('hidden');
+                addQuizTypeButton.classList.remove('hidden');
+                quiznumber_multiple_holder.classList.add('hidden');
+                quiznumber_true_or_false_holder.classList.add('hidden');
+                quiznumber_identification_holder.classList.add('hidden');
+            } else {
+                quiznumber.classList.remove('hidden');
+                quiznumber.removeAttribute('disabled');
+                // quiznumber_label.classList.remove('text-sm');
+                // quiznumber_label.classList.add('text-xs');
+                // quiznumber_label.classList.remove('font-semibold');
+                quiznumber_label.classList.remove('hidden');
+                addQuizTypeButton.classList.add('hidden');
+                quiznumber_multiple_holder.classList.add('hidden');
+                quiznumber_true_or_false_holder.classList.add('hidden');
+                quiznumber_identification_holder.classList.add('hidden');
+            }
+        });
+
+            const totalQuizTypes = 3; // Number of quiz types: multiple, true_or_false, identification
+            const addedQuizTypes = new Set();
+
+            const addQuizTypeButton = document.getElementById('addQuizTypeButton');
+            const selectQuizTypeModal = document.getElementById('selectQuizTypeModal');
+            const closeSelectQuizTypeModal = document.getElementById('closeSelectQuizTypeModal');
+            const selectMultipleChoice = document.getElementById('selectMultipleChoice');
+            const selectTrueOrFalse = document.getElementById('selectTrueOrFalse');
+            const selectIdentification = document.getElementById('selectIdentification');
+            const removeMultipleChoice = document.getElementById('removeMultipleChoice');
+            const removeTrueOrFalse = document.getElementById('removeTrueOrFalse');
+            const removeIdentification = document.getElementById('removeIdentification');
+
+            addQuizTypeButton.addEventListener('click', function() {
+                if (!addedQuizTypes.has('multiple')) {
+                    selectMultipleChoice.classList.remove('hidden');
+                }
+                if (!addedQuizTypes.has('true_or_false')) {
+                    selectTrueOrFalse.classList.remove('hidden');
+                }
+                if (!addedQuizTypes.has('identification')) {
+                    selectIdentification.classList.remove('hidden');
+                }
+                selectQuizTypeModal.classList.remove('hidden');
+            });
+
+            closeSelectQuizTypeModal.addEventListener('click', function() {
+                selectQuizTypeModal.classList.add('hidden');
+            });
+
+            selectMultipleChoice.addEventListener('click', function() {
+                quiznumber_multiple_holder.classList.remove('hidden');
+                selectQuizTypeModal.classList.add('hidden');
+                addedQuizTypes.add('multiple');
+                selectMultipleChoice.classList.add('hidden');
+                if (addedQuizTypes.size === totalQuizTypes) {
+                    addQuizTypeButton.classList.add('hidden');
+                }
+            });
+
+            selectTrueOrFalse.addEventListener('click', function() {
+                quiznumber_true_or_false_holder.classList.remove('hidden');
+                selectQuizTypeModal.classList.add('hidden');
+                addedQuizTypes.add('true_or_false');
+                selectTrueOrFalse.classList.add('hidden');
+                if (addedQuizTypes.size === totalQuizTypes) {
+                    addQuizTypeButton.classList.add('hidden');
+                }
+            });
+
+            selectIdentification.addEventListener('click', function() {
+                quiznumber_identification_holder.classList.remove('hidden');
+                selectQuizTypeModal.classList.add('hidden');
+                addedQuizTypes.add('identification');
+                selectIdentification.classList.add('hidden');
+                if (addedQuizTypes.size === totalQuizTypes) {
+                    addQuizTypeButton.classList.add('hidden');
+                }
+            });
+
+            removeMultipleChoice.addEventListener('click', function() {
+                quiznumber_multiple_holder.classList.add('hidden');
+                addedQuizTypes.delete('multiple');
+                selectMultipleChoice.classList.remove('hidden');
+                addQuizTypeButton.classList.remove('hidden');
+            });
+
+            removeTrueOrFalse.addEventListener('click', function() {
+                quiznumber_true_or_false_holder.classList.add('hidden');
+                addedQuizTypes.delete('true_or_false');
+                selectTrueOrFalse.classList.remove('hidden');
+                addQuizTypeButton.classList.remove('hidden');
+            });
+
+            removeIdentification.addEventListener('click', function() {
+                quiznumber_identification_holder.classList.add('hidden');
+                addedQuizTypes.delete('identification');
+                selectIdentification.classList.remove('hidden');
+                addQuizTypeButton.classList.remove('hidden');
+            });
+
+            
+        //remove the error button
         
+        closeErrorModalButton.addEventListener('click', function() {
+            errorModal.classList.add('hidden');
+        });
 
         saveQuizButton.addEventListener('click', function() {
             const QuizName = newQuizName.value.trim();
             const QuizType = quiztype.value;
             const QuizNumber = quiznumber.value;
+            let quiznumber_multiple_value = 0;
+            let quiznumber_true_or_false_value = 0;
+            let quiznumber_identification_value = 0;
 
             if (!QuizName) {
-                alert('Please enter a name for the quiz.');
+                errorMessage.textContent = 'Please enter a name for the quiz.';
+                errorModal.classList.remove('hidden');
                 return;
             }
+
+            if(QuizType !== 'Mixed'){
+                console.log("Hallloooo");
+                quiznumber_multiple_value = 0;
+                quiznumber_true_or_false_value = 0 ;
+                quiznumber_identification_value = 0 ;
+            }else{
+                let selectedQuizTypes = 0;
+                if (!quiznumber_multiple_holder.classList.contains('hidden')) {
+                    quiznumber_multiple_value = quiznumber_multiple.value;
+                    selectedQuizTypes++;
+                }
+                if (!quiznumber_true_or_false_holder.classList.contains('hidden')) {
+                    quiznumber_true_or_false_value = quiznumber_true_or_false.value;
+                    selectedQuizTypes++;
+                }
+                if (!quiznumber_identification_holder.classList.contains('hidden')) {
+                    quiznumber_identification_value = quiznumber_identification.value;
+                    selectedQuizTypes++;
+                }
+
+                //show an error if the quiz type is less than two quizzes
+                if (selectedQuizTypes < 2) {
+                    errorMessage.textContent = 'Please select at least two quiz types for a mixed quiz.';
+                    errorModal.classList.remove('hidden');
+                    return;
+                }
+            }
+
+
 
             // Show the loader
             loader.classList.remove('hidden');
@@ -224,6 +452,9 @@
                     name: QuizName,
                     type: QuizType,
                     number: QuizNumber,
+                    multiple: quiznumber_multiple_value,
+                    true_or_false: quiznumber_true_or_false_value,  
+                    identification: quiznumber_identification_value
                 }),
             })
             .then(response => response.json())

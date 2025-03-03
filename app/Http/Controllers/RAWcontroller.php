@@ -59,7 +59,8 @@ class RawController extends Controller
     public function extractText(Request $request)
     {   
         set_time_limit(300); // Set the maximum execution time to 300 seconds
-        
+        $startTime = time(); // Record the start time
+
         $request->validate([
             'topic_id' => 'required|integer',
         ]);
@@ -73,6 +74,7 @@ class RawController extends Controller
                 $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
                 $extractedText = '';
                 foreach ($image_paths as $index => $image_path) {
+                    
                     $imageContent = file_get_contents($image_path);
                     $response = $imageAnnotatorClient->textDetection($imageContent,['timeout' => 300]);
                     $text = $response->getTextAnnotations();
@@ -82,6 +84,7 @@ class RawController extends Controller
                         $extractedText .= 'API Error: ' . $error->getMessage() . PHP_EOL;
                     }
                 }
+                
                 $imageAnnotatorClient->close();
 
                 Raw::updateOrCreate(
@@ -92,6 +95,9 @@ class RawController extends Controller
                 return response()->json(['success' => true, 'raw_text' => $extractedText]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            }
+            if(set_time_limit(300)){
+                return response()->json(['success' => false, 'message' => 'time limit reach']);
             }
         } else {
             return response()->json(['success' => true, 'raw_text' => $rawText]);
