@@ -43,13 +43,17 @@ class ProfileController extends Controller
     public function cancelSubscription(Request $request)
     {
         $user = Auth::user();
-        $subscription = $user->subscription;
+        $subscription = Subscription::where('user_id', $user->user_id)
+                                    ->where('status', 'active')
+                                    ->first();
 
         if ($subscription) {
-            $subscription->delete(); // Assuming you have a delete method in your Subscription model
-            return redirect()->back()->with('success', 'Subscription cancelled successfully.');
+            $subscription->status = 'inactive'; // Change status to inactive
+            $subscription->end_date = now(); // Optional: Set the end date to today
+            $subscription->save();
+            return redirect()->route('profile.show')->with('success', 'Subscription cancelled successfully.');
         }
 
-        return redirect()->back()->with('error', 'No active subscription found.');
+        return redirect()->route('profile.show')->with('error', 'No active subscription found.');
     }
 }
