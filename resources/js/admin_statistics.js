@@ -9,7 +9,13 @@ const dailyOlChart = document.getElementById('dailyOlChart');
 const monthlyOlChart = document.getElementById('monthlyOlChart');
 const yearlyOlChart = document.getElementById('yearlyOlChart');
 
-const onlineCount = document.getElementById('ol-count');
+const dailyOlCount = document.getElementById('daily-ol-count');
+const monthlyOlCount = document.getElementById('monthly-ol-count');
+const yearlyOlCount = document.getElementById('yearly-ol-count');
+
+const dailyRevCount = document.getElementById('daily-rev-count');
+const monthlyRevCount = document.getElementById('monthly-rev-count');
+const yearlyRevCount = document.getElementById('yearly-rev-count');
 
 let daily_labels;
 let monthly_labels;
@@ -29,13 +35,20 @@ fetch('/admin/get-statistics',{
   const monthly_total_amount = data.monthly_rev[0].total_amount;
   const yearly_total_amount = data.yearly_rev[0].total_amount;
 
+  dailyRevCount.innerText = daily_total_amount;
+  monthlyRevCount.innerText = monthly_total_amount;
+  yearlyRevCount.innerText = yearly_total_amount;
+
   const daily_total_users = data.daily_ol[0].total_users;
   const monthly_total_users = data.monthly_ol[0].total_users;
   const yearly_total_users = data.yearly_ol[0].total_users;
 
-  console.log(data);
+  dailyOlCount.innerText = daily_total_users;
+  monthlyOlCount.innerText = monthly_total_users;
+  yearlyOlCount.innerText = yearly_total_users;
 
   const yearly_labels = data.recent_5_years_str;
+
   updateDailyChart(daily_total_amount);
   updateMonthlyChart(monthly_total_amount);
   updateYearlyChart(yearly_total_amount, yearly_labels);
@@ -53,18 +66,24 @@ selectOl.value = 'opt-daily-ol';
 selectRev.addEventListener('change', (e)=>{
   if (selectRev.value === 'opt-daily'){
     dailyChart.style.display = 'block';
+    dailyRevCount.display = 'block';
   }else{
     dailyChart.style.display = 'none';
+    dailyRevCount.display = 'none';
   }
   if (selectRev.value === 'opt-monthly'){
     monthlyChart.style.display = 'block';
+     monthlyRevCount.display = 'block';
   }else{
     monthlyChart.style.display = 'none';
+    monthlyRevCount.display = 'none';
   }
   if (selectRev.value === 'opt-yearly'){
     yearlyChart.style.display = 'block';
+    yearlyRevCount.display = 'block';
   }else{
     yearlyChart.style.display = 'none';
+    yearlyRevCount.display = 'none';
   }
 });
 
@@ -72,18 +91,24 @@ selectRev.addEventListener('change', (e)=>{
 selectOl.addEventListener('change', (e)=>{
   if (selectOl.value === 'opt-daily-ol'){
     dailyOlChart.style.display = 'block';
+    dailyOlCount.display = 'block';
   }else{
     dailyOlChart.style.display = 'none';
+    dailyOlCount.display = 'none';
   }
   if (selectOl.value === 'opt-monthly-ol'){
     monthlyOlChart.style.display = 'block';
+    monthlyOlCount.display = 'block';
   }else{
     monthlyOlChart.style.display = 'none';
+    monthlyOlCount.display = 'none';
   }
   if (selectOl.value === 'opt-yearly-ol'){
     yearlyOlChart.style.display = 'block';
+    yearlyOlCount.display = 'block';
   }else{
     yearlyOlChart.style.display = 'none';
+    yearlyOlCount.display = 'none';
   }
 });
 

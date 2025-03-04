@@ -9,7 +9,12 @@
             <canvas id="dailyChart"></canvas>
             <canvas id="monthlyChart" style = "display:none;"></canvas>
             <canvas id="yearlyChart" style = "display:none;"></canvas>
-            <div>Sales</div>
+            <div>
+                <p>Sales</p>
+                <div id="daily-rev-count"></div>
+                <div id="monthly-rev-count" style = "display:none;"></div>
+                <div id="yearly-rev-count" style = "display:none;"></div>
+            </div>
         </div>
         <div class="flex justify-center container bg-gray-100">
             <select id="select-ol">
@@ -22,7 +27,9 @@
             <canvas id="yearlyOlChart" style = "display:none;"></canvas>
             <div>
                 <p>Users</p>
-                <div id="ol-count"></div>
+                <div id="daily-ol-count"></div>
+                <div id="monthly-ol-count" style = "display:none;"></div>
+                <div id="yearly-ol-count" style = "display:none;"></div>
             </div>
         </div>
     </main>
