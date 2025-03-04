@@ -16,6 +16,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\ADMINController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AdminLogController;
 
 
 
@@ -136,7 +137,9 @@ Route::middleware('guest')->group(function (){
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
-    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
+    Route::put('/admin/users/update', [AUTHadminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/admin/users/delete/{id}', [AUTHadminController::class, 'deleteUser'])->name('admin.users.delete');
     // Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::get('/gcash/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('gcash.number');
@@ -147,7 +150,6 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
-    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
     Route::post('/admin/admins/create', [AUTHadminController::class, 'createAdmin'])->name('admin.admins.create');
@@ -177,12 +179,14 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
-    Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
+    /* Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete'); */
     
     Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
+
+    Route::get('/admin/logs', [AdminLogController::class, 'index'])->name('admin.logs');
 
 });
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
