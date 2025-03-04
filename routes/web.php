@@ -4,6 +4,7 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\PayMongoController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
@@ -225,3 +226,5 @@ Route::middleware(['auth:admin/login'])->group(function () {
         return redirect()->route('admin.login');
     })->where('any', '.*');
 });
+Route::view('/testpay', 'posts.paymongo')->name('testpay');
+Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
