@@ -119,7 +119,7 @@ Route::middleware('auth')->group(function (){
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
-    Route::post('/profile/cancelSubscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
+    Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 });
 
 Route::middleware('guest')->group(function (){
@@ -173,7 +173,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('admin/promo/create', [PromoController::class, 'create'])->name('admin.promo.create');
     Route::post('admin/promo', [PromoController::class, 'store'])->name('admin.promo.store');
     Route::get('admin/promo/{promo}/edit', [PromoController::class, 'edit'])->name('admin.promo.edit');
-    Route::put('admin/promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
+    Route::put('admin.promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
     Route::delete('admin.promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
 
     // New route for adding a promo
@@ -237,4 +237,5 @@ Route::get('/profile/cancelled', function () {
 })->name('profile.cancelled');
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 

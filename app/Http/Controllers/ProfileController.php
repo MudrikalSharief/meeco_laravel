@@ -39,4 +39,17 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.show')->with('success', 'Profile picture updated successfully.');
     }
+
+    public function cancelSubscription(Request $request)
+    {
+        $user = Auth::user();
+        $subscription = $user->subscription;
+
+        if ($subscription) {
+            $subscription->delete(); // Assuming you have a delete method in your Subscription model
+            return redirect()->back()->with('success', 'Subscription cancelled successfully.');
+        }
+
+        return redirect()->back()->with('error', 'No active subscription found.');
+    }
 }
