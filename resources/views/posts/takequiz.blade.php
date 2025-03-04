@@ -64,6 +64,30 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                            const savedAnswer = localStorage.getItem(`question_${index}`);
+                            if (savedAnswer) {
+                                const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                if (input) {
+                                    input.checked = true;
+                                    const selectedLabel = input.closest('label');
+                                    const labels = questionDiv.querySelectorAll('label');
+                                    
+                                    labels.forEach(label => {
+                                        label.classList.add('shadow-sm');
+                                        label.classList.remove('shadow-md');
+                                        label.classList.remove('bg-blue-300');
+                                        label.classList.add('bg-blue-50');
+                                    });
+                                    
+                                    selectedLabel.classList.remove('bg-blue-50');
+                                    selectedLabel.classList.add('bg-blue-300');
+                                    selectedLabel.classList.remove('shadow-sm');
+                                    selectedLabel.classList.add('shadow-md');
+                                }
+                            }
+                                
                             questionCounter++;
                         });
                     }
@@ -80,6 +104,30 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                            const savedAnswer = localStorage.getItem(`question_${index}`);
+                            if (savedAnswer) {
+                                const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                if (input) {
+                                    input.checked = true;
+                                    const selectedLabel = input.closest('label');
+                                    const labels = questionDiv.querySelectorAll('label');
+                                    
+                                    labels.forEach(label => {
+                                        label.classList.add('shadow-sm');
+                                        label.classList.remove('shadow-md');
+                                        label.classList.remove('bg-blue-300');
+                                        label.classList.add('bg-blue-50');
+                                    });
+                                    
+                                    selectedLabel.classList.remove('bg-blue-50');
+                                    selectedLabel.classList.add('bg-blue-300');
+                                    selectedLabel.classList.remove('shadow-sm');
+                                    selectedLabel.classList.add('shadow-md');
+                                }
+                            }
+
                             questionCounter++;
                         });
                     }
@@ -95,6 +143,16 @@
                                 </ul>
                             `;
                             quizForm.appendChild(questionDiv);
+
+                            // Retrieve saved answers from localStorage
+                                const savedAnswer = localStorage.getItem(`question_${index}`);
+                                if (savedAnswer) {
+                                    const input = questionDiv.querySelector('input');
+                                    if (input) {
+                                        input.value = savedAnswer;
+                                    }
+                                }
+
                             questionCounter++;
                         });
                     }
@@ -137,104 +195,136 @@
                                 }
 
                                 quizForm.appendChild(questionDiv);
+
+                                // Retrieve saved answers from localStorage
+                                const savedAnswer = localStorage.getItem(`question_${questionCounter}`);
+                                if (savedAnswer) {
+                                    if (type === 'multiple_choice' || type === 'true_or_false') {
+                                        const input = questionDiv.querySelector(`input[value="${savedAnswer}"]`);
+                                        if (input) {
+                                            input.checked = true;
+                                            const selectedLabel = input.closest('label');
+                                            const labels = questionDiv.querySelectorAll('label');
+                                            
+                                            labels.forEach(label => {
+                                                label.classList.add('shadow-sm');
+                                                label.classList.remove('shadow-md');
+                                                label.classList.remove('bg-blue-300');
+                                                label.classList.add('bg-blue-50');
+                                            });
+                                            
+                                            selectedLabel.classList.remove('bg-blue-50');
+                                            selectedLabel.classList.add('bg-blue-300');
+                                            selectedLabel.classList.remove('shadow-sm');
+                                            selectedLabel.classList.add('shadow-md');
+                                        }
+                                    } else if (type === 'identification') {
+                                        const input = questionDiv.querySelector('input');
+                                        if (input) {
+                                            input.value = savedAnswer;
+                                        }
+                                    }
+                                }
                                 questionCounter++;
                             });
                         }
                     });
+
                 }
 
-    
+                   
                     const submitQuizButton = document.getElementById('submitQuizButton');
                     const quizContainer = document.querySelector('.quiz-container');
                     const questionDivs = quizContainer.querySelectorAll('.question');
                     
+
+                    // show the errror if the brower is refresh
+                    questionDivs.forEach((questionDiv, index) => {
+                            const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                            if (localStorage.getItem(`unanswered_${index}`) === 'true') {
+                                if (errorSpan) {
+                                    errorSpan.textContent = 'Please answer this question';
+                                }
+                            } else {
+                                if (errorSpan) {
+                                    errorSpan.textContent = '';
+                                }
+                            }
+                        });
+
                     questionCounter = 1; // Initialize questionCounter for validation
 
                     submitQuizButton.addEventListener('click', function(event) {
                         // Prevent the default form submission
                         event.preventDefault();
 
-                        //validation
-                        // let index = 0;
-                        // let clear = 0;
-                        // let total = 0;
+                        //validation here
+                        
+                        let allAnswered = true;
+                        const questionDivs = quizContainer.querySelectorAll('.question');
+                        questionDivs.forEach((questionDiv, index) => {
+                            const inputs = questionDiv.querySelectorAll('input');
+                            let answered = false;
+                            inputs.forEach(input => {
+                                if ((input.type === 'radio' && input.checked) || (input.type === 'text' && input.value.trim() !== '')) {
+                                    answered = true;
+                                }
+                            });
+                            if (!answered) {
+                                allAnswered = false;
+                                const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                                if (errorSpan) {
+                                    errorSpan.textContent = 'Please answer this question';
+                                }
+                            } else {
+                                const errorSpan = questionDiv.querySelector(`#q${index + 1}`);
+                                if (errorSpan) {
+                                    errorSpan.textContent = '';
+                                }
+                            }
+                        });
 
-                        // if(quiztype === 'Identification'){
-                        //     questionDivs.forEach(questionDivs =>{
-                        //     total++;
-                        //     const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
-                        //     let answered = 0;        
-                        //     labels.forEach(label => {
-                                
-                        //         if(label.value.trim() != ""){
-                        //             answered++;
-                        //             clear++;
-                        //         }else{
-                        //             label.value = "";
-                        //         }
-                                
-                        //         if(answered == 0){
-                        //             const q = document.getElementById(`q${questionCounter}`);
-                        //             q.innerHTML = "Please answer this question";
-                        //         }else{
-                        //             const q = document.getElementById(`q${questionCounter}`);
-                        //             q.innerHTML = "";
-                        //         }
-                        //     });
-                        //     console.log(index, answered,clear);
-                        //     index++;
-                        //     questionCounter++; // Increment questionCounter
-                        
-                        // })
-                        // }
-                        // else{
 
-                        //     questionDivs.forEach(questionDivs =>{
-                        //         total++;
-                        //         const labels = questionDivs.querySelectorAll(`input[name="question_${index}"]`);
-                        //         let answered = 0;        
-                        //         labels.forEach(label => {
-                        //             if(label.checked){
-                        //                 answered++;
-                        //                 clear++;
-                        //             }
-                        //             if(answered == 0){
-                        //                 const q = document.getElementById(`q${questionCounter}`);
-                        //                 q.innerHTML = "Please answer this question";
-                        //             }else{
-                        //                 const q = document.getElementById(`q${questionCounter}`);
-                        //                 q.innerHTML = "";
-                        //             }
-                        //         });
-                        //         console.log(index, answered,clear);
-                        //         index++;
-                        //         questionCounter++; // Increment questionCounter
-                            
-                        //     })
-                        // }
-                        
-                        // if (clear < total) {
-                        //     const ValidateModal = document.createElement('div');
-                        //     ValidateModal.id = 'ValidateModal';
-                        //     ValidateModal.classList.add('z-50','fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
-                        //     ValidateModal.innerHTML = `
-                        //             <div class="bg-white p-6 rounded-lg shadow-lg">
-                        //                 <h2 class="text-2xl mb-4">Oh No!</h2>
-                        //                 <p id="scoreText" class="text-lg">Please Answer all Questions</p>
-                        //                 <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
-                        //             </div>
-                        //         `;
-                        //         document.body.appendChild(ValidateModal);
-                                
-                        //         const closeModalButton = document.getElementById('closeModalButton');
-                        //         if(closeModalButton){
-                        //             closeModalButton.addEventListener('click', function() {
-                        //                 ValidateModal.remove();
-                        //             });
-                        //         }
-                        //         return;
-                        // }
-                        
+
+                        if (!allAnswered) {
+                            // Save the unanswered questions state in localStorage
+                            questionDivs.forEach((questionDiv, index) => {
+                                    const inputs = questionDiv.querySelectorAll('input');
+                                    let answered = false;
+                                    inputs.forEach(input => {
+                                        if ((input.type === 'radio' && input.checked) || (input.type === 'text' && input.value.trim() !== '')) {
+                                            answered = true;
+                                        }
+                                    });
+                                    if (!answered) {
+                                        localStorage.setItem(`unanswered_${index}`, 'true');
+                                    } else {
+                                        localStorage.removeItem(`unanswered_${index}`);
+                                    }
+                                });
+                            // alert('Please answer all questions before submitting the quiz.');
+                           // Show modal instead of alert
+                            const validateModal = document.createElement('div');
+                            validateModal.id = 'validateModal';
+                            validateModal.classList.add('z-50', 'fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                            validateModal.innerHTML = `
+                                <div class="bg-white p-6 rounded-lg shadow-lg">
+                                    <h2 class="text-2xl mb-4">Oh No!</h2>
+                                    <p id="scoreText" class="text-lg">Please answer all questions before submitting the quiz.</p>
+                                    <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+                                </div>
+                            `;
+                            document.body.appendChild(validateModal);
+
+                            const closeModalButton = document.getElementById('closeModalButton');
+                            closeModalButton.addEventListener('click', function() {
+                                validateModal.remove();
+                            });
+                            return;
+                        }
+
+
+
                         //if validaten continue
                         const formData = new FormData(quizForm);
                         quiztype = data.question.question_type;
@@ -349,7 +439,34 @@
                 }
             });
 
+            //saving the answer in the browser local storage
+            quizForm.addEventListener('change', function(event) {
+                if (event.target.type === 'radio' || event.target.type === 'text') {
+                    const questionId = event.target.name;
+                    const answer = event.target.value;
+                    localStorage.setItem(questionId, answer);
 
-        });
+                    if (event.target.type === 'radio') {
+                        const selectedLabel = event.target.closest('label');
+                        const questionGroup = selectedLabel.closest('.question');
+                        const labels = questionGroup.querySelectorAll('label');
+                        
+                        labels.forEach(label => {
+                            label.classList.add('shadow-sm');
+                            label.classList.remove('shadow-md');
+                            label.classList.remove('bg-blue-300');
+                            label.classList.add('bg-blue-50');
+                        });
+                        
+                        selectedLabel.classList.remove('bg-blue-50');
+                        selectedLabel.classList.add('bg-blue-300');
+                        selectedLabel.classList.remove('shadow-sm');
+                        selectedLabel.classList.add('shadow-md');
+                    }
+                }
+            });
+
+
+});
     </script>
 </x-layout>

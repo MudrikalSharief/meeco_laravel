@@ -101,7 +101,9 @@ class OPENAIController extends Controller
         
     }
     public function generate_quiz($topic_id, Request $request)
-    {    set_time_limit(300); // Set the maximum execution time to 300 seconds
+    {   
+        // return response()->json(['success' => false, 'Request' => $request->post()]);
+            set_time_limit(300); // Set the maximum execution time to 300 seconds
 
         Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
     
@@ -379,7 +381,26 @@ class OPENAIController extends Controller
             }            
 //===============================================================================================================================
         }else if($request->post('type') == 'Mixed'){
-            // return response()->json(['success' => true, 'total quiz' => $total_quiz, 'identification' => $identification, 'Multiple' => $multiple, 'true or false' => $true_or_false]);
+            // Build the prompt dynamically
+            $prompt = "Based on the following text, generate ";
+            $quizTypes = [];
+            $jsonFormat = "{\n";
+
+            if ($multiple > 0) {
+                $quizTypes[] = "$multiple multiple-choice quiz questions";
+                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"question\": \"Question in here?\",\n            \"choices\": {\n                \"A\": \"choice\",\n                \"B\": \"choice\",\n                \"C\": \"choice\",\n                \"D\": \"choice\"\n            },\n            \"correct_answer\": \"C\"\n        }\n    ],\n";
+            }
+            if ($true_or_false > 0) {
+                $quizTypes[] = "$true_or_false true or false quiz questions";
+                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"question\": \"Question in here?\",\n            \"correct_answer\": \"True or False\"\n        }\n    ],\n";
+            }
+            if ($identification > 0) {
+                $quizTypes[] = "$identification identification quiz questions";
+                $jsonFormat .= "    \"identification\": [\n        {\n            \"question\": \"Question in here?\",\n            \"correct_answer\": \"Answer\"\n        }\n    ],\n";
+            }
+
+            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}\n\nText: " . $text . " The order of the questions must not be the same as the order of the text I gave you. Rearrange the order of the questions.";
+
             try {
                 $response = Http::withHeaders([
                     'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
@@ -390,71 +411,42 @@ class OPENAIController extends Controller
                     'model' => 'gpt-4-turbo',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an AI that generates quiz questions. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate ". $multiple ." multiple-choice quiz questions, ". $true_or_false ." true or false quiz questions, and ". $identification ." identification quiz questions. Format your response in JSON like this: 
-    
-                        {
-                            \"multiple_choice\": [
-                                {
-                                    \"question\": \"Question in here?\",
-                                    \"choices\": {
-                                        \"A\": \"choice\",
-                                        \"B\": \"choice\",
-                                        \"C\": \"choice\",
-                                        \"D\": \"choice\"
-                                    },
-                                    \"correct_answer\": \"C\"
-                                }
-                            ],
-                            \"true_or_false\": [
-                                {
-                                    \"question\": \"Question in here?\",
-                                    \"correct_answer\": \"True or False\"
-                                }
-                            ],
-                            \"identification\": [
-                                {
-                                    \"question\": \"Question in here?\",
-                                    \"correct_answer\": \"Answer\"
-                                }
-                            ]
-                        }
-    
-                        Text: " . $text . " The order of the questions must not be the same as the order of the text I gave you. Rearrange the order of the questions."]
+                        ['role' => 'user', 'content' => $prompt]
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 4096
                 ]);
-    
+
                 if ($response->failed()) {
                     Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
                     return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
                 }
-    
+
                 $responseData = json_decode($response->body(), true);
                 Log::info('OpenAI API Response:', ['response' => $responseData]);
-    
+
                 if (!isset($responseData['choices'][0]['message']['content'])) {
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
-    
+
                 $content = json_decode($responseData['choices'][0]['message']['content'], true);
                 Log::info('Parsed Content:', ['content' => $content]);
-    
+
                 if (empty($content['multiple_choice']) && empty($content['true_or_false']) && empty($content['identification'])) {
                     Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
                     return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
                 }
-    
+
                 $question = Question::create([
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
                     'number_of_question' => $total_quiz,
                 ]);
-    
+
                 Log::info('Created Question:', ['question' => $question]);
-    
+
                 if (!empty($content['multiple_choice'])) {
                     foreach ($content['multiple_choice'] as $questionData) {
                         multiple_choice::create([
@@ -468,7 +460,7 @@ class OPENAIController extends Controller
                         ]);
                     }
                 }
-    
+
                 if (!empty($content['true_or_false'])) {
                     foreach ($content['true_or_false'] as $questionData) {
                         true_or_false::create([
@@ -478,7 +470,7 @@ class OPENAIController extends Controller
                         ]);
                     }
                 }
-    
+
                 if (!empty($content['identification'])) {
                     foreach ($content['identification'] as $questionData) {
                         Identification::create([
@@ -488,16 +480,16 @@ class OPENAIController extends Controller
                         ]);
                     }
                 }
-    
+
                 return response()->json(['success' => true, 'data' => $content]);
-            
+
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
-            }            
+            }       
             
-        }else{
 //===============================================================================================================================
+        }else{
             return response()->json(['success' => false, 'message' => "Unidentified Question Type"]);
         }
     

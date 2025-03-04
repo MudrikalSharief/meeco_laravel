@@ -19,6 +19,17 @@
             const bottom_nav = document.getElementById('bottom_nav');
             bottom_nav.classList.add('hidden');
 
+            //this is the function to clear the quiz related from locat storage
+            function clearQuizData() {
+                // Clear all quiz-related data from localStorage
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('question_') || key.startsWith('unanswered_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
+            clearQuizData(); // Clear the quiz data
+            
             // this will go to the reviewer page
             const urlParams = new URLSearchParams(window.location.search);
             const questionId = urlParams.get('questionId');
@@ -171,6 +182,7 @@
                                                                     choice.classList.remove('bg-blue-50');
                                                                     choice.classList.add('bg-red-200');
                                                                     if(correctAnswer == userAnswer){
+                                                                        choice.classList.remove('bg-red-200');
                                                                         choice.classList.add('bg-green-200');
                                                                     }
                                                                     label.checked = true;

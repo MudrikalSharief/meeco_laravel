@@ -38,10 +38,9 @@
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h3>Help and Support</h3>
+                    <h3>Support</h3>
                     <ul>
                         <li><a href="{{route('faq')}}">FAQ</a></li>
-                        <li><a href="{{route('contact')}}">Contact Us</a></li>
                     </ul>
                 </div>
             </div>
