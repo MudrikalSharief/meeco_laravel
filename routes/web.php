@@ -4,6 +4,7 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\PayMongoController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
@@ -101,8 +102,11 @@ Route::middleware('auth')->group(function (){
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
 
+    //route for paymonggo
+    Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
+    Route::post('/checkpayment', [PayMongoController::class, 'retrieve_payment']);
+    Route::view('/testpay', 'posts.paymongo')->name('testpay');
 
-    //for upgrade
     Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
@@ -121,6 +125,8 @@ Route::middleware('auth')->group(function (){
     Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
     Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 });
+
+
 
 Route::middleware('guest')->group(function (){
     

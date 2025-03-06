@@ -6,7 +6,8 @@
         </div>
 
         @if(count($inquiries) > 0)
-            <table class="w-full border-collapse">
+            <div class="overflow-x-auto w-full">
+                <table class="w-full border-collapse min-w-[800px]">
                 <thead>
                     <tr>
                         <th class="text-left p-3 text-gray-600 font-medium border-b border-gray-200">Subject</th>

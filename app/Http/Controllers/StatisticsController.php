@@ -62,5 +62,6 @@ class StatisticsController extends Controller
             'monthly_ol' => $monthly_ol,
             'yearly_ol' => $yearly_ol
         ]);
+        
     }
 }

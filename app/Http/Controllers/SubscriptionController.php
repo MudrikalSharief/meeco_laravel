@@ -10,7 +10,29 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class SubscriptionController extends Controller
-{
+{   
+
+    // New function to add a new subscription
+    public function addSubscription(Request $request)
+    {
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'promo_id' => 'required|exists:promos,id',
+            'reference_number' => 'required|numeric|unique:subscriptions,reference_number',
+            'duration' => 'required|integer',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'status' => 'required|in:active,inactive',
+            'subscription_type' => 'required|string|max:255',
+        ]);
+
+        $subscription = Subscription::create($validatedData);
+
+        Log::info('New subscription added with ID: ' . $subscription->subscription_id);
+
+        return redirect()->route('admin.subscription')->with('success', 'Subscription added successfully.');
+    }
+    
     public function index()
     {
         $subscriptions = Subscription::all();
@@ -168,4 +190,6 @@ class SubscriptionController extends Controller
 
         return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
     }
+
+
 }

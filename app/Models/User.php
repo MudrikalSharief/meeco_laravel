@@ -69,9 +69,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Subject::class, 'user_id', 'user_id');
     }
-
-    public function subscription()
+    public function subscriptions()
     {
-        return $this->hasOne(Subscription::class, 'user_id', 'user_id')->where('status', 'active');
+        return $this->hasMany(Subscription::class, 'user_id', 'user_id');
     }
 }

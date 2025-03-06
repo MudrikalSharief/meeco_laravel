@@ -1,6 +1,6 @@
 <x-contact_layout>
     <main class="mt-5">
-        <div class="form-container w-[70%] bg-white p-8 rounded-lg shadow-md ml-48">
+        <div class="form-container w-[90%] md:w-[70%] bg-white p-8 rounded-lg shadow-md mx-auto md:ml-48">
             <h1 class="text-blue-700 text-2xl mb-6 font-medium">Inquiry (Message Form)</h1>
             @if(session('error'))
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
