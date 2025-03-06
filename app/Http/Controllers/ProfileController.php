@@ -37,7 +37,7 @@ class ProfileController extends Controller
         $user->profile_picture = $path;
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Profile picture updated successfully.');
+        return redirect()->route('profile')->with('success', 'Profile picture updated successfully.');
     }
 
     public function cancelSubscription(Request $request)
@@ -51,9 +51,9 @@ class ProfileController extends Controller
             $subscription->status = 'cancelled'; 
             $subscription->end_date = now(); 
             $subscription->save();
-            return redirect()->route('profile.show')->with('success', 'Subscription cancelled successfully.');
+            return redirect()->route('profile')->with('success', 'Subscription cancelled successfully.');
         }
 
-        return redirect()->route('profile.show')->with('error', 'No active subscription found.');
+        return redirect()->route('profile')->with('error', 'No active subscription found.');
     }
 }

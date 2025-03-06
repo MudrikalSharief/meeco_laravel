@@ -41,14 +41,13 @@
                     <p class="text-gray-700"><span class="font-semibold">Subscription:</span> {{ $subscription->promo->name }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Duration:</span> {{ $subscription->duration }} days</p>
                     <p class="text-gray-700"><span class="font-semibold">Start Date:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y') }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">End Date:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y') }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">End Date:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->addDays((int)$subscription->duration)->format('F j, Y') }}</p>
                 </div>
-                <form action="{{ route('profile.cancelSubscription') }}" method="POST" class="flex justify-end mt-4">
-                    @csrf
+                <div class="flex justify-end mt-4">
                     <button id="openModal" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
                         Cancel Subscription
                     </button>
-                </form>
+                </div>
             @else
                 <p class="text-gray-500 mt-4">No active subscription.</p>
             @endif
