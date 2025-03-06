@@ -27,32 +27,6 @@
                     </div>
                 </div>
                 
-                <h2 class="text-lg sm:text-base md:text-2xl font-semibold text-gray-800 my-4">Features Available:</h2>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach ([
-                        'photo_to_text' => 'Photo-to-Text Conversion',
-                        'reviewer_generator' => 'Reviewer Generator',
-                        'mock_quiz_generator' => 'Mock Quiz Generator',
-                        'save_reviewer' => 'Save & Download Reviewer'
-                    ] as $key => $label)
-                        <div>
-                            <label class="block text-gray-700 font-bold mb-1 sm:text-sm">{{ $label }}:</label>
-                            <div class="flex flex-wrap gap-2">
-                                <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="{{ $key }}" value="unlimited" class="mr-2" {{ old($key, $promo->$key ?? '') == 'unlimited' ? 'checked' : '' }}>
-                                    Unlimited
-                                </label>
-                                <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="{{ $key }}" value="limited" class="mr-2" {{ old($key, $promo->$key ?? '') == 'limited' ? 'checked' : '' }}>
-                                    Limited
-                                </label>
-                                <input type="text" name="{{ $key }}_limit" class="w-20 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm {{ old($key, $promo->$key ?? '') == 'limited' ? '' : 'hidden' }}" value="{{ old($key.'_limit', $promo->{$key.'_limit'} ?? '') }}" placeholder="Limit">
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                
                 <div class="mt-4">
                     <label for="perks" class="block text-gray-700 font-bold mb-1 sm:text-sm">Perks:</label>
                     <textarea id="perks" name="perks" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" rows="3" placeholder="Enter subscription perks">{{ old('perks', $promo->perks ?? '') }}</textarea>
@@ -89,10 +63,4 @@
             </form>
         </div>
     </main>
-    <script>
-        document.getElementById('start_date').addEventListener('change', function() {
-            var startDate = this.value;
-            document.getElementById('end_date').setAttribute('min', startDate);
-        });
-    </script>
-</x-admin_layout>
+    </x-admin_layout>

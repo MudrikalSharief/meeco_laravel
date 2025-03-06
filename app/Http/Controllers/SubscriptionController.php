@@ -57,9 +57,22 @@ class SubscriptionController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Subscription::create($validatedData);
+        $user = Auth::user();
+        $promo = Promo::find($request->promo_id);
 
-        return redirect()->route('admin.subscription')->with('success', 'Subscription created successfully.');
+        Subscription::create([
+            'reference_number' => $request->reference_number,
+            'name' => $user->firstname . ' ' . $user->middlename . ' ' . $user->lastname,
+            'pricing' => $promo->price,
+            'duration' => $promo->duration,
+            'start_date' => now(),
+            'end_date' => now()->addDays($promo->duration),
+            'status' => 'active',
+            'promo_id' => $promo->promo_id,
+            'user_id' => $user->user_id,
+        ]);
+
+        return redirect()->route('profile.show')->with('success', 'Subscription created successfully.');
     }
 
     public function payment($promo_id)
