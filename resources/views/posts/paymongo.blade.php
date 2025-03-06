@@ -52,7 +52,7 @@
                         success_loader.classList.remove('hidden');
 
                         // Countdown from 5 to 1
-                        let countdown = 5;
+                        let countdown = 3;
                         const countdownElement = document.querySelector('.countdown');
                         countdownElement.textContent = countdown;
                         const countdownInterval = setInterval(() => {
