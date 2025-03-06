@@ -48,8 +48,8 @@ class ProfileController extends Controller
                                     ->first();
 
         if ($subscription) {
-            $subscription->status = 'inactive'; // Change status to inactive
-            $subscription->end_date = now(); // Optional: Set the end date to today
+            $subscription->status = 'cancelled'; 
+            $subscription->end_date = now(); 
             $subscription->save();
             return redirect()->route('profile.show')->with('success', 'Subscription cancelled successfully.');
         }
