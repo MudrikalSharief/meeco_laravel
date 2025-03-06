@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 
@@ -112,7 +114,14 @@ class PromoController extends Controller
     // Show the active promos on the upgrade page
     public function showPromos()
     {
-        $promos = Promo::where('status', 'active')->get();
+        $user = Auth::user();
+        $promos = Promo::all();
+    
+        // Add a subscribed attribute to each promo
+        foreach ($promos as $promo) {
+            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->exists();
+        }
+    
         return view('subscriptionFolder.upgrade', compact('promos'));
     }
 }

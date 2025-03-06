@@ -101,8 +101,11 @@ Route::middleware('auth')->group(function (){
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
 
+    //route for paymonggo
+    Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
+    Route::post('/checkpayment', [PayMongoController::class, 'retrieve_payment']);
+    Route::view('/testpay', 'posts.paymongo')->name('testpay');
 
-    //for upgrade
     Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
@@ -117,6 +120,8 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
 });
+
+
 
 Route::middleware('guest')->group(function (){
     
@@ -226,5 +231,3 @@ Route::middleware(['auth:admin/login'])->group(function () {
         return redirect()->route('admin.login');
     })->where('any', '.*');
 });
-Route::view('/testpay', 'posts.paymongo')->name('testpay');
-Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
