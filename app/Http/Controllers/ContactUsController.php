@@ -156,10 +156,16 @@ class ContactUsController extends Controller
         
         $reply->save();
 
-        // Update the status to "Responded"
-        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Responded']);
+        // Update the status to "Responded" and store the timestamp
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update([
+            'status' => 'Responded',
+            'responded_at' => now()
+        ]);
 
-        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+            ->with('success', 'Reply submitted successfully. The inquiry will be automatically closed in 15 seconds.')
+            ->with('auto_close', true)
+            ->with('ticket_reference', $ticket_reference);
     }
 
     public function closeInquiry($ticket_reference)
@@ -169,6 +175,39 @@ class ContactUsController extends Controller
         $inquiry->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
+    }
+
+    /**
+     * Auto-close inquiries after they've been in Responded state for 15 seconds
+     */
+    public function autoCloseInquiry($ticket_reference)
+    {
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)
+                      ->where('status', 'Responded')
+                      ->first();
+
+        if ($inquiry) {
+            // Fix: Use the correct primary key column 'ticket_id' instead of 'id'
+            ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Closed']);
+            
+            // If it's an AJAX request, return JSON
+            if (request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Inquiry closed automatically']);
+            }
+            
+            // Otherwise redirect with success message
+            return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+                             ->with('success', 'Inquiry closed automatically.');
+        }
+
+        // If it's an AJAX request, return JSON error
+        if (request()->ajax()) {
+            return response()->json(['success' => false, 'message' => 'Inquiry not found or not in Responded state']);
+        }
+        
+        // Otherwise redirect with error message
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+                         ->with('error', 'Inquiry not found or not in Responded state.');
     }
 
     /**

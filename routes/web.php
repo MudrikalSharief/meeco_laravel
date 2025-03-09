@@ -206,7 +206,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
-    
+    Route::post('/admin/support/auto-close/{ticket_reference}', [ContactUsController::class, 'autoCloseInquiry'])->name('admin.autoCloseInquiry');
+
     // Remove or comment out these redundant routes since they are now handled by ContactUsController
     // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
     // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
