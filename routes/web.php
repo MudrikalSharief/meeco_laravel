@@ -230,19 +230,18 @@ Route::middleware(['auth:admin'])->group(function () {
 
 
 // Admin public routes for login/register
-Route::middleware('guest')->group(function () {
     Route::view('/admin', 'auth.login-admin')->name('admin.login');
     Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
     Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
     Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
     Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
-});
 
-// Redirect to admin login if trying to access admin paths without being authenticated
-Route::middleware(['guest:admin'])->group(function () {
+
+// Redirect to admin login if not authenticated
+Route::middleware(['auth:admin/login'])->group(function () {
     Route::get('/admin/{any}', function () {
         return redirect()->route('admin.login');
-    })->where('any', '.*')->name('admin.unauthorized');
+    })->where('any', '.*');
 });
 
 //profile
