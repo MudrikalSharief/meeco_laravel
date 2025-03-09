@@ -4,6 +4,7 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\PayMongoController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -100,8 +102,11 @@ Route::middleware('auth')->group(function (){
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
 
+    //route for paymonggo
+    Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
+    Route::post('/checkpayment', [PayMongoController::class, 'retrieve_payment']);
+    Route::view('/testpay', 'posts.paymongo')->name('testpay');
 
-    //for upgrade
     Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
@@ -115,7 +120,13 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+    Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 });
+
+
 
 Route::middleware('guest')->group(function (){
     
@@ -168,7 +179,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('admin/promo/create', [PromoController::class, 'create'])->name('admin.promo.create');
     Route::post('admin/promo', [PromoController::class, 'store'])->name('admin.promo.store');
     Route::get('admin/promo/{promo}/edit', [PromoController::class, 'edit'])->name('admin.promo.edit');
-    Route::put('admin/promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
+    Route::put('admin.promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
     Route::delete('admin.promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
 
     // New route for adding a promo
@@ -228,3 +239,12 @@ Route::middleware(['auth:admin/login'])->group(function () {
         return redirect()->route('admin.login');
     })->where('any', '.*');
 });
+
+//profile
+Route::get('/profile/cancelled', function () {
+    return view('profile.cancelled');
+})->name('profile.cancelled');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
+

@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 
@@ -57,14 +59,6 @@ class PromoController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'status' => 'required|string',
-            'photo_to_text' => 'required|string',
-            'photo_limit' => 'nullable|integer',
-            'reviewer_generator' => 'required|string',
-            'reviewer_limit' => 'nullable|integer',
-            'mock_quiz_generator' => 'required|string',
-            'mock_quiz_limit' => 'nullable|integer',
-            'save_reviewer' => 'required|string',
-            'save_reviewer_limit' => 'nullable|integer',
             'perks' => 'nullable|string',
         ]);
 
@@ -84,14 +78,6 @@ class PromoController extends Controller
             'end_date' => 'required|date',
             'status' => 'required|string|in:active,inactive',
             'perks' => 'nullable|string',
-            'photo_to_text' => 'required|string|in:unlimited,limited',
-            'reviewer_generator' => 'required|string|in:unlimited,limited',
-            'mock_quiz_generator' => 'required|string|in:unlimited,limited',
-            'save_reviewer' => 'required|string|in:unlimited,limited',
-            'photo_to_text_limit' => 'nullable|integer',
-            'reviewer_generator_limit' => 'nullable|integer',
-            'mock_quiz_generator_limit' => 'nullable|integer',
-            'save_reviewer_limit' => 'nullable|integer',
         ]);
 
         $promo = Promo::findOrFail($id);
@@ -112,7 +98,14 @@ class PromoController extends Controller
     // Show the active promos on the upgrade page
     public function showPromos()
     {
-        $promos = Promo::where('status', 'active')->get();
+        $user = Auth::user();
+        $promos = Promo::all();
+    
+        // Add a subscribed attribute to each promo
+        foreach ($promos as $promo) {
+            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->exists();
+        }
+    
         return view('subscriptionFolder.upgrade', compact('promos'));
     }
 }

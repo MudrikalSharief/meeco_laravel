@@ -123,8 +123,8 @@
     
 
     {{-- this is the modal when slecting a quiz type in --}}
-    <div id="selectQuizTypeModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+    <div id="selectQuizTypeModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center  ">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px; max-width: 400px;">
             <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Select Quiz Type</h2>
             <div class="flex flex-col space-y-2">
                 <button id="selectMultipleChoice" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Multiple Choice</button>
