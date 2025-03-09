@@ -212,32 +212,37 @@ Route::middleware(['auth:admin'])->group(function () {
     // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
     // Make sure you have these routes defined:
+    
+    //Transaction ROute
 
+    Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
+    Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+    Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+
+
+    //Statistic Route
+    Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
 });
-Route::view('/admin', 'auth.login-admin')->name('admin.login');
-Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
-
-//Transaction ROute
-
-Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
-Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
-Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
 
-//Statistic Route
-Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
-// Redirect to admin login if not authenticated
-Route::middleware(['auth:admin/login'])->group(function () {
+
+// Admin public routes for login/register
+Route::middleware('guest')->group(function () {
+    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+});
+
+// Redirect to admin login if trying to access admin paths without being authenticated
+Route::middleware(['guest:admin'])->group(function () {
     Route::get('/admin/{any}', function () {
         return redirect()->route('admin.login');
-    })->where('any', '.*');
+    })->where('any', '.*')->name('admin.unauthorized');
 });
 
 //profile
