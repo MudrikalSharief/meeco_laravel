@@ -20,13 +20,13 @@
                 
                 <!-- Display Status with ID for JavaScript targeting -->
                 <div id="inquiry-status" class="mb-2">
-                    Status: 
+                    {{-- Status:  --}}
                     @if($inquiry->status == 'Pending')
-                        <span class="badge bg-warning text-white py-1 px-2 rounded">Pending</span>
+                        {{-- <span class="badge bg-warning text-white py-1 px-2 rounded">Pending</span> --}}
                     @elseif($inquiry->status == 'Responded')
-                        <span class="badge bg-success text-white py-1 px-2 rounded">Responded</span>
+                        {{-- <span class="badge bg-success text-white py-1 px-2 rounded">Responded</span> --}}
                     @elseif($inquiry->status == 'Closed')
-                        <span class="badge bg-secondary text-white py-1 px-2 rounded">Closed</span>
+                        {{-- <span class="badge bg-secondary text-white py-1 px-2 rounded">Closed</span> --}}
                     @endif
                 </div>
                 
@@ -126,7 +126,7 @@
         const ticketReference = "{{ session('ticket_reference') }}";
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         
-        // Update UI to show countdown
+        /* Update UI to show countdown - commented out for production
         const statusElement = document.getElementById('inquiry-status');
         if (statusElement) {
             let countdown = 15;
@@ -143,6 +143,7 @@
                 }
             }, 1000);
         }
+        */
         
         // Call the auto-close endpoint after 15 seconds
         setTimeout(() => {
