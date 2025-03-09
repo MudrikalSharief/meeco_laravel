@@ -82,7 +82,9 @@
     @endforeach
 
     <div class="flex justify-end gap-3">
-        <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
+        @if($inquiry->status != 'Closed')
+            <button type="button" class="bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-500" onclick="toggleModal()">Reply</button>
+        @endif
         <form action="{{ route('admin.support') }}" method="GET">
             <button type="submit" class="bg-transparent border border-gray-300 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-100">Close Question</button>
         </form>
