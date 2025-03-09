@@ -32,7 +32,9 @@ class TransactionController extends Controller
         // session()->flush();
         $transactions = $query->paginate(7);
 
-        return view('admin.admin_transactions', compact('transactions'));
+        return response()->json([
+            'transactions' => $transactions
+        ]);
     }
 
     public function filter_transactions(Request $request){

@@ -22,20 +22,20 @@ class StatisticsController extends Controller
 
         $daily_rev = Subscription::selectRaw('SUM(price) as total_amount')
         ->Join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('start_date', '>=', $recent_monday)
-        ->groupBy(DB::raw('DATE(start_date)'))
+        ->where('subscriptions.start_date', '>=', $recent_monday)
+        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
         ->get();
 
         $monthly_rev =  Subscription::selectRaw('SUM(price) as total_amount')
         ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('start_date', '>=', $recent_january)
-        ->groupBy(DB::raw('DATE(start_date)'))
+        ->where('subscriptions.start_date', '>=', $recent_january)
+        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
         ->get();
 
         $yearly_rev = Subscription::selectRaw('SUM(price) as total_amount')
         ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('start_date', '>=', $recent_5_years)
-        ->groupBy(DB::raw('DATE(start_date)'))
+        ->where('subscriptions.start_date', '>=', $recent_5_years)
+        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
         ->get();
 
         $daily_ol = User::selectRaw('COUNT(user_id) as total_users')
