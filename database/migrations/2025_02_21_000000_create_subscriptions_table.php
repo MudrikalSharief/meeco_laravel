@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade'); 
             $table->string('reference_number')->unique()->nullable();
             $table->string('duration');
+            $table->integer('reviewer_created')->nullable();
+            $table->integer('quiz_created')->nullable();
             $table->date('start_date')->nullable(); 
             $table->date('end_date')->nullable(); 
             $table->enum('status', ['active', 'inactive'])->default('active'); 
