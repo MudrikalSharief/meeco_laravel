@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/quiz', 'posts.quiz')->name('quiz');
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
+    Route::delete('/deletequiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete.quiz');
 
     //route for paymonggo
     Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');

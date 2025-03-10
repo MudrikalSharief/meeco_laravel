@@ -103,7 +103,7 @@ class PromoController extends Controller
     
         // Add a subscribed attribute to each promo
         foreach ($promos as $promo) {
-            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->exists();
+            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->where('status', 'active')->exists();
         }
     
         return view('subscriptionFolder.upgrade', compact('promos'));

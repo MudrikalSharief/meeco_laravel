@@ -286,4 +286,17 @@ class QuizController extends Controller
             
             return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
         }
+
+        public function deleteQuiz($id)
+        {
+            $quiz = Question::find($id);
+            // return response()->json(['success' => false, 'quiz' => $id]);
+            if (!$quiz) {
+                return response()->json(['success' => false, 'message' => 'Quiz not found']);
+            }
+    
+            $quiz->delete();
+    
+            return response()->json(['success' => true, 'message' => 'Quiz deleted successfully']);
+        }
 }
