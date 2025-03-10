@@ -1,8 +1,8 @@
 <x-layout>
     
-    <div class="max-w-2xl h-full mx-auto pt-2 bg-white  rounded-lg">
+    <div class="max-w-2xl h-full mx-auto pt-2   rounded-lg">
         
-        <div class="w-full max-w-2xl w">
+        <div class="w-full max-w-2xl ">
             <!-- Content Header -->
             <div class="flex items-center justify-between mb-4 mx-5">
               <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : <span id="topic_name"></span></h1>
@@ -15,7 +15,7 @@
             </div>
             <hr class="mb-2">
             {{-- This code will show the quiz menu AND DROPDOWN --}}
-            <div id="quiz_menu_holder" class="bg-white h-full w-full px-6 py-3">
+            <div id="quiz_menu_holder" class=" h-full w-full px-6 py-3">
                     <div class="flex justify-between items-center">
                         <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Quiz</h1>
                         <button id="addQuizButton" class=" bg-blue-500 text-white py-2 px-4 rounded">New Quiz</button>

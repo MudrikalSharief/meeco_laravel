@@ -21,7 +21,7 @@
         }
     </style>
 </head>
-<body class="relative min-h-screen flex flex-col">
+<body class="relative min-h-screen flex flex-col bg_base_lightmode">
 
     {{-- Upper Navigation --}}
     <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between z-50">

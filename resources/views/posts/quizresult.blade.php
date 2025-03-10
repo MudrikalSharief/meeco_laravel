@@ -8,7 +8,7 @@
                 <!-- Quiz info will be dynamically inserted here -->
             </div>
 
-            <div id="quiz_result" class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5 pb-3">
+            <div id="quiz_result" class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5 pb-3 bg_base_lightmode">
                 <!-- Quiz result will be dynamically inserted here -->
             </div>
         </div>
