@@ -52,19 +52,29 @@ class PromoController extends Controller
     // Store a newly created promo in the database
     public function store(Request $request)
     {
+        // return response()->json(['success' => false, 'request' => $request->all()]);
+        
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'perks' => 'nullable|string',
             'duration' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'image_limit' => 'required|integer',
+            'reviewer_limit' => 'required|integer',
+            'quiz_limit' => 'required|integer',
+            'quiz_questions_limit' => 'required|integer',
+            'can_mix_quiz' => 'required|boolean',
+            'mix_quiz_limit' => 'required|integer',
             'status' => 'required|string',
-            'perks' => 'nullable|string',
         ]);
+        if($data){
 
-        Promo::updateOrCreate(['promo_id' => $request->id], $data);
-
-        return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
+            $create = Promo::updateOrCreate(['promo_id' => $request->id], $data);
+    
+            return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
+        }
     }
 
     // Update the specified promo in the database
@@ -73,11 +83,17 @@ class PromoController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'perks' => 'nullable|string',
             'duration' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'image_limit' => 'required|integer',
+            'reviewer_limit' => 'required|integer',
+            'quiz_limit' => 'required|integer',
+            'quiz_questions_limit' => 'required|integer',
+            'can_mix_quiz' => 'required|boolean',
+            'mix_quiz_limit' => 'required|integer',
             'status' => 'required|string|in:active,inactive',
-            'perks' => 'nullable|string',
         ]);
 
         $promo = Promo::findOrFail($id);

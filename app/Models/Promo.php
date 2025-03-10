@@ -15,6 +15,7 @@ class Promo extends Model
         'duration',
         'start_date',
         'end_date',
+        'quiz_limit',
         'image_limit',
         'reviewer_limit',
         'staquiz_limittus',
