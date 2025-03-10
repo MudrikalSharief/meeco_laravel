@@ -4,17 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ContactUs;
+use App\Models\User;
 use App\Models\Reply;
+use App\Models\AdminReply;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 
 class ContactUsController extends Controller
 {
     public function submitInquiry(Request $request)
     {
+        // Check if user is authenticated 
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please login to submit an inquiry.');
+        }
+        
         $request->validate([
-            'email' => 'required|email',
-            'category' => 'required',
             'subject' => 'required|string|max:255',
             'question' => 'required|string',
             'upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
@@ -25,7 +32,7 @@ class ContactUsController extends Controller
 
             $contactUs = new ContactUs();
             $contactUs->ticket_reference = $ticketReference;
-            $contactUs->email = $request->email;
+            $contactUs->email = Auth::user()->email; // Use authenticated user's email
             $contactUs->category = $request->category;
             $contactUs->subject = $request->subject;
             $contactUs->question = $request->question;
@@ -49,16 +56,50 @@ class ContactUsController extends Controller
         }
     }
 
+    /**
+     * Display the inquiry history for the authenticated user.
+     *
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\View\View
+     */
     public function inquiryHistory()
     {
-        $inquiries = ContactUs::all();
-        return view('website.footer.inquiry_history', compact('inquiries'));
+        $user = Auth::user(); // Get the authenticated user
+        
+        // If user is authenticated, get their email, otherwise redirect to login
+        if ($user) {
+            $email = $user->email;
+            
+            // Fetch only inquiries that match the logged-in user's email
+            $inquiries = ContactUs::where('email', $email)
+                               ->orderBy('created_at', 'desc')
+                               ->get();
+                               
+            return view('Contact.inquiry_history', compact('inquiries'));
+        }
+        
+        // If not authenticated, redirect to login page
+        return redirect()->route('login')->with('error', 'Please login to view your inquiry history');
+    }
+
+    /**
+     * Display a listing of support tickets for admin
+     */
+    public function SupportTicketAdmin()
+    {
+        $InquiriesAdmin = ContactUs::latest()->paginate(10);
+        return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 
     public function getInquiryDetails($ticket_reference)
     {
         $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
-        return view('website.footer.inquiry_history2', compact('inquiry'));
+        return view('Contact.inquiry_history2', compact('inquiry'));
+    }
+
+    public function getAdminInquiryDetails($ticket_reference)
+    {
+        $inquiry = ContactUs::with('replies', 'adminReplies')->where('ticket_reference', $ticket_reference)->firstOrFail();
+        return view('admin.admin_supportReply', compact('inquiry'));
     }
 
     public function submitReply(Request $request, $ticket_reference)
@@ -85,7 +126,46 @@ class ContactUsController extends Controller
 
         $reply->save();
 
+        // Update the status to "Responded"
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Pending']);
+
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+    }
+
+    public function submitAdminReply(Request $request, $ticket_reference)
+    {
+        $request->validate([
+            'reply_admin_question' => 'required|string',
+            'reply_admin_upload.*' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:5120'
+        ]);
+
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
+
+        $reply = new AdminReply();
+        $reply->ticket_id = $inquiry->ticket_id;
+        $reply->reply_admin_question = $request->reply_admin_question;
+
+        if ($request->hasFile('reply_admin_upload')) {
+            $uploads = [];
+            foreach ($request->file('reply_admin_upload') as $file) {
+                $path = $file->store('uploads', 'public');
+                $uploads[] = $path;
+            }
+            $reply->reply_admin_upload = json_encode($uploads);
+        }
+        
+        $reply->save();
+
+        // Update the status to "Responded" and store the timestamp
+        ContactUs::where('ticket_id', $inquiry->ticket_id)->update([
+            'status' => 'Responded',
+            'responded_at' => now()
+        ]);
+
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+            ->with('success', 'Reply submitted successfully. The inquiry will be automatically closed in 15 seconds.')
+            ->with('auto_close', true)
+            ->with('ticket_reference', $ticket_reference);
     }
 
     public function closeInquiry($ticket_reference)
@@ -95,5 +175,65 @@ class ContactUsController extends Controller
         $inquiry->save();
 
         return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
+    }
+
+    /**
+     * Auto-close inquiries after they've been in Responded state for 15 seconds
+     */
+    public function autoCloseInquiry($ticket_reference)
+    {
+        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)
+                      ->where('status', 'Responded')
+                      ->first();
+
+        if ($inquiry) {
+            // Fix: Use the correct primary key column 'ticket_id' instead of 'id'
+            ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Closed']);
+            
+            // If it's an AJAX request, return JSON
+            if (request()->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Inquiry closed automatically']);
+            }
+            
+            // Otherwise redirect with success message
+            return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+                             ->with('success', 'Inquiry closed automatically.');
+        }
+
+        // If it's an AJAX request, return JSON error
+        if (request()->ajax()) {
+            return response()->json(['success' => false, 'message' => 'Inquiry not found or not in Responded state']);
+        }
+        
+        // Otherwise redirect with error message
+        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])
+                         ->with('error', 'Inquiry not found or not in Responded state.');
+    }
+
+    /**
+     * Filter inquiries by status and search for admin
+     */
+    public function filterInquiriesByStatus(Request $request)
+    {
+        $query = ContactUs::query();
+        
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'like', "%{$search}%")
+                  ->orWhere('ticket_reference', 'like', "%{$search}%");
+            });
+        }
+        
+        $InquiriesAdmin = $query->latest()->paginate(10)->appends([
+            'status' => $request->status,
+            'search' => $request->search
+        ]);
+        
+        return view('admin.admin_support', compact('InquiriesAdmin'));
     }
 }

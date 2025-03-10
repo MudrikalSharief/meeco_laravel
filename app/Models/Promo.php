@@ -15,11 +15,6 @@ class Promo extends Model
         'start_date',
         'end_date',
         'status',
-        'photo_to_text',
-        'reviewer_generator',
-        'mock_quiz_generator',
-        'save_reviewer',
-        'save_reviewer_limit',
         'perks',
     ];
 

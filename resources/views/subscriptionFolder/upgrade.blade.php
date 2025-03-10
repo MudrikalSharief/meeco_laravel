@@ -1,9 +1,8 @@
 <x-layout>
     <div class="px-4 py-6 h-screen flex flex-col">
         <!-- Header Section -->
-        <div class="flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md rounded-lg px-6 py-4 mb-6">
+        <div class="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-md rounded-lg px-6 py-4 mb-6">
             <div class="flex items-center gap-2">
-                <button class="text-xl hover:text-gray-200 transition-colors duration-300">&larr;</button>
                 <span class="flex items-center text-xl font-semibold">
                     PREMIUM OFFERS
                 </span>
@@ -11,28 +10,42 @@
         </div>
 
         <!-- Cards Section -->
-        <div class="flex-grow overflow-auto pb-16">
+        <div class="flex-grow overflow-hidden pb-16">
             @if($promos->isEmpty())
                 <p class="text-center text-gray-600 font-semibold">No Available Offers</p>
             @else
-                <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 justify-items-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-2 px-3">
                     @foreach($promos as $promo)
-                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform hover:scale-105 w-full sm:w-56 mx-1">
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform {{ $promo->subscribed ? 'hover:scale-105' : '' }} flex flex-col">
                         <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
-                            <span class="font-semibold text-lg">{{ $promo->name }}</span>
+                            <span class="font-semibold text-xl px-1">{{ $promo->name }}</span>
                         </div>
-                        <div class="p-4">
-                            <p class="text-center font-bold text-gray-700">ONLY ₱{{ $promo->price }}</p>
-                            <ul class="mt-2 text-gray-600 list-disc list-inside">
+                        <div class="p-4 flex-grow">
+                            <p class="text-center font-bold text-3xl text-blue-700">₱{{ $promo->price }}</p>
+                            <ul class="mt-2 text-blue-500 list-disc list-inside">
                                 <li>{{ $promo->duration }} days access</li>
                                 <li>{{ $promo->perks }}</li>
                             </ul>
+                            @if($promo->subscribed)
+                                <p class="mt-3 text-center text-xl text-blue-600">Active promo!</p>
+                            @endif
                         </div>
-                        <div class="flex justify-center pb-4">
-                            <a href="{{ route('upgrade.payment', ['promo_id' => $promo->promo_id]) }}" class="bg-blue-500 text-white rounded-lg py-2 px-6 font-semibold hover:bg-blue-800">
-                                Subscribe to {{ $promo->name }}
+                        @if($promo->subscribed)
+                            <a href="{{ route('profile') }}" class="m-4 py-2 bg-blue-500 text-white rounded-lg font-semibold text-center transition-transform duration-300 transform hover:scale-105">
+                                View Info
                             </a>
-                        </div>
+                            
+                        @else
+                            @if($promos->contains('subscribed', true))
+                                <button class="m-4 py-2 bg-gray-500 text-white rounded-lg font-semibold cursor-not-allowed" disabled>
+                                    Subscribe
+                                </button>
+                            @else
+                                <button data-promo-id="{{ $promo->promo_id }}" class="m-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-800">
+                                    Subscribe
+                                </button>
+                            @endif
+                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -40,32 +53,46 @@
         </div>
     </div>
 
-    @foreach($promos as $promo)
-    <!-- Modal for each promo -->
-    <div id="modal-{{ $promo->promo_id }}" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white w-80 rounded-lg shadow-lg relative p-6">
-            <button onclick="closeModal('{{ $promo->promo_id }}')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-            <h3 class="text-xl font-semibold text-blue-500 mt-4">{{ $promo->name }}</h3>
-            <p class="text-gray-600 mt-2">Pay once in advance. Does not auto-renew.</p>
-            <p class="text-gray-900 font-bold text-lg mt-4">₱ {{ $promo->price }}</p>
-            <div class="mt-4">
-                <a href="{{ route('upgrade.payment', ['promo_id' => $promo->promo_id]) }}">
-                    <button class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg w-full mt-6 hover:bg-blue-600 transition-colors">
-                        Subscribe
-                    </button>
-                </a>
-            </div>
-        </div>
-    </div>
-    @endforeach
-
     <script>
-        function openModal(promoId) {
-            document.getElementById('modal-' + promoId).classList.remove('hidden');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button[data-promo-id]');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const promoId = this.getAttribute('data-promo-id');
+                    console.log('Button clicked with promo ID:', promoId);
 
-        function closeModal(promoId) {
-            document.getElementById('modal-' + promoId).classList.add('hidden');
-        }
+                    // Make a POST request to the PayMongoController with the promo ID
+                    fetch('/Paymongo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ promo_id: promoId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('payment code');
+                        console.log(data);
+                        if (data.success) {
+                            const responseData = JSON.parse(data.data);
+                            const checkoutURL = responseData.checkout_url;
+                            const checkoutID = data.checkoutId;
+                            localStorage.setItem('checkoutID', checkoutID);
+                            localStorage.setItem('promoID', promoId); // Store promo ID in local storage
+                            console.log('checkoutID :', checkoutID);
+                            console.log('Checkout URL:', checkoutURL);
+                            window.location.href = checkoutURL;
+                        } else {
+                            alert("Failed to get checkout URL");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            });
+        });
     </script>
 </x-layout>

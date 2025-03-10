@@ -1,28 +1,43 @@
 <x-layout>
     
-    <div class="max-w-2xl mx-auto pt-6 bg-white  rounded-lg">
+    <div class="reviewer_whole_content max-w-2xl mx-auto pt-2 bg-white  rounded-lg">
    
-        <!-- Buttons -->
-        <div class="flex gap-2 space-x-4 mb-6">
-            <button class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">Reviewer</button>
-            <button id="quiz" class="py-2 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Quizzes</button>
-        </div>
-
+        
         <!-- Content Header -->
-        <hr class="my-3">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="TITLE text-xl font-bold text-gray-800">Topic Name: {{ $topic->name }}</h1>
-            <button id="toggleButton" class="text-blue-500 text-sm font-medium rounded-lg hover:underline">Raw text</button>
+        <div class="flex items-center justify-between mb-4 mx-5">
+            <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : {{ $topic->name }}</h1>
+        </div>
+    
+        <!-- Buttons -->
+        <div class="flex space-x-2 mx-5 mb-2 ">
+            <button class="px-2 py-1 bg-blue-400 font-medium text-sm text-gray-50 rounded-sm cursor-default">Reviewer</button>
+            <button id="quiz" class=" px-2 py-1 bg-gray-100 text-sm text-gray-700  rounded-sm  hover:bg-gray-300">Quizzes</button>
+        </div>
+        <hr class="mb-2">
+        {{-- rawtext-reviewer --}}
+        <div class="mx-5 flex justify-end gap-2 items-center">
+            <button id="toggleButton" class="px-2 py-1 bg-blue-200 text-sm flex gap-1  rounded-sm hover:bg-blue-400  items-center">
+                <span id="viewRawOrRev" class="text-black-500 text-xs">Reviewer</span>
+                <div>
+                    <img class="max-w-4 eye1" src="{{ asset('logo_icons/eye1.svg') }}" alt="view">    
+                    <img class="max-w-4 hidden eye2" src="{{ asset('logo_icons/eye2.svg') }}" alt="view">  
+                </div>
+            </button>
+            <button id="cardReviwe" class="flex px-2 py-1 bg-green-100 text-sm text-green-700 rounded-sm hover:bg-green-300 items-center">
+                <img class="max-w-4" src="{{ asset('logo_icons/memo.svg') }}" alt="download">    
+            </button>
+            <button id="downloadReviewer" class="flex px-2 py-1 bg-gray-100 text-smrounded-sm hover:bg-gray-300 items-center">
+                <img class="max-w-4" src="{{ asset('logo_icons/download.svg') }}" alt="download">    
+            </button>
         </div>
 
         <!-- Scrollable Content Box -->
-        <div class="Reviewer border  border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Reviewer mx-5 my-3 rounded-lg";>
             {{-- Reviewer  in here --}}
-            <h1>Reviewer for Topic: {{ $topic->name }}</h1>
             <h1 class="reviewer_holder"></h1>
         </div>
 
-        <div class="Rawtext  border hidden border-blue-500 rounded-lg bg-blue-50 p-6 overflow-y-scroll";>
+        <div class="Rawtext hidden mx-5 my-3 rounded-lg";>
             {{-- Raw text in here --}}
             <h1 class="rawtext_holder">Raw Text: {{ $rawText }}</h1>
          </div>
@@ -48,6 +63,16 @@
             const reviewerText = @json($reviewerText);
             const rawText = @json($rawText);
 
+            const toggleButton = document.getElementById('toggleButton');
+            const reviewer = document.querySelector('.Reviewer');
+            const rawtext = document.querySelector('.Rawtext');
+            const downloadButton = document.getElementById('downloadReviewer');
+            const cardReviwe = document.getElementById('cardReviwe');
+            const quizbutton = document.getElementById('quiz');
+            const viewRawOrRev = document.getElementById('viewRawOrRev');
+            const eye1 = document.querySelector('.eye1');
+            const eye2 = document.querySelector('.eye2');
+
             fetch('/disect_reviewer', {
                 method: 'POST',
                 headers: {
@@ -60,38 +85,78 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
-                items = data['data'];
                 let content = '';
+                if(data.success){
 
-                items.forEach((item) => {
-                    content += `<h2 class="font-bold">${item[0]}  <span class=" font-normal"> ${item[1]}<br><br></span></h2>`;
-                });
-
-                document.querySelector('.reviewer_holder').innerHTML = content;
+                    console.log('Success:', data);
+                    items = data['data'];
+                    
+    
+                    items.forEach((item) => {
+                        content += `<h2 class="font-bold">${item[0]}  <span class=" font-normal"> ${item[1]}<br><br></span></h2>`;
+                    });
+    
+                    document.querySelector('.reviewer_holder').innerHTML = content;
+                }else{
+                    toggleButton.classList.add('pointer-events-none'); // Works for <a> too
+                    downloadButton.setAttribute('disabled', 'true');
+                    downloadButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    quizbutton.setAttribute('disabled', 'true');
+                    quizbutton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    cardReviwe.setAttribute('disabled', 'true');
+                    cardReviwe.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    
+                    content += `<h2 class="font-semibold text-red-500 text-center mt-10">${data.message} </h2>`;
+                    document.querySelector('.reviewer_holder').innerHTML = content;
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
 
+            //click event for cards
+            cardReviwe.addEventListener('click', function(){
+                window.location.href=`/cards?topicId=${topicId}`;
+            });
+
             // Handle switching between raw text and reviewer text
-            const toggleButton = document.getElementById('toggleButton');
-            const reviewer = document.querySelector('.Reviewer');
-            const rawtext = document.querySelector('.Rawtext');
 
             toggleButton.addEventListener('click', function() {
                 reviewer.classList.toggle('hidden');
-                toggleButton.textContent = reviewer.classList.contains('hidden') ? 'Reviewer' : 'Raw Text';
                 rawtext.classList.toggle('hidden');
-                toggleButton.textContent = rawtext.classList.contains('hidden') ? 'Raw Text' : 'Reviewer';
+                if(reviewer.classList.contains('hidden')){
+                    eye1.classList.add('hidden');
+                    eye2.classList.remove('hidden');
+                    viewRawOrRev.innerText = 'Raw Text';
+                }else{
+                    eye2.classList.add('hidden');
+                    eye1.classList.remove('hidden');
+                    viewRawOrRev.innerText = 'Reviewer';
+                }
+                
             });
 
-            const quizbutton = document.getElementById('quiz');
+            //for quiz button
             quizbutton.addEventListener('click', function(){
                 window.location.href=`/quiz?topicId=${topicId}`;
             });
 
+            // This handles the download Reviewer
+            downloadButton.addEventListener('click', function() {
+                const reviewerContent = document.querySelector('.reviewer_holder').innerText;
+                const topicId = @json($topic->topic_id);
 
+                const blob = new Blob([reviewerContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `${topicId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+         
         });
     </script>
 </x-layout>

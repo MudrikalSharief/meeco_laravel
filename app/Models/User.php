@@ -39,13 +39,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'firstname',
-        'middlename',
-        'lastname',
-        'email',
-        'password',
+        'firstname', 'lastname', 'email', 'password', 'role', 'date_created', 'last_login', 'created_at', 'updated_at', 'remember_token'
     ];
-
+    
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -72,5 +68,9 @@ class User extends Authenticatable
     public function subjects()
     {
         return $this->hasMany(Subject::class, 'user_id', 'user_id');
+    }
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class, 'user_id', 'user_id');
     }
 }

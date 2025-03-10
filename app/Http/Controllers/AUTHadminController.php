@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User; // Add this line to import the User model
 use Illuminate\Support\Facades\DB;
 
+use App\Models\ContactUs; // Add this line to import the ContactUs model
 class AUTHadminController extends Controller
 {
     // Show Login Form
@@ -39,6 +40,9 @@ class AUTHadminController extends Controller
         Auth::guard('admin')->login($admin);
 
         // Redirect
+        if ($request->has('redirect_to')) {
+            return redirect($request->input('redirect_to'));
+        }
         return redirect()->route('admin.dashboard');
     }
 

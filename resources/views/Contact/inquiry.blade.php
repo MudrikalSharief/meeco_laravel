@@ -1,6 +1,6 @@
-<x-web_footer>
-    <main class="">
-        <div class="form-container w-[70%] bg-white p-8 rounded-lg shadow-md ml-48">
+<x-contact_layout>
+    <main class="mt-5">
+        <div class="form-container w-[90%] md:w-[70%] bg-white p-8 rounded-lg shadow-md mx-auto md:ml-48">
             <h1 class="text-blue-700 text-2xl mb-6 font-medium">Inquiry (Message Form)</h1>
             @if(session('error'))
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -18,7 +18,8 @@
                 @csrf
                 <div class="form-group mb-5">
                     <label for="email" class="block text-gray-600 mb-2 text-sm">Email</label>
-                    <input type="email" id="email" name="email" required class="w-full p-3 border border-gray-300 rounded-lg text-sm">
+                    <input type="email" id="email" name="email" value="{{ Auth::user()->email }}" readonly class="w-full p-3 border border-gray-300 rounded-lg text-sm bg-gray-100">
+                    <p class="text-xs text-gray-500 mt-1">This email is associated with your account and cannot be changed.</p>
                 </div>
     
                 <div class="form-group mb-5">
@@ -63,4 +64,4 @@
             </form>
         </div>
     </main>
-</x-web_footer>
+</x-contact_layout>

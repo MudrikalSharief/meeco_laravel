@@ -10,15 +10,20 @@ return new class extends Migration {
     {   
         Schema::dropIfExists('subscriptions');
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name'); 
-            $table->decimal('pricing', 8, 2);
+            $table->id('subscription_id')->primary();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade'); 
+            $table->unsignedBigInteger('promo_id');
+            $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade'); 
+            $table->string('reference_number')->unique()->nullable();
             $table->string('duration');
             $table->date('start_date')->nullable(); 
             $table->date('end_date')->nullable(); 
             $table->enum('status', ['active', 'inactive'])->default('active'); 
+            $table->enum('subscription_type', ['Admin Granted', 'Subscribed'])->default('Subscribed'); 
             $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate(); 
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
+
         });
     }
 

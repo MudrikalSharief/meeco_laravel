@@ -18,7 +18,7 @@
                     @foreach($users as $user)
                         <tr>
                             <td>{{ $user->firstname }}</td>
-                            <td>{{ $user->middlename ??" " }}</td>
+                            <td>{{ $user->middlename ?? 'N/A' }}</td>
                             <td>{{ $user->lastname }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->created_at->format('Y-m-d') }}</td>

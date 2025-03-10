@@ -4,6 +4,7 @@ use App\Http\Controllers\OPENAIController;
 use App\Http\Controllers\AUTHController;
 use App\Http\Controllers\CaptureController;
 use App\Http\Controllers\IMAGEcontroller;
+use App\Http\Controllers\PayMongoController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SubjectController;
@@ -14,11 +15,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
-use App\Http\Controllers\ADMINController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
 
 
+use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -56,6 +58,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
+    Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
@@ -64,6 +67,17 @@ Route::middleware('auth')->group(function (){
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
+    //contact us
+    Route::view('/contact', 'Contact.contact')->name('contact');
+    Route::view('/contact/inquiry', 'Contact.inquiry')->name('inquiry');
+    Route::get('/contact/inquiry-history', [ContactUsController::class, 'inquiryHistory'])->name('inquiry-history');
+    Route::view('/contact/inquiry-history/second', 'Contact.inquiry_history2')->name('inquiry-history2');
+    Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
+    Route::get('/contact/inquiry-history/{ticket_reference}', [ContactUsController::class, 'getInquiryDetails'])->name('inquiry.details');
+    Route::post('/contact/inquiry-history/{ticket_reference}/reply', [ContactUsController::class, 'submitReply'])->name('submitReply');
+    Route::post('/contact/inquiry-history/{ticket_reference}/close', [ContactUsController::class, 'closeInquiry'])->name('closeInquiry');
+
+    //for reviewer
     Route::post('/get-raw-text', [RawController::class, 'getRawText']);
     Route::post('/UpdateAndGet_RawText', [RawController::class, 'UpdateAndGet_RawText']);
     Route::post('/extract-text', [RawController::class, 'extractText']);
@@ -73,7 +87,12 @@ Route::middleware('auth')->group(function (){
     Route::view('/reviewer', 'posts.reviewer')->name('reviewer');
     Route::post('/disect_reviewer', [ReviewerController::class, 'disectReviewer'])->name('disectReviewer');
     Route::get('/reviewer/{topicId}', [ReviewerController::class, 'showReviewPage'])->name('reviewer.show');
-    
+    Route::view('/cards','posts.cards')->name('card');
+
+   //this is for download
+    Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
+    Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
+
     //for quiz
     Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
     Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');
@@ -85,9 +104,13 @@ Route::middleware('auth')->group(function (){
     Route::view('/quiz', 'posts.quiz')->name('quiz');
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
+    Route::delete('/deletequiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete.quiz');
 
+    //route for paymonggo
+    Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
+    Route::post('/checkpayment', [PayMongoController::class, 'retrieve_payment']);
+    Route::view('/testpay', 'posts.paymongo')->name('testpay');
 
-    //for upgrade
     Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
@@ -101,7 +124,13 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+    Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 });
+
+
 
 Route::middleware('guest')->group(function (){
     
@@ -123,15 +152,6 @@ Route::middleware('guest')->group(function (){
     Route::view('/privacy', 'website.footer.privacy')->name('privacy');
 
 
-    //contact us
-    Route::view('/contact', 'website.footer.contact')->name('contact');
-    Route::view('/contact/inquiry', 'website.footer.inquiry')->name('inquiry');
-    Route::get('/contact/inquiry-history', [ContactUsController::class, 'inquiryHistory'])->name('inquiry-history');
-    Route::view('/contact/inquiry-history/second', 'website.footer.inquiry_history2')->name('inquiry-history2');
-    Route::post('/contact/inquiry', [ContactUsController::class, 'submitInquiry'])->name('submitInquiry');
-    Route::get('/contact/inquiry-history/{ticket_reference}', [ContactUsController::class, 'getInquiryDetails'])->name('inquiry.details');
-    Route::post('/contact/inquiry-history/{ticket_reference}/reply', [ContactUsController::class, 'submitReply'])->name('submitReply');
-    Route::post('/contact/inquiry-history/{ticket_reference}/close', [ContactUsController::class, 'closeInquiry'])->name('closeInquiry');
 
 });
 
@@ -150,6 +170,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
+    Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
     Route::post('/admin/admins/create', [AUTHadminController::class, 'createAdmin'])->name('admin.admins.create');
@@ -165,7 +186,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('admin/promo/create', [PromoController::class, 'create'])->name('admin.promo.create');
     Route::post('admin/promo', [PromoController::class, 'store'])->name('admin.promo.store');
     Route::get('admin/promo/{promo}/edit', [PromoController::class, 'edit'])->name('admin.promo.edit');
-    Route::put('admin/promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
+    Route::put('admin.promo/{promo}', [PromoController::class, 'update'])->name('admin.promo.update');
     Route::delete('admin.promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
 
     // New route for adding a promo
@@ -186,48 +207,43 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
 
-    Route::get('/admin/logs', [AdminLogController::class, 'index'])->name('admin.logs');
+    //Support Ticket Routes
+    Route::get('/admin/support', [ContactUsController::class, 'SupportTicketAdmin'])->name('admin.support');
+    Route::get('/admin/support/filter', [ContactUsController::class, 'filterInquiriesByStatus'])->name('filter.inquiries');
+    Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
+    Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
+    Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
+    Route::post('/admin/support/auto-close/{ticket_reference}', [ContactUsController::class, 'autoCloseInquiry'])->name('admin.autoCloseInquiry');
 
-});
-Route::view('/admin', 'auth.login-admin')->name('admin.login');
-Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+    // Remove or comment out these redundant routes since they are now handled by ContactUsController
+    // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
+    // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
-
-// Auth admin
-// // Admin Authentication Routes
-// Route::get('admin/login', [AUTHadminController::class, 'showLoginForm'])->name('admin.login');
-// Route::post('admin/login', [AUTHadminController::class, 'login_admin']);
-// Route::get('admin/register', [AUTHadminController::class, 'showRegisterForm'])->name('admin.register');
-// Route::post('admin/register', [AUTHadminController::class, 'register_admin']);
-// Route::post('admin/logout', [AUTHadminController::class, 'logout_admin'])->name('admin.logout');
-
-// // Middleware for redirection based on authentication status
-// Route::middleware(['auth:admin'])->group(function () {
-//     Route::view('/admin/dashboard', 'admin.admin_view')->name('admin.dashboard');
-//     Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
-//     Route::view('/admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-//     Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-//     Route::view('/admin/subscription', 'admin.admin_subscription')->name('admin.subscription');
-//     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
-//     Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
-//     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
-//     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+    // Make sure you have these routes defined:
     
-//     Route::view('/admin/manage_admin', 'admin.admin_manage')->name('admin.admin-manage');
-//     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
-// });
-//Transaction Routes
-Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
-Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
-Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+    //Transaction ROute
+
+    Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
+    Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+    Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
 
-//Statistic Route
-Route::get('admin/statistics', [TransactionController::class, 'get_sales'])->name('admin.statistics');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+    //Statistic Route
+    Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+});
+
+
+
+
+// Admin public routes for login/register
+    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
 
 // Redirect to admin login if not authenticated
 Route::middleware(['auth:admin/login'])->group(function () {
@@ -235,3 +251,12 @@ Route::middleware(['auth:admin/login'])->group(function () {
         return redirect()->route('admin.login');
     })->where('any', '.*');
 });
+
+//profile
+Route::get('/profile/cancelled', function () {
+    return view('profile.cancelled');
+})->name('profile.cancelled');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
+Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
+

@@ -17,7 +17,7 @@
     </div>
     <div class="p-6 h-full  md:overflow-hidden">
         <h1 class="pb-3 text-xl font-bold text-blue-500">Extracted Text for Topic: {{ request('topic_name') }}</h1>
-        <div class="flex flex-col md:flex-row h-full">
+        <div class="flex flex-col md:flex-row h-screen">
             <div class="image-container  md:max-h-[80vh] md:w-1/3 w-full">
                 <h3 class=" mb-2 text-blue-400">Images Uploaded <hr></h3>
                 <div class="image_holder flex gap-3 md:flex-col overflow-x-auto md:overflow-y-auto scrollable">
@@ -37,10 +37,10 @@
             </div>
             <div class="text-container  w-full md:w-2/3 md:pl-4 pt-4 md:pt-0">
                 <h3 class=" pb-2 text-blue-400">Extracted Text <hr></h3>
-                <form id="extractedTextForm" class="w-full h-full" method="POST" action="/store-extracted-text">
+                <form id="extractedTextForm" class="w-full h-4/5" method="POST" action="/store-extracted-text">
                     @csrf
                     <input type="hidden" name="topic_id" value="{{ request('topic_id') }}">
-                    <textarea name="raw_text" class="extractedTA w-full h-[calc(100vh-16rem)] md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($rawText); ?></textarea>
+                    <textarea name="raw_text" class="extractedTA w-full h-full min-h-96 md:h-3/4 p-2 border rounded"><?php echo htmlspecialchars($rawText); ?></textarea>
                     <button type="submit" id="genereate_reviewer_button" class="generate_reviewer mb-5 md:mb-0 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600">Generate Reviewer</button>
                 </form>
             </div>
@@ -89,7 +89,8 @@
             const extractedTextForm = document.getElementById('extractedTextForm');
             const extractedTextArea = extractedTextForm.querySelector('textarea[name="raw_text"]');
             const topicId = extractedTextForm.querySelector('input[name="topic_id"]').value;
-
+            const bottomNav = document.getElementById('bottom_nav');
+            bottomNav.classList.add('hidden');
 
             const loader = document.getElementById('loader');
             
@@ -139,11 +140,17 @@
                         extractedTextArea.value = data.raw_text;
                     })
                     .catch((error) => {
+                         // Hide the loader
+                         loader.classList.add('hidden');
+                         alert('eror');
                         console.error('Error:', error);
                     });
                 }
             })
             .catch((error) => {
+                 // Hide the loader
+                 loader.classList.add('hidden');
+                 alert('eror');
                 console.error('Error:', error);
             });
 
