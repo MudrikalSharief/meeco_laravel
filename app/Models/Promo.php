@@ -11,11 +11,17 @@ class Promo extends Model
     protected $fillable = [
         'name',
         'price',
+        'perks',
         'duration',
         'start_date',
         'end_date',
+        'image_limit',
+        'reviewer_limit',
+        'staquiz_limittus',
+        'quiz_questions_limit',
+        'can_mix_quiz',
+        'mix_quiz_limit',
         'status',
-        'perks',
     ];
 
     protected $primaryKey = 'promo_id'; 
