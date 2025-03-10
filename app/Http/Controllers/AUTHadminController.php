@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User; // Add this line to import the User model
+use Illuminate\Support\Facades\DB;
+
 use App\Models\ContactUs; // Add this line to import the ContactUs model
 class AUTHadminController extends Controller
 {
@@ -43,6 +45,8 @@ class AUTHadminController extends Controller
         }
         return redirect()->route('admin.dashboard');
     }
+
+
 
     // Login Admin
     public function login_admin(Request $request){
@@ -102,16 +106,26 @@ class AUTHadminController extends Controller
         $request->validate([
             'firstname' => 'required|max:255',
             'lastname' => 'required|max:255',
+            'middlename' => 'nullable|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:3|confirmed'
         ]);
 
-        User::create([
+        $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
+            'middlename' => $request->middlename,
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);
+
+        /* $admin_id = DB::table('sessions')->pluck('user_id');    
+
+        DB::table('admin_actions')->insert([
+            'action_id'=>rand(100000, 999999),
+            'admin_id' => $admin_id,
+            'action_type' => "Admin has added User". $user->id,
+        ]); */
 
         return redirect()->route('admin.users')->with('success', 'User created successfully.');
     }
@@ -203,13 +217,35 @@ class AUTHadminController extends Controller
     }
 
     // Delete User by Email
-    public function deleteUserByEmail($email)
+    public function deleteUser(Request $request, $id)
     {
-        $user = User::where('email', $email)->firstOrFail();
+        $user = User::where('user_id', $id)->firstOrFail();
         $user->delete();
 
         return redirect()->route('admin.users')->with('success', 'User deleted successfully.');
     }
-    
 
+    public function updateUser(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:users,user_id',
+            'firstname' => 'required|max:255',
+            'middlename' => 'nullable|max:255',
+            'lastname' => 'required|max:255',
+            'email' => 'required|email|unique:users,email,' . $request->id . ',user_id',
+        ]);
+
+        $user = User::findOrFail($request->id);
+
+        DB::transaction(function () use ($request, $user) {
+            $user->update([
+                'firstname' => $request->firstname,
+                'middlename' => $request->middlename,
+                'lastname' => $request->lastname,
+                'email' => $request->email,
+            ]);
+        });
+
+        return redirect()->route('admin.users')->with('success', 'User updated successfully.');
+    }
 }

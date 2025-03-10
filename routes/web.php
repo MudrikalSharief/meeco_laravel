@@ -16,6 +16,9 @@ use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AdminLogController;
+
+
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
 
@@ -154,7 +157,9 @@ Route::middleware('guest')->group(function (){
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
-    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
+    Route::put('/admin/users/update', [AUTHadminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/admin/users/delete/{id}', [AUTHadminController::class, 'deleteUser'])->name('admin.users.delete');
     // Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::get('/gcash/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('gcash.number');
@@ -164,6 +169,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
@@ -194,7 +200,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
-    Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
+    /* Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete'); */
     
     Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
@@ -207,29 +213,37 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
-    
+    Route::post('/admin/support/auto-close/{ticket_reference}', [ContactUsController::class, 'autoCloseInquiry'])->name('admin.autoCloseInquiry');
+
     // Remove or comment out these redundant routes since they are now handled by ContactUsController
     // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
     // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
     // Make sure you have these routes defined:
+    
+    //Transaction ROute
 
+    Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
+    Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+    Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+
+
+    //Statistic Route
+    Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
 });
-Route::view('/admin', 'auth.login-admin')->name('admin.login');
-Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
-Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
-
-Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
-Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
-Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
 
-//Statistic Route
-Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
+
+// Admin public routes for login/register
+    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
 
 // Redirect to admin login if not authenticated
 Route::middleware(['auth:admin/login'])->group(function () {
