@@ -83,15 +83,39 @@ class AUTHcontroller extends Controller
 
         //Try login
         if(Auth::attempt($field,$request->remember)){
-            return redirect()->route('capture');
+
+
+            $user = Auth::user();
+
+            $subscription = Subscription::where('user_id', $user->user_id)
+                                    ->where('status', 'active')
+                                    ->with('promo')
+                                    ->first();
             
-        }else{
-            return back()->withErrors([
-                'failed' => 'Account Doesnt Exist.'
-            ]);
-        }
+            if ($subscription) {
+                // Check if the promo's end date is beyond today's date
+                if ($subscription->end_date < now()) {
+                    // Update the subscription status to inactive
+                    $subscription->update(['status' => 'inactive']);
+                }
+
+                if($subscription->promo->reviewer_limit >= $subscription->reviewer_created && $subscription->promo->quiz_created >= $subscription->quiz_limit){
+                    // Update the subscription status to inactive
+                    $subscription->update(['status' => 'inactive']);
+                }
+
+                // Find the 'FreeTrial' promo
+                $promo = Promo::where('name', 'Free Trial')->first();
+
+                return redirect()->route('capture');
+            
+            }else{
+                return back()->withErrors([
+                    'failed' => 'Account Doesnt Exist.'
+                ]);
+            }
         
-    }
+    }}
 
     //logout user
     public function logout_user(Request $request){
