@@ -49,11 +49,11 @@
                             <label for="can_mix_quiz" class="block text-gray-700 font-bold mb-1 sm:text-sm">Mix Quiz Type : </label>
                             <div class="flex gap-4">
                                 <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="1" class="mr-2" {{ old('statcan_mix_quizus', $promo->can_mix_quiz ?? '') == '1' ? 'checked' : '' }}>
+                                    <input type="radio" name="can_mix_quiz" value="1" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '1' ? 'checked' : '' }} onclick="toggleMixQuizLimit(true)" required>
                                     Yes
                                 </label>
                                 <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }}>
+                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)" required>
                                     No
                                 </label>
                             </div>
@@ -61,7 +61,8 @@
                     </div>
                     <div>
                         <label for="mix_quiz_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Question per Mix Quiz limit : </label>
-                        <input type="number" id="mix_quiz_limit" name="mix_quiz_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('mix_quiz_limit', $promo->mix_quiz_limit ?? '') }}" required>
+                        <input type="number" id="mix_quiz_limit" name="mix_quiz_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('mix_quiz_limit', $promo->mix_quiz_limit ?? '') }}">
+                        <span id="mix_quiz_limit_message" class="text-red-500 text-sm hidden">This field does not apply.</span>
                     </div>
                 </div>
                 
@@ -73,11 +74,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label for="start_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('start_date', isset($promo->start_date) ? \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') : '') }}" required min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                        <input type="date" id="start_date" name="start_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('start_date', isset($promo->start_date) ? \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') : '') }}" {{ isset($promo) ? 'readonly' : 'required' }} min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                     </div>
                     <div>
                         <label for="end_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer End Date:</label>
-                        <input type="date" id="end_date" name="end_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('end_date', isset($promo->end_date) ? \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') : '') }}" required min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                        <input type="date" id="end_date" name="end_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('end_date', isset($promo->end_date) ? \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') : '') }}" required min="{{ \Carbon\Carbon::now()->addDay()->format('Y-m-d') }}">
                     </div>
                 </div>
                 
@@ -101,4 +102,27 @@
             </form>
         </div>
     </main>
-    </x-admin_layout>
+
+    <script>
+        function toggleMixQuizLimit(enable) {
+            const mixQuizLimitInput = document.getElementById('mix_quiz_limit');
+            const mixQuizLimitMessage = document.getElementById('mix_quiz_limit_message');
+            mixQuizLimitInput.disabled = !enable;
+            mixQuizLimitInput.required = enable;
+            mixQuizLimitMessage.classList.toggle('hidden', enable);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const canMixQuiz = document.querySelector('input[name="can_mix_quiz"]:checked').value;
+            toggleMixQuizLimit(canMixQuiz == '1');
+        });
+
+        document.getElementById('start_date').addEventListener('change', function() {
+            const startDate = new Date(this.value);
+            const endDateInput = document.getElementById('end_date');
+            const minEndDate = new Date(startDate);
+            minEndDate.setDate(minEndDate.getDate() + 1);
+            endDateInput.min = minEndDate.toISOString().split('T')[0];
+        });
+    </script>
+</x-admin_layout>

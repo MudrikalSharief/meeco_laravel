@@ -55,6 +55,13 @@
                                 <th class="py-2 px-4 border-b">Promo Name</th>
                                 <th class="py-2 px-4 border-b">Pricing</th>
                                 <th class="py-2 px-4 border-b">Duration</th>
+                                <th class="py-2 px-4 border-b">Image Limit</th>
+                                <th class="py-2 px-4 border-b">Reviewer Limit</th>
+                                <th class="py-2 px-4 border-b">Quiz Limit</th>
+                                <th class="py-2 px-4 border-b">Questions per Quiz Limit</th>
+                                <th class="py-2 px-4 border-b">Mix Quiz</th>
+                                <th class="py-2 px-4 border-b">Mix Quiz Limit</th>
+                                <th class="py-2 px-4 border-b">Perks</th>
                                 <th class="py-2 px-4 border-b">Start Date</th>
                                 <th class="py-2 px-4 border-b">End Date</th>
                                 <th class="py-2 px-4 border-b">Status</th>
@@ -66,11 +73,18 @@
                                 @if(request('status') == '' || request('status') == $promo->status)
                                 <tr class="hover:bg-gray-50">
                                     <td class="py-2 px-4 border-b">{{ $promo->name }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $promo->price }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $promo->duration }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $promo->start_date }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $promo->end_date }}</td>
-                                    <td class="py-2 px-4 border-b">{{ $promo->status }}</td>
+                                    <td class="py-2 px-4 border-b">₱{{ $promo->price }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->duration }} days</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->image_limit }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->reviewer_limit }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->quiz_limit }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->quiz_questions_limit }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->can_mix_quiz ? 'Yes' : 'No' }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->can_mix_quiz ? $promo->mix_quiz_limit : 'N/A' }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->perks }}</td>
+                                    <td class="py-2 px-4 border-b">{{ \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') }}</td>
+                                    <td class="py-2 px-4 border-b">{{ \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') }}</td>
+                                    <td class="py-2 px-4 border-b">{{ ucfirst($promo->status) }}</td>
                                     <td class="py-2 px-4 border-b text-center">
                                         <a href="{{ route('admin.editPromo', $promo->promo_id) }}" class="inline-block">
                                             <img src="{{ asset('logo_icons/edit.png') }}" alt="Edit" class="w-4 h-4 mx-1">
