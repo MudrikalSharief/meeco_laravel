@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Promo;
+use App\Models\Subject;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,17 +27,50 @@ class AUTHcontroller extends Controller
         //Register
         $user = User::create($field);
 
-        // Associate user with a promo
-        $promo = Promo::where('name', 'Default Promo')->first();
-        if ($promo) {
-            $user->promos()->attach($promo->id);
-        }
-
         // Login
         Auth::login($user);
 
-        //Redirect
-        return redirect()->route('capture');
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Find the 'FreeTrial' promo
+        $promo = Promo::where('name', 'Free Trial')->first();
+
+        // Check if the promo exists
+        if($promo){
+            // Create a subscription for the user
+            Subscription::create([
+                'user_id' => $user->user_id,
+                'promo_id' => $promo->promo_id,
+                'reference_number' => 'Free Trial Promo',
+                'reviewer_created' => 0,
+                'quiz_created' => 0,
+                'status' => 'active',
+                'subscription_type' => 'Admin Granted',
+                'start_date' => now(),
+                'end_date' => now()->addDays($promo->duration),
+            ]);
+
+                
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'FreeTrial Promo not found.',
+                'user_id' => $user->user_id,
+                'promo_id' => $promo->promo_id,
+                'duration' => $promo->duration,
+            ]);
+        }
+
+            //Redirect
+            if($promo && $user){
+                return redirect()->route('capture');
+            }else{
+                return back()->withErrors([
+                    'failed' => 'Account Doesnt Exist.'
+                ]);
+            }
+
     }
 
     //login user
