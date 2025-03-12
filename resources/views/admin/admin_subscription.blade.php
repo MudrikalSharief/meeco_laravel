@@ -59,6 +59,7 @@
                                 <th class="py-2 px-4 border-b">Reviewer Limit</th>
                                 <th class="py-2 px-4 border-b">Quiz Limit</th>
                                 <th class="py-2 px-4 border-b">Questions per Quiz Limit</th>
+                                <th class="py-2 px-4 border-b">Mix Quiz</th>
                                 <th class="py-2 px-4 border-b">Mix Quiz Limit</th>
                                 <th class="py-2 px-4 border-b">Perks</th>
                                 <th class="py-2 px-4 border-b">Start Date</th>
@@ -78,6 +79,7 @@
                                     <td class="py-2 px-4 border-b">{{ $promo->reviewer_limit }}</td>
                                     <td class="py-2 px-4 border-b">{{ $promo->quiz_limit }}</td>
                                     <td class="py-2 px-4 border-b">{{ $promo->quiz_questions_limit }}</td>
+                                    <td class="py-2 px-4 border-b">{{ $promo->can_mix_quiz ? 'Yes' : 'No' }}</td>
                                     <td class="py-2 px-4 border-b">{{ $promo->can_mix_quiz ? $promo->mix_quiz_limit : 'N/A' }}</td>
                                     <td class="py-2 px-4 border-b">{{ $promo->perks }}</td>
                                     <td class="py-2 px-4 border-b">{{ \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') }}</td>
