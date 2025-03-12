@@ -16,7 +16,7 @@ return new class extends Migration
             'name' => 'Free Trial',
             'price' => 0.00,
             'perks' => 'Default perks',
-            'duration' => 3,
+            'duration' => 7,
             'start_date' => now(),
             'end_date' => now()->addDays(90),
             'status' => 'inactive',

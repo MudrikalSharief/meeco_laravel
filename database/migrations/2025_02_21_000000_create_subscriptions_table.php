@@ -16,9 +16,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('promo_id');
             $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade'); 
             $table->string('reference_number')->unique()->nullable();
-            $table->string('duration');
-            $table->integer('reviewer_created')->nullable();
-            $table->integer('quiz_created')->nullable();
+            $table->integer('duration');
+            $table->integer('reviewer_created')->default(0);
+            $table->integer('quiz_created')->default(0);
             $table->date('start_date')->nullable(); 
             $table->date('end_date')->nullable(); 
             $table->enum('status', ['active', 'expired','canceled'])->default('active'); 

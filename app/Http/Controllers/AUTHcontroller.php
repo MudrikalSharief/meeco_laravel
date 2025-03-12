@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Promo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,13 @@ class AUTHcontroller extends Controller
         //Register
         $user = User::create($field);
 
-        //Login
+        // Associate user with a promo
+        $promo = Promo::where('name', 'Default Promo')->first();
+        if ($promo) {
+            $user->promos()->attach($promo->id);
+        }
+
+        // Login
         Auth::login($user);
 
         //Redirect
