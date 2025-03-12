@@ -53,7 +53,7 @@
                                     Yes
                                 </label>
                                 <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)" required>
+                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == 'false' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)">
                                     No
                                 </label>
                             </div>
