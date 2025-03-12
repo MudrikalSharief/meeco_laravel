@@ -115,7 +115,7 @@ class PromoController extends Controller
     public function showPromos()
     {
         $user = Auth::user();
-        $promos = Promo::all();
+        $promos = Promo::where('status', 'active')->get();
     
         // Add a subscribed attribute to each promo
         foreach ($promos as $promo) {
