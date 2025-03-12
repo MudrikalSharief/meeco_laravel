@@ -49,11 +49,11 @@
                             <label for="can_mix_quiz" class="block text-gray-700 font-bold mb-1 sm:text-sm">Mix Quiz Type : </label>
                             <div class="flex gap-4">
                                 <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="1" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == 'true' ? 'checked' : '' }} onclick="toggleMixQuizLimit(true)">
+                                    <input type="radio" name="can_mix_quiz" value="1" class="mr-2" {{ old('statcan_mix_quizus', $promo->can_mix_quiz ?? '') == '1' ? 'checked' : '' }}>
                                     Yes
                                 </label>
                                 <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == 'false' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)">
+                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }}>
                                     No
                                 </label>
                             </div>
