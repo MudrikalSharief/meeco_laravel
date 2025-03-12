@@ -53,19 +53,23 @@ class PromoController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'perks' => 'nullable|string',
-            'duration' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'image_limit' => 'required|integer',
-            'reviewer_limit' => 'required|integer',
-            'quiz_limit' => 'required|integer',
-            'quiz_questions_limit' => 'required|integer',
-            'can_mix_quiz' => 'required|boolean',
-            'mix_quiz_limit' => 'required_if:can_mix_quiz,1|integer',
-            'status' => 'required|string',
+            'name' => ['required', 'string', 'min:3', 'max:50'],
+            'price' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/', 'min:1'],
+            'duration' => ['required', 'integer', 'min:1', 'max:365'],
+            'image_limit' => ['required', 'integer', 'min:1'], 
+            'reviewer_limit' => ['required', 'integer', 'min:1'], 
+            'quiz_limit' => ['required', 'integer', 'min:1'], 
+            'quiz_questions_limit' => ['required', 'integer', 'min:1', 'max:40'], 
+            'can_mix_quiz' => ['required', 'boolean'],
+            'mix_quiz_limit' => ['required_if:can_mix_quiz,1', 'integer', 'min:1', 'max:40'],
+            'perks' => ['required', 'string', function ($attribute, $value, $fail) {
+                if (trim($value) === '') {
+                    $fail('Perks field cannot be empty or whitespace only.');
+                }
+            }],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after:start_date'],
+            'status' => ['required', 'string', 'in:active,inactive'],
         ]);
 
         $create = Promo::updateOrCreate(['promo_id' => $request->id], $data);
