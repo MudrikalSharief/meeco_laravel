@@ -24,8 +24,16 @@
                             <div class="p-4 flex-grow">
                                 <p class="text-center font-bold text-3xl text-blue-700">₱{{ $promo->price }}</p>
                                 <ul class="mt-2 text-blue-500 list-disc list-inside">
-                                    <li>{{ $promo->duration }} days access</li>
-                                    <li>{{ $promo->perks }}</li>
+                            <li>Enjoy {{ $promo->duration }} days of access</li>
+                            <li>{{ $promo->perks }}</li>
+                            <li>Upload up to {{ $promo->image_limit }} images</li>
+                            <li>Create up to {{ $promo->reviewer_limit }} reviewers</li>
+                            <li>Build up to {{ $promo->quiz_limit }} quizzes</li>
+                            <li>Up to {{ $promo->quiz_questions_limit }} questions per quiz</li>
+
+                                    @if($promo->can_mix_quiz)
+                                        <li>can mix quizzes with a limit of {{ $promo->mix_quiz_limit }} questions per quiz type</li>
+                                    @endif
                                 </ul>
                                 @if($promo->subscribed)
                                     <p class="mt-3 text-center text-xl text-blue-600">Active promo!</p>

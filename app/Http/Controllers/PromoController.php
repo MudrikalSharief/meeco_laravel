@@ -52,8 +52,6 @@ class PromoController extends Controller
     // Store a newly created promo in the database
     public function store(Request $request)
     {
-        // return response()->json(['success' => false, 'request' => $request->all()]);
-        
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -66,21 +64,19 @@ class PromoController extends Controller
             'quiz_limit' => 'required|integer',
             'quiz_questions_limit' => 'required|integer',
             'can_mix_quiz' => 'required|boolean',
-            'mix_quiz_limit' => 'required|integer',
+            'mix_quiz_limit' => 'required_if:can_mix_quiz,1|integer',
             'status' => 'required|string',
         ]);
-        if($data){
 
-            $create = Promo::updateOrCreate(['promo_id' => $request->id], $data);
+        $create = Promo::updateOrCreate(['promo_id' => $request->id], $data);
     
-            return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
-        }
+        return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
     }
 
     // Update the specified promo in the database
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'perks' => 'nullable|string',
@@ -92,12 +88,12 @@ class PromoController extends Controller
             'quiz_limit' => 'required|integer',
             'quiz_questions_limit' => 'required|integer',
             'can_mix_quiz' => 'required|boolean',
-            'mix_quiz_limit' => 'required|integer',
+            'mix_quiz_limit' => 'required_if:can_mix_quiz,1|integer',
             'status' => 'required|string|in:active,inactive',
         ]);
 
         $promo = Promo::findOrFail($id);
-        $promo->update($request->all());
+        $promo->update($data);
 
         return redirect()->route('promos.index')->with('success', 'Promo updated successfully.');
     }
