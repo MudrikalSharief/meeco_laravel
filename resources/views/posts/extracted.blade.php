@@ -183,13 +183,12 @@
                     })
                     .then(data => {
                         loader.classList.add('hidden');
-                        console.log('Success: OpenAi have Created the reviewer');
-                        
+
                         if (data.success) {
                                 document.getElementById('successModal').classList.remove('hidden');
-                            } else {
-                                throw new Error(storeData.message || 'Unknown error');
-                            }
+                                console.log('Success: OpenAi have Created the reviewer');
+                        
+                        } 
                     })
                     .catch((error) => {
                         console.error('Error:', error);

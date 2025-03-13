@@ -14,7 +14,8 @@
         "google/cloud-vision": "^1.10",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "orhanerday/open-ai": "^5.2"
+        "orhanerday/open-ai": "^5.2",
+        "vlucas/phpdotenv": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
