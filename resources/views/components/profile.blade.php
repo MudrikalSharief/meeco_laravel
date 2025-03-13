@@ -38,7 +38,8 @@
             </div>
             @if($subscription)
                 <div class="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <p class="text-gray-700"><span class="font-semibold">Subscription:</span> {{ $subscription->promo->name }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Promo :</span> {{ $subscription->promo->name }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Status :</span> {{ $subscription->status }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Duration:</span> {{ $subscription->promo->duration }} days</p>
                     <p class="text-gray-700"><span class="font-semibold">Reviewer created:</span> {{ $subscription->reviewer_created }} / {{ $subscription->promo->reviewer_limit }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Quiz created:</span> {{ $subscription->quiz_created }} /  {{ $subscription->promo->quiz_limit }}</p>

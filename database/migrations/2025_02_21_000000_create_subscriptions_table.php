@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->integer('quiz_created')->default(0);
             $table->dateTime('start_date')->nullable(); 
             $table->dateTime('end_date')->nullable(); 
-            $table->enum('status', ['active', 'expired','cancelled','limit'])->default('active'); 
+            $table->enum('status', ['Active', 'Expired','Cancelled','Limit Reached'])->default('active'); 
             $table->enum('subscription_type', ['Admin Granted', 'Subscribed'])->default('Subscribed'); 
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();

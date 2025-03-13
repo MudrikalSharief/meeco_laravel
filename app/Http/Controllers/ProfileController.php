@@ -15,7 +15,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         
         $subscription = Subscription::where('user_id', $user->user_id)
-                    ->where('status', 'active')
+                    ->whereIn('status', ['Active','Limit Reached','Cancelled'])
                     ->with('promo')
                     ->first();
 

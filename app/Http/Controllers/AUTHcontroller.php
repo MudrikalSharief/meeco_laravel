@@ -88,22 +88,35 @@ class AUTHcontroller extends Controller
     
             // Check if the user has an active subscription
             $subscription = Subscription::where('user_id', $user->user_id)
-                ->where('status', 'active')
+                ->whereIn('status', ['Active', 'Limit Reached'])
                 ->with('promo')
                 ->first();
-    
+            
+            // Check if the user has an active subscription
             if ($subscription) {
+
+                // // Check if the subscription's reviewer and quiz limits have been reached
+                // if ($subscription->promo->reviewer_limit <= $subscription->reviewer_created && $subscription->promo->quiz_limit <= $subscription->quiz_created) {
+                    
+                //     // Update the subscription status to inactive
+                //     $subscription->update(['status' => 'Limit Reached']);
+                // }
+
                 // Check if the subscription's end date and time have already passed the current date and time
-                if ($subscription->end_date < now()) {
+                // Parse the end date
+                $endDate = \Carbon\Carbon::parse($subscription->end_date);
+
+                // Debugging: Log the end date and current date
+                \Log::info('Subscription end date: ' . $endDate);
+                \Log::info('Current date: ' . now());
+                \Log::info('Current timezone: ' . config('app.timezone'));
+
+                // Check if the subscription's end date and time have already passed the current date and time
+                if ($endDate->isPast()) {
                     // Update the subscription status to inactive
-                    $subscription->update(['status' => 'expired']);
+                    $subscription->update(['status' => 'Expired']);
                 }
-    
-                // Check if the subscription's reviewer and quiz limits have been reached
-                if ($subscription->promo->reviewer_limit <= $subscription->reviewer_created && $subscription->promo->quiz_limit <= $subscription->quiz_created) {
-                    // Update the subscription status to inactive
-                    $subscription->update(['status' => 'limit']);
-                }
+                
             }
     
             // Redirect to the capture route
