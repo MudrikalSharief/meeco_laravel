@@ -46,6 +46,7 @@
                     <p class="text-gray-700"><span class="font-semibold">Quiz Question Limit:</span> {{ $subscription->promo->quiz_questions_limit }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Mixed Quiz :</span> {{ $subscription->promo->can_mix_quiz ? 'Yes' : 'No' }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Mixed Question Limit:</span> {{ $subscription->promo->mix_quiz_limit }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Max Image Upload:</span> {{ $subscription->promo->image_limit }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Start Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y g:i A') }}</p>
 <p class="text-gray-700"><span class="font-semibold">End Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y g:i A') }}</p>
                 </div>
