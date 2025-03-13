@@ -256,6 +256,91 @@
             });
         }
 
+            //get the max number of quiz question
+           // Fetch quiz question limit and update quiznumber options
+           fetch('/subscription/get-quiz-question-limit', {
+                method: 'POST',
+                headers: {
+                    
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const quizQuestionLimit = data.quiz_questions_limit;
+                    const quiznumber = document.getElementById('quiznumber');
+                    const options = quiznumber.options;
+
+                    //this is for the option in quiz number
+                    for (let i = 0; i < options.length; i++) {
+                        const option = options[i];
+                        console.log(option.value);
+                        console.log(quizQuestionLimit);
+                        if (parseInt(option.value) > quizQuestionLimit) {
+                            console.log('true');
+                            option.disabled = true;
+                        } else {
+                            console.log('false');
+                            option.disabled = false;
+                        }
+                    }
+
+                    //mix quiz type
+                    const quiztype = document.getElementById('quiztype');
+                    const mixQuizLimit = data.mixQuizLimit;
+                
+                    const quiznumber_true_or_false_holder = document.getElementById('quiznumber_true_or_false');
+                    const tf_option = quiznumber_true_or_false_holder.options;
+                    const quiznumber_identification_holder = document.getElementById('quiznumber_identification');
+                    const id_option = quiznumber_identification_holder.options;
+                    const quiznumber_multiple = document.getElementById('quiznumber_multiple');
+                    const mc_option = quiznumber_multiple.options;
+
+                    if(data.MixQuizType == 0){
+                        quiztype.options[3].disabled = true;
+                    }else{
+                        quiztype.options[3].disabled = false;
+
+                        for (let i = 0; i < tf_option.length; i++) {
+                            const option = tf_option[i];
+                            if (parseInt(option.value) > mixQuizLimit) {
+                                option.disabled = true;
+                            } else {
+                                option.disabled = false;
+                            }
+                        }
+
+                        for (let i = 0; i < id_option.length; i++) {
+                            const option = id_option[i];
+                            if (parseInt(option.value) > mixQuizLimit) {
+                                option.disabled = true;
+                            } else {
+                                option.disabled = false;
+                            }
+                        }
+
+                        for (let i = 0; i < mc_option.length; i++) {
+                            const option = mc_option[i];
+                            if (parseInt(option.value) > mixQuizLimit) {
+                                option.disabled = true;
+                            } else {
+                                option.disabled = false;
+                            }
+                        }
+
+                    }
+
+
+                } else {
+                    console.error('Failed to fetch quiz question limit:', data.message);
+                }
+            })
+            .catch(error => console.error('Error fetching quiz question limit:', error));
+        
+
     // this code will run after the new quiz is clicked
         const newQuizButton = document.getElementById('addQuizButton');
         const addQuizModal = document.getElementById('addQuizModal');
@@ -275,6 +360,8 @@
         cancelQuizButton.addEventListener('click', function() {
             addQuizModal.classList.add('hidden');
         });
+
+    
 
     //this code work when the save button is clicked
         const saveQuizButton = document.getElementById('saveQuizButton');
@@ -449,79 +536,107 @@
             }
 
 
-
-            // Show the loader
-            loader.classList.remove('hidden');
-
-            fetch(`/generate-quiz/${topicId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    name: QuizName,
-                    type: QuizType,
-                    number: QuizNumber,
-                    multiple: quiznumber_multiple_value,
-                    true_or_false: quiznumber_true_or_false_value,  
-                    identification: quiznumber_identification_value
-                }),
+            //check if the user exceeded the reviewer generation yet
+            fetch('/subscription/check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+                body: JSON.stringify({})
             })
             .then(response => response.json())
             .then(data => {
-                 // Hide the loader
-                 loader.classList.add('hidden');
                 if (data.success) {
-                    addQuizModal.classList.add('hidden');
-                    // Show the success modal
-                    successModal.classList.remove('hidden');
+                    console.log(data);
+                    if(data.quizLimitReached){
+                        alert('You have reached the maximum number of Quiz. Please upgrade your subscription to add more reviewers.');
+                    }
+                    else{
+                        //================================================================================================
 
-                    //generate the quiz card again
-                    fetch(`/getquizzes/${topicId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            
-                            quizContainer.innerHTML="";
-                            data.questions.forEach(quiz => {
-                                const button = document.createElement('button');
-                                button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
-                                button.id = quiz.question_id;
-                                button.innerHTML = `
-                                    <p class="w-2/5 ">${quiz.question_title}</p>
-                                    <div class="flex justify-between w-3/5">
-                                        <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
-                                        <div class="flex justify-between w-1/2  gap-1">
-                                            <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
-                                            <div class="flex gap-1 items-center w- 3/5">
-                                                <img class="hidden w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
-                                                <img class="delete-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete" data-question-id="${quiz.question_id}">
-                                            </div>
-                                        </div>    
-                                    </div>
-                                `;
-                                quizContainer.appendChild(button);
-                            });
-                            // Reset form values
-                            newQuizName.value = '';
-                            quiztype.value = 'Multiple Choice';
-                            quiznumber.value = '10';
-                            quiznumber_multiple_holder.classList.add('hidden');
-                            quiznumber_true_or_false_holder.classList.add('hidden');
-                            quiznumber_identification_holder.classList.add('hidden');
-                            addedQuizTypes.clear();
-                            addQuizTypeButton.classList.add('hidden');
-                            // location.reload();
-                        } else {
-                            alert('Failed to get quizzes: ' + data.message);
-                        }
-                    });       
+                         // Show the loader
+                        loader.classList.remove('hidden');
+
+                        fetch(`/generate-quiz/${topicId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                name: QuizName,
+                                type: QuizType,
+                                number: QuizNumber,
+                                multiple: quiznumber_multiple_value,
+                                true_or_false: quiznumber_true_or_false_value,  
+                                identification: quiznumber_identification_value
+                            }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Hide the loader
+                            loader.classList.add('hidden');
+                            if (data.success) {
+                                addQuizModal.classList.add('hidden');
+                                // Show the success modal
+                                successModal.classList.remove('hidden');
+
+                                //generate the quiz card again
+                                fetch(`/getquizzes/${topicId}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        
+                                        quizContainer.innerHTML="";
+                                        data.questions.forEach(quiz => {
+                                            const button = document.createElement('button');
+                                            button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
+                                            button.id = quiz.question_id;
+                                            button.innerHTML = `
+                                                <p class="w-2/5 ">${quiz.question_title}</p>
+                                                <div class="flex justify-between w-3/5">
+                                                    <p class="text-xs sm:text-sm items-center">${quiz.question_type}</p>
+                                                    <div class="flex justify-between w-1/2  gap-1">
+                                                        <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
+                                                        <div class="flex gap-1 items-center w- 3/5">
+                                                            <img class="hidden w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
+                                                            <img class="delete-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete" data-question-id="${quiz.question_id}">
+                                                        </div>
+                                                    </div>    
+                                                </div>
+                                            `;
+                                            quizContainer.appendChild(button);
+                                        });
+                                        // Reset form values
+                                        newQuizName.value = '';
+                                        quiztype.value = 'Multiple Choice';
+                                        quiznumber.value = '10';
+                                        quiznumber_multiple_holder.classList.add('hidden');
+                                        quiznumber_true_or_false_holder.classList.add('hidden');
+                                        quiznumber_identification_holder.classList.add('hidden');
+                                        addedQuizTypes.clear();
+                                        addQuizTypeButton.classList.add('hidden');
+                                        // location.reload();
+                                    } else {
+                                        alert('Failed to get quizzes: ' + data.message);
+                                    }
+                                });       
+                            } else {
+                                alert('Failed to create quiz: ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                        //=============================================================================================== 
+                    }
                 } else {
-                    alert('Failed to create quiz: ' + data.message);
+                    console.log(data);
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error checking subscription:', error));
+
+           
         });
 
 

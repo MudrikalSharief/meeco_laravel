@@ -93,6 +93,11 @@ Route::middleware('auth')->group(function (){
     Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
     Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
 
+    //this is for the checking of subcription
+    Route::post('/subscription/check', [SubscriptionController::class, 'checkSubscription'])->name('subscription.check');
+    Route::post('/subscription/get-quiz-question-limit', [SubscriptionController::class, 'getQuizQuestionLimit'])->name('subscription.getQuizQuestionLimit');
+
+
     //for quiz
     Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
     Route::get('/getquizzes/{topicId}',[QuizController::class,'getAllQuiz'])->name('get.quizzes');

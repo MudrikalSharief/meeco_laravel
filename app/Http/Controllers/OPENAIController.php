@@ -7,6 +7,7 @@ use App\Models\Identification;
 use App\Models\multiple_choice;
 use App\Models\Question;
 use App\Models\Reviewer;
+use App\Models\Subscription;
 use App\Models\Topic;
 
 use App\Models\true_or_false;
@@ -101,6 +102,12 @@ class OPENAIController extends Controller
                 Log::info('Action : Generate Reviewer');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
+                // Update the reviewer count in the subscription
+                $subscription = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($subscription) {
+                    $subscription->increment('reviewer_created');
+                }
+                
                 return response()->json(['success' => true, 'data' => $content, 'topic_id' => $request->post('topic_id')]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
@@ -244,6 +251,12 @@ class OPENAIController extends Controller
                 // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Quiz Multple Choice');
                 OpenAIHelper::calculateAndLogCost($responseData);
+
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
         
                 return response()->json(['success' => true, 'data' => $content]);
         
@@ -335,6 +348,12 @@ class OPENAIController extends Controller
                 Log::info('Action : Generate Quiz True or false');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+
                 return response()->json(['success' => true, 'data' => $content]);
         
             } catch (\Exception $e) {
@@ -424,7 +443,15 @@ class OPENAIController extends Controller
                 
                 // Calculate and log the cost using the helper function
                 OpenAIHelper::calculateAndLogCost($responseData);
+                
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+
                 return response()->json(['success' => true, 'data' => $content]);
+                
         
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
@@ -540,6 +567,12 @@ class OPENAIController extends Controller
                 // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Quiz Mixed');
                 OpenAIHelper::calculateAndLogCost($responseData);
+
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+                
                 return response()->json(['success' => true, 'data' => $content]);
 
             } catch (\Exception $e) {

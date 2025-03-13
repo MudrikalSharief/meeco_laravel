@@ -9,7 +9,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 
 class AUTHcontroller extends Controller
 {   
@@ -42,7 +42,7 @@ class AUTHcontroller extends Controller
             Subscription::create([
                 'user_id' => $user->user_id,
                 'promo_id' => $promo->promo_id,
-                'reference_number' => 'Free Trial Promo',
+                'reference_number' => 'Free Trial Promo ' . $user->user_id,
                 'reviewer_created' => 0,
                 'quiz_created' => 0,
                 'status' => 'active',
@@ -118,7 +118,16 @@ class AUTHcontroller extends Controller
                 }
                 
             }
-    
+            
+            //remove all the image
+            $user = $request->user();
+            $userid = $user->user_id;
+        
+            $filePath = 'uploads/image' . $userid;
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->deleteDirectory($filePath);
+            }
+
             // Redirect to the capture route
             return redirect()->route('capture');
         } else {
@@ -130,6 +139,17 @@ class AUTHcontroller extends Controller
 
     //logout user
     public function logout_user(Request $request){
+
+        //remove all the image
+        $user = $request->user();
+        $userid = $user->user_id;
+    
+        $filePath = 'uploads/image' . $userid;
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->deleteDirectory($filePath);
+        }
+
+
        //logout the user
         Auth::logout();
 
@@ -140,7 +160,6 @@ class AUTHcontroller extends Controller
         $request->session()->regenerateToken();
 
         //redirect the users
-
         return redirect('login');
     }
 }
