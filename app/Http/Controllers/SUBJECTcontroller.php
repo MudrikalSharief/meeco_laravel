@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Auth;
 class SubjectController extends Controller
 {
     public function getSubjects()
-    {
-        $subjects = Subject::all();
+    {   
+        $user = Auth::user();
+        $user_id = $user->user_id;
+        $subjects = Subject::where('user_id', $user_id)->get();
         return response()->json(['subjects' => $subjects]);
     }
 

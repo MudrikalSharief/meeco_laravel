@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,8 +13,9 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+        
         $subscription = Subscription::where('user_id', $user->user_id)
-                    ->where('status', 'active')
+                    ->whereIn('status', ['Active','Limit Reached','Cancelled'])
                     ->with('promo')
                     ->first();
 

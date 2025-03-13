@@ -78,15 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (fileInput && uploadButton) {
-        // Disable the upload button initially
-        uploadButton.disabled = true;
-
-        // Enable the upload button only if a file is selected
-        fileInput.addEventListener('change', () => {
-            uploadButton.disabled = fileInput.files.length === 0;
-        });
-    }
 
     // Modal logic for displaying images
     const imageModal = document.getElementById('imageModal');
@@ -576,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                             
                     } else {
-                        alert('Failed to upload images.');
+                        alert(data.message);
                     }
                 })
                 .catch(error => console.error('Error:', error))
@@ -684,7 +675,7 @@ if (confirmDelete) {
     confirmDelete.addEventListener('click', function () {
         if (imgWrapperToDelete) {
             const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
-
+            console.log(filePath);
             fetch('/capture/delete', {
                 method: 'POST',
                 headers: {
@@ -803,7 +794,7 @@ if (captureImage) {
                 if (data.success) {
                     captureConfirmMessage.textContent = 'Image captured and uploaded successfully!';
                 } else {
-                    captureConfirmMessage.textContent = 'Failed to upload captured image.';
+                    captureConfirmMessage.textContent = data;
                 }
                 captureConfirmModal.classList.remove('hidden');
                 if (cameraFeed.srcObject) {
@@ -1008,18 +999,44 @@ if (closeCaptureConfirm) {
                 noTopicsMessage.classList.add('hidden');
                 extractTextModal.classList.add('hidden');
 
-                const topicId = topicDropdown.value;
-                const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/capture/extract';
-                form.innerHTML = `
-                    <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
-                    <input type="hidden" name="topic_id" value="${topicId}">
-                    <input type="hidden" name="topic_name" value="${topicName}">
-                `;
-                document.body.appendChild(form);
-                form.submit();
+                
+                //check if the user exceeded the reviewer generation yet
+                fetch('/subscription/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(data);
+                        if(data.reviewerLimitReached){
+                            alert('You have reached the maximum number of reviewers. Please upgrade your subscription to add more reviewers.');
+                        }
+                        else{
+                            const topicId = topicDropdown.value;
+                            const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '/capture/extract';
+                            form.innerHTML = `
+                                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
+                                <input type="hidden" name="topic_id" value="${topicId}">
+                                <input type="hidden" name="topic_name" value="${topicName}">
+                            `;
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
+                    } else {
+                        console.log(data);
+                    }
+                })
+                .catch(error => console.error('Error checking subscription:', error));
+                
+
             }
         });
     }

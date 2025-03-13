@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Question;
+use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\Promo;
@@ -191,5 +193,67 @@ class SubscriptionController extends Controller
         return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
     }
 
+    public function checkSubscription(Request $request)
+    {
+        $user = $request->user();
 
+        // Check if the user has an active subscription
+        $subscription = Subscription::where('user_id', $user->user_id)
+            ->where('end_date', '>=', Carbon::now())
+            ->whereIn('status', ['Active','Limit Reached'])
+            ->with('promo')
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found.','subscription' => $subscription]);
+        }
+
+        // Check the limits for reviewers and quizzes
+        $reviewerLimit = $subscription->promo->reviewer_limit;
+        $quizLimit = $subscription->promo->quiz_limit;
+
+        $reviewerCreated = $subscription->reviewer_created;
+        $quizCreated = $subscription->quiz_created;
+    
+
+        $reviewerLimitReached = $reviewerCreated >= $reviewerLimit ;
+        $quizLimitReached = $quizCreated >= $quizLimit;
+
+        if($reviewerLimitReached && $quizLimitReached){
+            if($subscription->status == 'Active'){
+                $subscription->status = 'Limit Reached';
+                $subscription->save();
+            }
+
+            return response()->json(['success' => true, 'reviewerLimitReached' => $reviewerLimitReached, 'quizLimitReached' => $quizLimitReached]);
+        }
+        
+        
+    }
+
+    public function getQuizQuestionLimit(Request $request)
+    {
+        $user = $request->user();
+
+        // Check if the user has an active subscription
+        $subscription = Subscription::where('user_id', $user->user_id)
+            ->whereIn('status', ['Active','Limit Reached'])
+            ->where('end_date', '>=', Carbon::now())
+            ->with('promo')
+            ->first();
+            
+        if (!$subscription) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found.']);
+        }
+
+        $quizQuestionLimit = $subscription->promo->quiz_questions_limit ?? 0;
+        $mixQuizLimit = $subscription->promo->mix_quiz_limit ?? 0; 
+        $MixQuizType = $subscription->promo->can_mix_quiz ?? 0;
+        return response()->json([
+            'success' => true,
+            'quiz_questions_limit' => $quizQuestionLimit,
+            'mixQuizLimit' => $mixQuizLimit,
+            'MixQuizType' => $MixQuizType,
+        ]);
+    }
 }
