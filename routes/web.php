@@ -125,9 +125,14 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    //profile
+    Route::get('/profile/cancelled', function () {
+        return view('profile.cancelled');
+    })->name('profile.cancelled');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
     Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
+
 });
 
 
@@ -252,11 +257,4 @@ Route::middleware(['auth:admin/login'])->group(function () {
     })->where('any', '.*');
 });
 
-//profile
-Route::get('/profile/cancelled', function () {
-    return view('profile.cancelled');
-})->name('profile.cancelled');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
-Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 
