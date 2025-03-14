@@ -63,7 +63,6 @@ Route::middleware('auth')->group(function (){
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
     Route::view('/profile', 'components.profile')->name('profile');
-    Route::view('/profile/cancelled', 'components.cancelled')->name('profile.cancelled');
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 

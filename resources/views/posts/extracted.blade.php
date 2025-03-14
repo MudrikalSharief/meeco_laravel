@@ -22,7 +22,9 @@
                 <h3 class=" mb-2 text-blue-400">Images Uploaded <hr></h3>
                 <div class="image_holder flex gap-3 md:flex-col overflow-x-auto md:overflow-y-auto scrollable">
                     <?php
-                    $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
+                    $userid = auth()->user()->user_id;
+                    $directory = storage_path('app/public/uploads/image' . $userid);
+                    $image_paths = glob($directory . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
                     foreach ($image_paths as $index => $image_path) {
                         $publicImagePath = str_replace(storage_path('app/public'), 'storage', $image_path);
                         ?>

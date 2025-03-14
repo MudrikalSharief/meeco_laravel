@@ -551,6 +551,8 @@
                     console.log(data);
                     if(data.quizLimitReached){
                         alert('You have reached the maximum number of Quiz. Please upgrade your subscription to add more reviewers.');
+                    }else if(data.notSubscribed){
+                        alert('Your are not subscribed to any promo yet.');
                     }
                     else{
                         //================================================================================================

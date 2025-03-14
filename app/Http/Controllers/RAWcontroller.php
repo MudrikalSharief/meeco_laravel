@@ -8,6 +8,7 @@ use App\Models\Reviewer;
 use App\Models\Subscription;
 use App\Models\Topic;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Google\Cloud\Vision\V1\ImageAnnotatorClient;
@@ -63,6 +64,8 @@ class RawController extends Controller
         set_time_limit(300); // Set the maximum execution time to 300 seconds
         $startTime = time(); // Record the start time
 
+        $user = Auth::user();
+        $userId = $user->user_id;
         $request->validate([
             'topic_id' => 'required|integer',
         ]);
@@ -73,7 +76,9 @@ class RawController extends Controller
             try {
                 
                 $imageAnnotatorClient = new ImageAnnotatorClient();
-                $image_paths = glob(storage_path('app/public/uploads/*.{jpg,jpeg,png,gif}'), GLOB_BRACE);
+                $userId = Auth::user()->user_id;
+                $directory = storage_path("app/public/uploads/image{$userId}/");
+                $image_paths = glob("{$directory}*.{jpg,jpeg,png,gif}", GLOB_BRACE);
                 $extractedText = '';
                 foreach ($image_paths as $index => $image_path) {
                     
@@ -94,7 +99,7 @@ class RawController extends Controller
                     ['raw_text' => $extractedText]
                 );
 
-                return response()->json(['success' => true, 'raw_text' => $extractedText]);
+                return response()->json(['success' => true, 'raw_text' => $extractedText, 'message' => $directory]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }

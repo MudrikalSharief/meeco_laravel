@@ -205,7 +205,8 @@ class SubscriptionController extends Controller
             ->first();
 
         if (!$subscription) {
-            return response()->json(['success' => false, 'message' => 'No active subscription found.','subscription' => $subscription]);
+            $notSubscribed = true;
+            return response()->json(['success' => true, 'notSubscribed' => $notSubscribed , 'reviewerLimitReached' => false, 'quizLimitReached' => false]);
         }
 
         // Check the limits for reviewers and quizzes
@@ -225,8 +226,8 @@ class SubscriptionController extends Controller
                 $subscription->save();
             }
 
-            return response()->json(['success' => true, 'reviewerLimitReached' => $reviewerLimitReached, 'quizLimitReached' => $quizLimitReached]);
         }
+        return response()->json(['success' => true, 'reviewerLimitReached' => $reviewerLimitReached, 'quizLimitReached' => $quizLimitReached]);
         
         
     }

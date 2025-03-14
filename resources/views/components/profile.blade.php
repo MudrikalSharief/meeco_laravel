@@ -48,13 +48,30 @@
                     <p class="text-gray-700"><span class="font-semibold">Mixed Question Limit:</span> {{ $subscription->promo->mix_quiz_limit }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Max Image per Upload:</span> {{ $subscription->promo->image_limit }}</p>
                     <p class="text-gray-700"><span class="font-semibold">Start Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y g:i A') }}</p>
-<p class="text-gray-700"><span class="font-semibold">End Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y g:i A') }}</p>
+                    <p class="text-gray-700"><span class="font-semibold">End Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y g:i A') }}</p>
                 </div>
                 <div class="flex justify-end mt-4">
-                    <button id="openModal" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
-                        Cancel Subscription
-                    </button>
+                
+                        
+                    {{-- @else
+                        <a href="#" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                            Subscribe to a New Promo
+                        </a> --}}
+                    @if($subscription->status == 'Expired')
+                        <a href="{{ route('upgrade') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                            Subscribe to a New Promo
+                        </a>
+                    @elseif($subscription->status == 'Cancelled')
+                        <a href="{{ route('upgrade') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+                            Subscribe to a New Promo
+                        </a>
+                    @else
+                        <button id="openModal" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
+                            Cancel Subscription
+                        </button>
+                    @endif
                 </div>
+
             @else
                 <p class="text-gray-500 mt-4">No active subscription.</p>
             @endif
@@ -78,6 +95,25 @@
             </div>
         </div>
     </div>
+
+       {{-- <!-- Modal -->
+       <div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Confirm Cancellation</h2>
+            <p class="text-gray-600 mb-6">Before Subscribing to another promo, cancel your current promo first.</p>
+            <div class="flex justify-end space-x-3">
+                <button id="closeModal" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md shadow hover:bg-gray-400 transition duration-300">
+                    Cancel
+                </button>
+                <form action="{{ route('profile.cancelSubscription') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300 shadow-md">
+                        Confirm
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div> --}}
 
     <script>
         document.getElementById('openModal').addEventListener('click', function () {

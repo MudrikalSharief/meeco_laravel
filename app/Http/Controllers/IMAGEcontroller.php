@@ -24,7 +24,9 @@ class IMAGEcontroller extends Controller
                         ->first();
 
         $imageLimit = $subscription->promo->image_limit ?? 0;
-
+        if(!$subscription) {
+            return response()->json(['success' => false, 'message' => 'You are not subscribe to any promos yet.']);
+        }
         // Get the current number of uploaded images
         $directory = storage_path('app/public/uploads/image' . $userid);
         $currentImageCount = 0;
