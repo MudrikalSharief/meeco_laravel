@@ -30,16 +30,19 @@
             <p class="nav_text blue_text text-xl font-bold">meeco</p>
         </div>
         
+        <div class="flex items-center gap-2">
 
+            <a href="{{ route('profile') }}" class="flex items-center ml-auto">
+                @auth
+                    <p class="name mr-1 hidden md:block">{{ auth()->user()->firstname}} {{ auth()->user()->middlename}} {{ auth()->user()->lastname}}</p>
+                @endauth
+                <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
+                    <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
+                </div>
+            </a>
+            <div id="lottie-container" class=" w-6 h-6"></div>
+        </div>
 
-        <a href="{{ route('profile') }}" class="flex items-center ml-auto">
-            @auth
-                <p class="name mr-1 hidden md:block">{{ auth()->user()->firstname}} {{ auth()->user()->middlename}} {{ auth()->user()->lastname}}</p>
-            @endauth
-            <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
-                <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
-            </div>
-        </a>
     </div>
 
     <!-- Bottom Navigation -->
@@ -75,6 +78,17 @@
     <div class=" pt-1 w-full flex-grow mb-20 mt-12 ">
         {{ $slot ?? '' }}
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <script>
 
+        lottie.loadAnimation({
+        container: document.getElementById('lottie-container'), // the DOM element that will contain the animation
+        renderer: 'svg',
+        loop: false,
+        autoplay: false,
+        path: '{{asset('logo_icons/jsons_icon/icons8-notification.json')}}' // the path to the animation json
+        });
+
+    </script>
 </body>
 </html>
