@@ -18,17 +18,6 @@
                 <p class="text-sm leading-6 text-gray-600 mb-2">{{ $inquiry->question }}</p>
                 <div class="text-xs text-gray-500 mb-2">{{ $inquiry->created_at }}</div>
                 
-                <!-- Display Status with ID for JavaScript targeting -->
-                <div id="inquiry-status" class="mb-2">
-                    {{-- Status:  --}}
-                    @if($inquiry->status == 'Pending')
-                        {{-- <span class="badge bg-warning text-white py-1 px-2 rounded">Pending</span> --}}
-                    @elseif($inquiry->status == 'Responded')
-                        {{-- <span class="badge bg-success text-white py-1 px-2 rounded">Responded</span> --}}
-                    @elseif($inquiry->status == 'Closed')
-                        {{-- <span class="badge bg-secondary text-white py-1 px-2 rounded">Closed</span> --}}
-                    @endif
-                </div>
                 
                 @if($inquiry->upload)
                     @foreach(json_decode($inquiry->upload) as $upload)
@@ -120,52 +109,7 @@
     }
 </script>
 
-@if(session('auto_close') && session('ticket_reference'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const ticketReference = "{{ session('ticket_reference') }}";
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
-        /* Update UI to show countdown - commented out for production
-        const statusElement = document.getElementById('inquiry-status');
-        if (statusElement) {
-            let countdown = 15;
-            statusElement.innerHTML = `Status: <span class="badge bg-success text-white py-1 px-2 rounded">Responded</span> <span class="text-red-500">(Auto-closing in ${countdown}s)</span>`;
-            
-            const timer = setInterval(() => {
-                countdown--;
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    // Just update the UI immediately for better UX
-                    statusElement.innerHTML = `Status: <span class="badge bg-secondary text-white py-1 px-2 rounded">Closed</span> <span class="text-red-500">(Auto-closed)</span>`;
-                } else {
-                    statusElement.innerHTML = `Status: <span class="badge bg-success text-white py-1 px-2 rounded">Responded</span> <span class="text-red-500">(Auto-closing in ${countdown}s)</span>`;
-                }
-            }, 1000);
-        }
-        */
-        
-        // Call the auto-close endpoint after 15 seconds
-        setTimeout(() => {
-            // Create a form element
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/support/auto-close/${ticketReference}`;
-            
-            // Add CSRF token
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = token;
-            form.appendChild(csrfInput);
-            
-            // Add to document and submit
-            document.body.appendChild(form);
-            form.submit();
-        }, 15000);
-    });
-</script>
-@endif
+
 
 <style>
     .custom-border {
