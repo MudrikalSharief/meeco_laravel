@@ -16,11 +16,11 @@ class IMAGEcontroller extends Controller
                 'images.*' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:5120'],
             ], [
                 'images.*.required' => 'Please upload an image.',
-                'images.*.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg.',
+                'images.*.mimes' => 'The image must be a file of type: jpeg, png, jpg, svg.',
                 'images.*.max' => 'The image size must not exceed 5MB.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'message' => $e->errors()]);
+            return response()->json(['success' => false, 'message' => 'File type must be a jpeg, png, jpg, or svg.']);
         }
     
         $user = $request->user();
@@ -33,7 +33,7 @@ class IMAGEcontroller extends Controller
     
         $imageLimit = $subscription->promo->image_limit ?? 0;
         if(!$subscription) {
-            return response()->json(['success' => false, 'message' => 'You are not subscribed to any promos yet.']);
+            return response()->json(['success' => false, 'message' => 'You are not subscribed to any promos yet.','route' => true]);
         }
     
         // Get the current number of uploaded images

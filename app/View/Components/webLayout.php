@@ -23,4 +23,5 @@ class webLayout extends Component
     {
         return view('components.web_layout');
     }
+    
 }
