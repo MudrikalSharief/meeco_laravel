@@ -112,6 +112,8 @@
                         <option value="Admin Granted">Admin Granted</option>
                         <option value="Subscribed">Subscribed</option>
                     </select>
+                    <!-- Add a hidden fallback field in case the select doesn't work -->
+                    <input type="hidden" id="subscription_type_hidden" name="subscription_type_hidden">
                 </div>
                 
                 <div class="mt-5 flex justify-end">
@@ -169,8 +171,40 @@
                         document.getElementById('end_date').value = endDate.toISOString().split('T')[0];
                     }
                     
+                    // Debug current subscription type
+                    console.log("Subscription type from server:", data.subscription_type);
+                    
+                    // Set both the dropdown and hidden field
+                    const subscriptionTypeSelect = document.getElementById('subscription_type');
+                    document.getElementById('subscription_type_hidden').value = data.subscription_type;
+                    
+                    // Try to find and select the correct option
+                    let optionFound = false;
+                    for (let i = 0; i < subscriptionTypeSelect.options.length; i++) {
+                        if (subscriptionTypeSelect.options[i].value === data.subscription_type) {
+                            subscriptionTypeSelect.selectedIndex = i;
+                            optionFound = true;
+                            console.log("Found matching option at index:", i);
+                            break;
+                        }
+                    }
+                    
+                    // If no matching option, add one
+                    if (!optionFound && data.subscription_type) {
+                        console.log("No matching option found, creating one");
+                        const newOption = new Option(data.subscription_type, data.subscription_type);
+                        subscriptionTypeSelect.add(newOption);
+                        subscriptionTypeSelect.value = data.subscription_type;
+                    }
+                    
+                    console.log("Final selected value:", subscriptionTypeSelect.value);
+                    
                     document.getElementById('status').value = data.status;
                     document.getElementById('subscription_type').value = data.subscription_type;
+                    
+                    // Add debugging to check the values
+                    console.log("Subscription type from server:", data.subscription_type);
+                    console.log("Set subscription type in dropdown:", document.getElementById('subscription_type').value);
                     
                     // Set the form action URL
                     document.getElementById('editForm').action = `/admin/subscription/${data.subscription_id}/update`;
@@ -184,8 +218,42 @@
                 });
         }
         
-        // Add an event listener to validate the end date when it changes
+        // Add form submission debugging
         document.addEventListener('DOMContentLoaded', function() {
+            const editForm = document.getElementById('editForm');
+            
+            editForm.addEventListener('submit', function(e) {
+                // Debug the form data before submission
+                const formData = new FormData(this);
+                console.log("Form submission data:");
+                for (let [key, value] of formData.entries()) {
+                    console.log(key + ": " + value);
+                }
+                
+                // Ensure subscription_type is set correctly
+                const subscriptionType = document.getElementById('subscription_type').value;
+                if (subscriptionType) {
+                    // Add as custom parameter to ensure it gets sent
+                    document.getElementById('subscription_type_hidden').value = subscriptionType;
+                    
+                    // Add a text input with the value to ensure it gets submitted
+                    const extraInput = document.createElement('input');
+                    extraInput.type = 'text';
+                    extraInput.name = 'subscription_type_text';
+                    extraInput.value = subscriptionType;
+                    extraInput.style.display = 'none';
+                    this.appendChild(extraInput);
+                    
+                    console.log("Added fallback fields for subscription_type:", subscriptionType);
+                }
+            });
+            
+            // Update hidden field when dropdown changes
+            document.getElementById('subscription_type').addEventListener('change', function() {
+                document.getElementById('subscription_type_hidden').value = this.value;
+                console.log("Dropdown changed to:", this.value);
+            });
+            
             const endDateInput = document.getElementById('end_date');
             
             endDateInput.addEventListener('change', function() {
