@@ -238,6 +238,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
 
+    //New Transaction Route
+    Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
+    Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
+    Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
+
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');

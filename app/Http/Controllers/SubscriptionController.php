@@ -7,6 +7,7 @@ use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\Promo;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -256,5 +257,90 @@ class SubscriptionController extends Controller
             'mixQuizLimit' => $mixQuizLimit,
             'MixQuizType' => $MixQuizType,
         ]);
+    }
+
+    /**
+     * Get subscription data for editing
+     *
+     * @param int $subscription
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubscriptionData($subscription)
+    {
+        try {
+            $subscription = Subscription::with('user', 'promo')->findOrFail($subscription);
+            return response()->json($subscription);
+        } catch (\Exception $e) {
+            Log::error('Error fetching subscription data: ' . $e->getMessage());
+            return response()->json(['error' => 'Subscription not found'], 404);
+        }
+    }
+
+    /**
+     * Update the specified subscription
+     *
+     * @param Request $request
+     * @param int $subscription
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateSubscription(Request $request, $subscription)
+    {
+        try {
+            $subscription = Subscription::findOrFail($subscription);
+            
+            $now = Carbon::now();
+            
+            $validatedData = $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => [
+                    'required',
+                    'date',
+                    'after:start_date', 
+                    function ($attribute, $value, $fail) use ($now) {
+                        // Ensure end_date is not in the past
+                        if (Carbon::parse($value)->lt($now)) {
+                            $fail('The end date must not be in the past.');
+                        }
+                    },
+                ],
+                'reviewer_created' => 'required|integer|min:0',
+                'quiz_created' => 'required|integer|min:0',
+                'status' => 'required|in:Active,Expired,Cancelled,Limit Reached',
+                'subscription_type' => 'required|in:Admin Granted,Subscribed',
+            ]);
+
+            // Use the original start date to ensure it doesn't change
+            $validatedData['start_date'] = $subscription->start_date;
+            
+            // Update the subscription
+            $subscription->update($validatedData);
+            
+            // Log the update
+            Log::info('Subscription updated by admin', [
+                'subscription_id' => $subscription->subscription_id,
+                'updated_by' => Auth::guard('admin')->id(),
+                'changes' => $validatedData
+            ]);
+            
+            return redirect()->route('admin.newtransactions')->with('success', 'Subscription updated successfully');
+        } catch (\Exception $e) {
+            Log::error('Error updating subscription: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update subscription: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display a listing of the subscriptions for admin transactions page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllTransactions()
+    {
+        // Get all subscriptions with their associated user
+        $subscriptions = Subscription::with('user', 'promo')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('admin.admin_newtransactions', compact('subscriptions'));
     }
 }
