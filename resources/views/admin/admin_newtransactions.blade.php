@@ -84,13 +84,15 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-4">
-                        <label for="reviewer_created" class="block text-sm font-medium text-gray-700">Reviewer Created</label>
-                        <input type="number" id="reviewer_created" name="reviewer_created" min="0" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <label for="reviewer_created_display" class="block text-sm font-medium text-gray-700">Reviewer Created</label>
+                        <div id="reviewer_created_display" class="mt-1 block w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md shadow-sm sm:text-sm"></div>
+                        <input type="hidden" id="reviewer_created" name="reviewer_created">
                     </div>
                     
                     <div class="mb-4">
-                        <label for="quiz_created" class="block text-sm font-medium text-gray-700">Quiz Created</label>
-                        <input type="number" id="quiz_created" name="quiz_created" min="0" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <label for="quiz_created_display" class="block text-sm font-medium text-gray-700">Quiz Created</label>
+                        <div id="quiz_created_display" class="mt-1 block w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md shadow-sm sm:text-sm"></div>
+                        <input type="hidden" id="quiz_created" name="quiz_created">
                     </div>
                 </div>
                 
@@ -134,6 +136,8 @@
                     document.getElementById('email_display').textContent = data.user.email || 'N/A';
                     document.getElementById('reviewer_created').value = data.reviewer_created;
                     document.getElementById('quiz_created').value = data.quiz_created;
+                    document.getElementById('reviewer_created_display').textContent = data.reviewer_created;
+                    document.getElementById('quiz_created_display').textContent = data.quiz_created;
                     
                     // Format dates for display and hidden fields
                     const startDate = data.start_date ? new Date(data.start_date) : null;
@@ -206,21 +210,6 @@
                     this.value = minEndDate.toISOString().split('T')[0];
                 }
             });
-            
-            const reviewerCreatedInput = document.getElementById('reviewer_created');
-            const quizCreatedInput = document.getElementById('quiz_created');
-            
-            function validatePositiveInteger(input) {
-                input.addEventListener('input', function() {
-                    const value = parseInt(this.value);
-                    if (isNaN(value) || value < 0) {
-                        this.value = 0;
-                    }
-                });
-            }
-            
-            validatePositiveInteger(reviewerCreatedInput);
-            validatePositiveInteger(quizCreatedInput);
         });
         
         function closeEditModal() {
