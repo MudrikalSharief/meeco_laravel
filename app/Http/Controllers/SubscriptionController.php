@@ -93,145 +93,67 @@ class SubscriptionController extends Controller
         return view('subscriptionFolder.payment', compact('promo'));
     }
 
-    public function paymentEmail($promo_id)
-    {
-        Log::info('PaymentEmail method called with promo_id: ' . $promo_id);
-
-        $promo = Promo::find($promo_id);
-
-        if (!$promo) {
-            Log::error('Promo not found with promo_id: ' . $promo_id);
-            return redirect()->route('upgrade.payment', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
-        }
-
-        Log::info('Promo found: ' . $promo->name);
-
-        return view('subscriptionFolder.paymentEmail', compact('promo'));
-    }
-
-    public function gcashNumber($promo_id)
-    {
-        Log::info('GcashNumber method called with promo_id: ' . $promo_id);
-
-        $promo = Promo::find($promo_id);
-
-        if (!$promo) {
-            Log::error('Promo not found with promo_id: ' . $promo_id);
-            return redirect()->route('upgrade.paymentEmail', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
-        }
-
-        Log::info('Promo found: ' . $promo->name);
-
-        return view('subscriptionFolder.gcashNumber', compact('promo'));
-    }
-
-    public function mpin($promo_id)
-    {
-        Log::info('Mpin method called with promo_id: ' . $promo_id);
-
-        $promo = Promo::find($promo_id);
-
-        if (!$promo) {
-            Log::error('Promo not found with promo_id: ' . $promo_id);
-            return redirect()->route('upgrade.gcashNumber', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
-        }
-
-        Log::info('Promo found: ' . $promo->name);
-
-        return view('subscriptionFolder.mpin', compact('promo'));
-    }
-
-    public function payment1($promo_id)
-    {
-        Log::info('Payment1 method called with promo_id: ' . $promo_id);
-
-        $promo = Promo::find($promo_id);
-
-        if (!$promo) {
-            Log::error('Promo not found with promo_id: ' . $promo_id);
-            return redirect()->route('upgrade.mpin', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
-        }
-
-        Log::info('Promo found: ' . $promo->name);
-
-        return view('subscriptionFolder.payment1', compact('promo'));
-    }
-
-    public function receipt($promo_id)
-    {
-        Log::info('Receipt method called with promo_id: ' . $promo_id);
-
-        $promo = Promo::find($promo_id);
-
-        if (!$promo) {
-            Log::error('Promo not found with promo_id: ' . $promo_id);
-            return redirect()->route('upgrade.payment1', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
-        }
-
-        Log::info('Promo found: ' . $promo->name);
-
-        $user = Auth::user();
-        $userName = "{$user->firstname} {$user->middlename} {$user->lastname}";
-        $startDate = Carbon::now();
-        $endDate = $startDate->copy()->addDays($promo->duration);
-
-        // Ensure name is always set
-        $subscription = Subscription::create([
-            'promo_id' => $promo_id,
-            'user_id' => Auth::id(),
-            'name' => $userName, // Set the name to the authenticated user's name
-            'pricing' => $promo->price,
-            'duration' => $promo->duration,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'status' => 'active', // Set the status to active
-            'reference_number' => Subscription::max('reference_number') + 1, // Ensure reference_number is auto-incrementing
-        ]);
-
-        Log::info('Subscription created with ID: ' . $subscription->subscription_id);
-
-        return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
-    }
-
+    
     public function checkSubscription(Request $request)
     {
         $user = $request->user();
-
+    
         // Check if the user has an active subscription
         $subscription = Subscription::where('user_id', $user->user_id)
             ->where('end_date', '>=', Carbon::now())
-            ->whereIn('status', ['Active','Limit Reached'])
+            ->whereIn('status', ['Active', 'Limit Reached'])
             ->with('promo')
+            ->orderBy('start_date', 'desc')
             ->first();
-
+    
         if (!$subscription) {
-            $notSubscribed = true;
-            return response()->json(['success' => true, 'notSubscribed' => $notSubscribed , 'reviewerLimitReached' => false, 'quizLimitReached' => false]);
+            // Check if the user had a subscription that expired recently (e.g., within the last 7 days)
+            $recentlyExpiredSubscription = Subscription::where('user_id', $user->user_id)
+                ->where('status', 'Expired')
+                ->where('end_date', '<', Carbon::now())
+                ->where('end_date', '>=', Carbon::now()->subDays(1))
+                ->orderBy('end_date', 'desc')
+                ->first();
+    
+            if ($recentlyExpiredSubscription) {
+                $recentlyExpiredMessage = 'Your Last subscription expired last ' . Carbon::parse($recentlyExpiredSubscription->end_date)->format('F j, Y g:i A');
+                return response()->json(['success' => true, 'notSubscribed' => true, 'recentlyExpired' => true, 'recentlyExpiredMessage' => $recentlyExpiredMessage, 'reviewerLimitReached' => false, 'quizLimitReached' => false]);
+            }
+    
+            return response()->json(['success' => true, 'notSubscribed' => true, 'recentlyExpired' => false, 'reviewerLimitReached' => false, 'quizLimitReached' => false]);
         }
-
+    
+        // Check if the subscription is close to expiring
+        $daysToExpire = Carbon::now()->diffInDays($subscription->end_date, false);
+        $isCloseToExpiring = $daysToExpire <= 1;
+        $isCloseToExpiringMessage = 'Your subscription is expiring on ' . Carbon::parse($subscription->end_date)->format('F j, Y g:i A');
+    
         // Check the limits for reviewers and quizzes
         $reviewerLimit = $subscription->promo->reviewer_limit;
         $quizLimit = $subscription->promo->quiz_limit;
-
+    
         $reviewerCreated = $subscription->reviewer_created;
         $quizCreated = $subscription->quiz_created;
     
-
-        $reviewerLimitReached = $reviewerCreated >= $reviewerLimit ;
+        $reviewerLimitReached = $reviewerCreated >= $reviewerLimit;
         $quizLimitReached = $quizCreated >= $quizLimit;
-
-        if($reviewerLimitReached && $quizLimitReached){
-            if($subscription->status == 'Active'){
+    
+        if ($reviewerLimitReached && $quizLimitReached) {
+            if ($subscription->status == 'Active') {
                 $subscription->status = 'Limit Reached';
                 $subscription->save();
             }
-
         }
-        return response()->json(['success' => true, 'reviewerLimitReached' => $reviewerLimitReached, 'quizLimitReached' => $quizLimitReached]);
-        
-        
+    
+        return response()->json([
+            'success' => true,
+            'reviewerLimitReached' => $reviewerLimitReached,
+            'quizLimitReached' => $quizLimitReached,
+            'isCloseToExpiring' => $isCloseToExpiring,
+            'isCloseToExpiringMessage' => $isCloseToExpiringMessage,
+            'recentlyExpired' => false
+        ]);
     }
-
     public function getQuizQuestionLimit(Request $request)
     {
         $user = $request->user();
@@ -257,4 +179,105 @@ class SubscriptionController extends Controller
             'MixQuizType' => $MixQuizType,
         ]);
     }
+
+
+    // public function paymentEmail($promo_id)
+    // {
+    //     Log::info('PaymentEmail method called with promo_id: ' . $promo_id);
+
+    //     $promo = Promo::find($promo_id);
+
+    //     if (!$promo) {
+    //         Log::error('Promo not found with promo_id: ' . $promo_id);
+    //         return redirect()->route('upgrade.payment', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+    //     }
+
+    //     Log::info('Promo found: ' . $promo->name);
+
+    //     return view('subscriptionFolder.paymentEmail', compact('promo'));
+    // }
+
+    // public function gcashNumber($promo_id)
+    // {
+    //     Log::info('GcashNumber method called with promo_id: ' . $promo_id);
+
+    //     $promo = Promo::find($promo_id);
+
+    //     if (!$promo) {
+    //         Log::error('Promo not found with promo_id: ' . $promo_id);
+    //         return redirect()->route('upgrade.paymentEmail', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+    //     }
+
+    //     Log::info('Promo found: ' . $promo->name);
+
+    //     return view('subscriptionFolder.gcashNumber', compact('promo'));
+    // }
+
+    // public function mpin($promo_id)
+    // {
+    //     Log::info('Mpin method called with promo_id: ' . $promo_id);
+
+    //     $promo = Promo::find($promo_id);
+
+    //     if (!$promo) {
+    //         Log::error('Promo not found with promo_id: ' . $promo_id);
+    //         return redirect()->route('upgrade.gcashNumber', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+    //     }
+
+    //     Log::info('Promo found: ' . $promo->name);
+
+    //     return view('subscriptionFolder.mpin', compact('promo'));
+    // }
+
+    // public function payment1($promo_id)
+    // {
+    //     Log::info('Payment1 method called with promo_id: ' . $promo_id);
+
+    //     $promo = Promo::find($promo_id);
+
+    //     if (!$promo) {
+    //         Log::error('Promo not found with promo_id: ' . $promo_id);
+    //         return redirect()->route('upgrade.mpin', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+    //     }
+
+    //     Log::info('Promo found: ' . $promo->name);
+
+    //     return view('subscriptionFolder.payment1', compact('promo'));
+    // }
+
+    // public function receipt($promo_id)
+    // {
+    //     Log::info('Receipt method called with promo_id: ' . $promo_id);
+
+    //     $promo = Promo::find($promo_id);
+
+    //     if (!$promo) {
+    //         Log::error('Promo not found with promo_id: ' . $promo_id);
+    //         return redirect()->route('upgrade.payment1', ['promo_id' => $promo_id])->with('error', 'Promo not found. Please check again.');
+    //     }
+
+    //     Log::info('Promo found: ' . $promo->name);
+
+    //     $user = Auth::user();
+    //     $userName = "{$user->firstname} {$user->middlename} {$user->lastname}";
+    //     $startDate = Carbon::now();
+    //     $endDate = $startDate->copy()->addDays($promo->duration);
+
+    //     // Ensure name is always set
+    //     $subscription = Subscription::create([
+    //         'promo_id' => $promo_id,
+    //         'user_id' => Auth::id(),
+    //         'name' => $userName, // Set the name to the authenticated user's name
+    //         'pricing' => $promo->price,
+    //         'duration' => $promo->duration,
+    //         'start_date' => $startDate,
+    //         'end_date' => $endDate,
+    //         'status' => 'active', // Set the status to active
+    //         'reference_number' => Subscription::max('reference_number') + 1, // Ensure reference_number is auto-incrementing
+    //     ]);
+
+    //     Log::info('Subscription created with ID: ' . $subscription->subscription_id);
+
+    //     return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
+    // }
 }
