@@ -19,6 +19,19 @@
         body {
             -ms-overflow-style: none;  /* IE and Edge */
         }
+
+        /* Red circle with grey outline */
+        #lottie-container::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            background-color: rgb(230, 16, 16);
+            /* border: 2px solid grey; */
+        }
     </style>
 </head>
 <body class="relative min-h-screen flex flex-col bg_base_lightmode">
@@ -27,7 +40,7 @@
     <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between z-50">
         <div class="logo_holder flex justify-start items-center gap-3 pl-4">
             <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
-            <p class="nav_text blue_text text-xl font-bold">meeco</p>
+            <p class="nav_text blue_text text-xl font-bold">Meeco</p>
         </div>
         
         <div class="flex items-center gap-2">
@@ -40,7 +53,7 @@
                     <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
                 </div>
             </a>
-            <div id="lottie-container" class=" w-6 h-6"></div>
+            <div id="lottie-container" class=" w-6 h-6 relative"></div>
         </div>
 
     </div>
@@ -85,7 +98,7 @@
         container: document.getElementById('lottie-container'), // the DOM element that will contain the animation
         renderer: 'svg',
         loop: false,
-        autoplay: false,
+        autoplay: true,
         path: '{{asset('logo_icons/jsons_icon/icons8-notification.json')}}' // the path to the animation json
         });
 
