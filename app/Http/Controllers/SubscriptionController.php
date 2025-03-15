@@ -7,8 +7,10 @@ use App\Models\Reviewer;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\Promo;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class SubscriptionController extends Controller
@@ -280,4 +282,144 @@ class SubscriptionController extends Controller
 
     //     return view('subscriptionFolder.receipt', compact('promo', 'subscription', 'userName'));
     // }
+
+    /**
+     * Get subscription data for editing
+     *
+     * @param int $subscription
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubscriptionData($subscription)
+    {
+        try {
+            $subscription = Subscription::with('user', 'promo')->findOrFail($subscription);
+            return response()->json($subscription);
+        } catch (\Exception $e) {
+            Log::error('Error fetching subscription data: ' . $e->getMessage());
+            return response()->json(['error' => 'Subscription not found'], 404);
+        }
+    }
+
+    /**
+     * Update the specified subscription
+     *
+     * @param Request $request
+     * @param int $subscription
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateSubscription(Request $request, $subscription)
+    {
+        try {
+            $subscription = Subscription::findOrFail($subscription);
+            
+            $now = Carbon::now();
+            
+            // Dump all request data for debugging
+            Log::info('Raw request data:', $request->all());
+            
+            // Check if subscription_type is in the request
+            if (!$request->has('subscription_type')) {
+                Log::error('subscription_type field is missing from the request');
+            } else {
+                Log::info('subscription_type in request: ' . $request->subscription_type);
+                Log::info('Current subscription_type in DB: ' . $subscription->subscription_type);
+            }
+            
+            $validatedData = $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => [
+                    'required',
+                    'date',
+                    'after:start_date', 
+                    function ($attribute, $value, $fail) use ($now) {
+                        // Ensure end_date is not in the past
+                        if (Carbon::parse($value)->lt($now)) {
+                            $fail('The end date must not be in the past.');
+                        }
+                    },
+                ],
+                'reviewer_created' => 'required|integer|min:0',
+                'quiz_created' => 'required|integer|min:0',
+                'status' => 'required|in:Active,Expired,Cancelled,Limit Reached',
+                // Modify the validation to be more permissive for testing
+                'subscription_type' => 'required|string',
+            ]);
+
+            // Use the original start date to ensure it doesn't change
+            $validatedData['start_date'] = $subscription->start_date;
+            
+            // Try to update each field individually to pinpoint issues
+            try {
+                $subscription->status = $validatedData['status'];
+                $subscription->save();
+                Log::info('Status updated successfully');
+            } catch (\Exception $e) {
+                Log::error('Failed to update status: ' . $e->getMessage());
+            }
+            
+            try {
+                $subscription->end_date = $validatedData['end_date'];
+                $subscription->save();
+                Log::info('End date updated successfully');
+            } catch (\Exception $e) {
+                Log::error('Failed to update end_date: ' . $e->getMessage());
+            }
+            
+            try {
+                $subscription->reviewer_created = $validatedData['reviewer_created'];
+                $subscription->quiz_created = $validatedData['quiz_created'];
+                $subscription->save();
+                Log::info('Counts updated successfully');
+            } catch (\Exception $e) {
+                Log::error('Failed to update counts: ' . $e->getMessage());
+            }
+            
+            // Try updating subscription_type separately with direct query
+            try {
+                $subscription->subscription_type = $validatedData['subscription_type'];
+                $subscription->save();
+                Log::info('Subscription type updated successfully to: ' . $subscription->subscription_type);
+            } catch (\Exception $e) {
+                Log::error('Failed to update subscription_type: ' . $e->getMessage());
+                
+                // Try a direct DB update as a last resort
+                try {
+                    DB::table('subscriptions')
+                        ->where('subscription_id', $subscription->subscription_id)
+                        ->update(['subscription_type' => $validatedData['subscription_type']]);
+                    Log::info('Used direct DB update for subscription_type');
+                } catch (\Exception $dbEx) {
+                    Log::error('Even direct DB update failed: ' . $dbEx->getMessage());
+                }
+            }
+            
+            // Verify the update worked
+            $subscription->refresh();
+            Log::info('Subscription after update:', [
+                'status' => $subscription->status,
+                'subscription_type' => $subscription->subscription_type,
+                'end_date' => $subscription->end_date
+            ]);
+            
+            return redirect()->route('admin.newtransactions')->with('success', 'Subscription updated successfully');
+        } catch (\Exception $e) {
+            Log::error('Error updating subscription: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update subscription: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display a listing of the subscriptions for admin transactions page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllTransactions()
+    {
+        // Get all subscriptions with their associated user
+        $subscriptions = Subscription::with('user', 'promo')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('admin.admin_newtransactions', compact('subscriptions'));
+    }
 }

@@ -87,9 +87,17 @@ class AUTHadminController extends Controller
     }
 
     // Show Users
-    public function showUsers()
+    public function showUsers(Request $request)
     {
-        $users = User::paginate(10);
+        $query = User::query();
+
+        // If search parameter exists, filter by email
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('email', 'like', '%' . $request->search . '%');
+        }
+
+        $users = $query->paginate(10);
+        
         return view('admin.admin_users', compact('users'));
     }
 

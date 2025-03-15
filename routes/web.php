@@ -222,7 +222,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
-    Route::post('/admin/support/auto-close/{ticket_reference}', [ContactUsController::class, 'autoCloseInquiry'])->name('admin.autoCloseInquiry');
+   
 
     // Remove or comment out these redundant routes since they are now handled by ContactUsController
     // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
@@ -237,6 +237,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
     Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
+
+    //New Transaction Route
+    Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
+    Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
+    Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
