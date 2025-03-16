@@ -24,7 +24,7 @@
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
-        <button id="extractTextButton" type="button" class=" ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
+        <button id="extractTextButton" type="button" class="hidden ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
         
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
@@ -44,7 +44,7 @@
                 </div>
                 <div class="flex justify-end border-t px-4 py-2">
                     <button class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600" id="cancelUpload">Cancel</button>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" id="uploadButton">Upload</button>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:hover:bg-blue-500" id="uploadButton">Upload</button>
                 </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
     <!-- Modal for Capture Confirmation -->
     <div id="captureConfirmModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
-            <h2 id="captureConfirmMessage" class="text-lg font-semibold mb-4"></h2>
+            <h2 id="captureConfirmMessage" class="text-red-500 font-semibold mb-4"></h2>
             <div class="flex justify-end mt-4">
                 <button id="closeCaptureConfirm" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">OK</button>
             </div>
@@ -184,8 +184,8 @@
         </div>
     </div>
 
-     <!-- Modal for Topic Exists -->
-     <div id="topicExistsModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <!-- Modal for Topic Exists -->
+    <div id="topicExistsModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
             <h2 class="text-lg font-semibold mb-4 text-red-500">Topic Exists</h2>
             <hr class="mb-2">
@@ -197,150 +197,119 @@
     </div>
 
     <x-confirmation_modal id="dynamicModal" title="" titleColor="" message="" buttonId="dynamicModalButton" buttonText="OK" />
-
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to show the dynamic modal
-            const modal = document.getElementById('dynamicModal');
-            const modalTitle = document.getElementById('dynamicModal-title');
-            const modalMessage = document.getElementById('dynamicModal-message');
-            const modalButton = document.getElementById('dynamicModalButton');
-            function showModal(title = '', message = '', titleColor = '', buttonText = '') {
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageContainer = document.getElementById('imageContainer');
+        const modal = document.getElementById('dynamicModal');
+        const modalTitle = document.getElementById('dynamicModal-title');
+        const modalMessage = document.getElementById('dynamicModal-message');
+        const modalButton = document.getElementById('dynamicModalButton');
 
-                modalTitle.textContent = title;
-                modalTitle.className = `text-lg font-semibold mb-4 ${titleColor}`;
-                modalMessage.textContent = message;
-                modalButton.textContent = buttonText;
-                modal.classList.remove('hidden');
-            }
-            // Close the modal when the close button is clicked
-            document.getElementById('dynamicModal-close').addEventListener('click', function() {
-                document.getElementById('dynamicModal').classList.add('hidden');
-            });
-            
-              //This is for the upload image from modal
-            const uploaded = document.getElementById('uploadButton');
-            const uploadConfirmModal = document.getElementById('uploadConfirmModal');
-            const closeUploadConfirm = document.getElementById('closeUploadConfirm');
+        // Function to show the dynamic modal
+        function showModal(title = '', message = '', titleColor = '', buttonText = '') {
+            modalTitle.textContent = title;
+            modalTitle.className = `text-lg font-semibold mb-4 ${titleColor}`;
+            modalMessage.textContent = message;
+            modalButton.textContent = buttonText;
+            modal.classList.remove('hidden');
+        }
 
-            if(uploaded){
-                uploaded.addEventListener('click', function () {
-                    // Disable the upload button to prevent spamming
-                    uploaded.disabled = true;
+        // Close the modal when the close button is clicked
+        document.getElementById('dynamicModal-close').addEventListener('click', function() {
+            document.getElementById('dynamicModal').classList.add('hidden');
+        });
 
-                    let form = document.getElementById('uploadForm');
-                    const fileInput = document.getElementById('imageInput'); 
-                
-                    let formData = new FormData(form);
-                
-                    fetch('/capture/upload', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: formData
-                    })
+        // Handle image upload
+        const uploaded = document.getElementById('uploadButton');
+        const uploadConfirmModal = document.getElementById('uploadConfirmModal');
+        const closeUploadConfirm = document.getElementById('closeUploadConfirm');
+
+        if (uploaded) {
+            uploaded.addEventListener('click', function () {
+                uploaded.disabled = true; // Disable the upload button to prevent spamming
+
+                let form = document.getElementById('uploadForm');
+                const fileInput = document.getElementById('imageInput'); 
+                let formData = new FormData(form);
+
+                fetch('/capture/upload', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        uploadConfirmModal.classList.remove('hidden'); // Show the upload confirmation modal
+                        document.querySelector('#uploadModal').classList.add('hidden');
+                        fileInput.value = ''; // Reset the file input value
+
+                        fetch('/capture/images')
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data);
-                            if (data.success) {
-                                // Show the upload confirmation modal
-                                uploadConfirmModal.classList.remove('hidden');
-                                // Handle success (e.g., refresh image list or close modal)
-                                document.querySelector('#uploadModal').classList.add('hidden')
-                                fileInput.value = ''; // Reset the file input value
-                                
-                                fetch('/capture/images')
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.images && data.images.length > 0) {
-                                        imageContainer.innerHTML = '';
-                                        data.images.forEach((url, index) => {
-                                            const imgWrapper = document.createElement('div');
-                                            imgWrapper.className = 'm-2 img-wrapper relative';
+                            if (data.images && data.images.length > 0) {
+                                imageContainer.innerHTML = '';
+                                data.images.forEach((url, index) => {
+                                    const imgWrapper = document.createElement('div');
+                                    imgWrapper.className = 'm-2 img-wrapper relative';
 
-                                            const img = document.createElement('img');
-                                            img.src = url;
-                                            img.alt = 'Uploaded Image';
-                                            img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
-                                            img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
+                                    const img = document.createElement('img');
+                                    img.src = url;
+                                    img.alt = 'Uploaded Image';
+                                    img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                                    img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
 
-                                            const deleteIcon = document.createElement('span');
-                                            deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
-                                            deleteIcon.textContent = '×';
+                                    const deleteIcon = document.createElement('span');
+                                    deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
+                                    deleteIcon.textContent = '×';
 
-                                            const name = document.createElement('p');
-                                            name.textContent = `Image ${index + 1}`;
-                                            name.className = 'text-center';
+                                    const name = document.createElement('p');
+                                    name.textContent = `Image ${index + 1}`;
+                                    name.className = 'text-center';
 
-                                            imgWrapper.appendChild(img);
-                                            imgWrapper.appendChild(deleteIcon);
-                                            imgWrapper.appendChild(name);
-                                            imageContainer.appendChild(imgWrapper);
-                                        });
-                                        toggleExtractButton();
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error))
-                                .finally(() => {
-                                    uploaded.disabled = false;
+                                    imgWrapper.appendChild(img);
+                                    imgWrapper.appendChild(deleteIcon);
+                                    imgWrapper.appendChild(name);
+                                    imageContainer.appendChild(imgWrapper);
                                 });
-                                    
-                            } else {
-                                // alert(data.message);
-                                //show the oh no icon
-                                console.log(data.message);
-                                if(data.route){
-                                    showModal('No Subscription', data.message, 'text-red-500', 'View Promos');
-                                    modalButton.classList.remove('hidden');
-                                    modalButton.addEventListener('click', function() {
-                                        window.location.href = '/upgrade';
-                                        console,log('click')
-                                    });
-                                }else{
-                                    showModal('Error', data.message, 'text-red-500', 'OK');
-                                    modalButton.classList.add('hidden');
-                                }
-                               
+                                toggleExtractButton();
                             }
                         })
                         .catch(error => console.error('Error:', error))
                         .finally(() => {
-                            // Re-enable the upload button after the request is complete
                             uploaded.disabled = false;
                         });
-                });
-            }
-
-            if (closeUploadConfirm) {
-                closeUploadConfirm.addEventListener('click', () => {
-                    uploadConfirmModal.classList.add('hidden');
-                });
-            }
-
-        });
-
-
-          //this is for the Showing the image in capture
-        // Fetch and display previously uploaded images
-        document.addEventListener('DOMContentLoaded', function () {
-            const imageContainer = document.getElementById('imageContainer');
-            const imageNamesContainer = document.getElementById('imageNamesContainer');
-            const extractTextButton = document.getElementById('extractTextButton');
-
-            function toggleExtractButton() {
-                if(imageContainer){
-
-                        if (imageContainer.children.length > 0) {
-                            extractTextButton.classList.remove('hidden');
+                    } else {
+                        if (data.route) {
+                            showModal('No Subscription', data.message, 'text-red-500', 'View Promos');
+                            modalButton.classList.remove('hidden');
+                            modalButton.addEventListener('click', function() {
+                                window.location.href = '/upgrade';
+                            });
                         } else {
-                            extractTextButton.classList.add('hidden');
+                            showModal('Error', data.message, 'text-red-500', 'OK');
+                            modalButton.classList.add('hidden');
                         }
-                }
-            }
+                    }
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    uploaded.disabled = false; // Re-enable the upload button after the request is complete
+                });
+            });
+        }
 
+        if (closeUploadConfirm) {
+            closeUploadConfirm.addEventListener('click', () => {
+                uploadConfirmModal.classList.add('hidden');
+            });
+        }
 
-        if(imageContainer){
+        // Fetch and display previously uploaded images
+        function fetchImages() {
             fetch('/capture/images')
             .then(response => response.json())
             .then(data => {
@@ -353,11 +322,11 @@
                         const img = document.createElement('img');
                         img.src = url;
                         img.alt = 'Uploaded Image';
-                        img.className = 'IMG w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                        img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
                         img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
 
                         const deleteIcon = document.createElement('span');
-                        deleteIcon.className = 'delete-icon absolute py-1 px-2   top-0 right-0 bg-red-500 text-white  cursor-pointer';
+                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
                         deleteIcon.textContent = '×';
 
                         const name = document.createElement('p');
@@ -371,80 +340,254 @@
                     });
                     toggleExtractButton();
                 } else {
-                    // Show a message if no images are available
                     const message = document.createElement('p');
                     message.textContent = 'No images uploaded yet.';
                     message.className = 'text-gray-500 mt-2';
                     imageContainer.appendChild(message);
-                    
                 }
             })
             .catch(error => console.error('Error fetching uploaded images:', error));
         }
 
-    
-    
-        toggleExtractButton();
-    });
+        fetchImages();
 
-    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-    const cancelDelete = document.getElementById('cancelDelete');
-    const confirmDelete = document.getElementById('confirmDelete');
-    let imgWrapperToDelete = null;
-
-    if (imageContainer) {
-        imageContainer.addEventListener('click', function (event) {
-            if (event.target.classList.contains('delete-icon')) {
-                imgWrapperToDelete = event.target.closest('.img-wrapper');
-                deleteConfirmModal.classList.remove('hidden');
+        // Toggle the visibility of the extract button
+        function toggleExtractButton() {
+            const extractTextButton = document.getElementById('extractTextButton');
+            if (imageContainer.children.length > 0) {
+                extractTextButton.classList.remove('hidden');
+            } else {
+                extractTextButton.classList.add('hidden');
             }
-        });
-    }
+        }
 
-    if (cancelDelete) {
-        cancelDelete.addEventListener('click', function () {
-            deleteConfirmModal.classList.add('hidden');
-            imgWrapperToDelete = null;
-        });
-    }
+        // Handle image deletion
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDelete = document.getElementById('confirmDelete');
+        let imgWrapperToDelete = null;
 
-    if (confirmDelete) {
-        confirmDelete.addEventListener('click', function () {
-            if (imgWrapperToDelete) {
-                const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
-                console.log(filePath);
-                fetch('/capture/delete', {
+        if (imageContainer) {
+            imageContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-icon')) {
+                    imgWrapperToDelete = event.target.closest('.img-wrapper');
+                    deleteConfirmModal.classList.remove('hidden');
+                }
+            });
+        }
+
+        if (cancelDelete) {
+            cancelDelete.addEventListener('click', function () {
+                deleteConfirmModal.classList.add('hidden');
+                imgWrapperToDelete = null;
+            });
+        }
+
+        if (confirmDelete) {
+            confirmDelete.addEventListener('click', function () {
+                if (imgWrapperToDelete) {
+                    const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
+                    fetch('/capture/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            imageContainer.removeChild(imgWrapperToDelete);
+                            toggleExtractButton();
+
+                            if (imageContainer.children.length === 0) {
+                                const message = document.createElement('p');
+                                message.textContent = 'No images uploaded yet.';
+                                message.className = 'text-gray-500 mt-2';
+                                imageContainer.appendChild(message);
+                            }
+                        } else {
+                            alert('Failed to delete image.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error))
+                    .finally(() => {
+                        deleteConfirmModal.classList.add('hidden');
+                        imgWrapperToDelete = null;
+                    });
+                }
+            });
+        }
+
+        // Handle zooming of images
+        const zoomModal = document.getElementById('zoomModal');
+        const zoomedImage = document.getElementById('zoomedImage');
+
+        if (imageContainer) {
+            imageContainer.addEventListener('click', (event) => {
+                if (event.target.tagName === 'IMG') {
+                    zoomedImage.src = event.target.src;
+                    zoomModal.classList.remove('hidden');
+                }
+            });
+        }
+
+        if (zoomModal) {
+            zoomModal.addEventListener('click', (event) => {
+                if (event.target === zoomModal) {
+                    zoomModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Handle image capture from camera
+        const captureImage = document.getElementById('captureImage');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const cameraModal = document.getElementById('cameraModal');
+        const captureConfirmModal = document.getElementById('captureConfirmModal');
+        const captureConfirmMessage = document.getElementById('captureConfirmMessage');
+        const closeCaptureConfirm = document.getElementById('closeCaptureConfirm');
+
+        if (captureImage) {
+            captureImage.addEventListener('click', () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = cameraFeed.videoWidth;
+                canvas.height = cameraFeed.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    const formData = new FormData();
+                    formData.append('images[]', blob, 'captured-image.png');
+
+                    fetch('/capture/upload', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        cameraModal.classList.add('hidden');
+                        if (!data.success) {
+                            
+                            showModal('Error', data.message, 'text-red-500', 'OK');
+                            modalButton.classList.add('hidden');
+                        } 
+                        
+                        if (cameraFeed.srcObject) {
+                            const stream = cameraFeed.srcObject;
+                            const tracks = stream.getTracks();
+                            tracks.forEach(track => track.stop());
+                            cameraFeed.srcObject = null;
+                        }
+                        fetchImages(); // Refresh the image list
+                    })
+                    .catch(error => {
+                        cameraModal.classList.add('hidden');
+                        captureConfirmMessage.textContent = 'Failed to upload captured image.';
+                        captureConfirmModal.classList.remove('hidden');
+                        console.error('Error:', error);
+                    });
+                }, 'image/png');
+            });
+        }
+
+        if (closeCaptureConfirm) {
+            closeCaptureConfirm.addEventListener('click', () => {
+                captureConfirmModal.classList.add('hidden');
+            });
+        }
+
+        if (confirmExtractText) {
+        confirmExtractText.addEventListener('click', () => {
+            if (!subjectDropdown.value) {
+                subjectReminder.classList.remove('hidden');
+                noTopicsMessage.classList.add('hidden');
+            } else if (!topicDropdown.value) {
+                subjectReminder.classList.add('hidden');
+                noTopicsMessage.classList.remove('hidden');
+            } else {
+                subjectReminder.classList.add('hidden');
+                noTopicsMessage.classList.add('hidden');
+                extractTextModal.classList.add('hidden');
+
+                
+                //check if the user exceeded the reviewer generation yet
+                fetch('/subscription/check', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                    body: JSON.stringify({})
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        imageContainer.removeChild(imgWrapperToDelete);
-                        toggleExtractButton();
-                        
-                        if (imageContainer.children.length === 0) {
-                            const message = document.createElement('p');
-                            message.textContent = 'No images uploaded yet.';
-                            message.className = 'text-gray-500 mt-2';
-                            imageContainer.appendChild(message);
+                        console.log(data);
+                        if(data.reviewerLimitReached){
+                            showModal('Error', 'Please upgrade your subscription to add more reviewers.', 'text-red-500', 'OK');
+                            modalButton.classList.add('hidden');
+                        }
+                        else{
+                            const topicId = topicDropdown.value;
+                            const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = '/capture/extract';
+                            form.innerHTML = `
+                                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
+                                <input type="hidden" name="topic_id" value="${topicId}">
+                                <input type="hidden" name="topic_name" value="${topicName}">
+                            `;
+                            document.body.appendChild(form);
+                            form.submit();
                         }
                     } else {
-                        alert('Failed to delete image.');
+                        console.log(data);
                     }
                 })
-                .catch(error => console.error('Error:', error))
-                .finally(() => {
-                    deleteConfirmModal.classList.add('hidden');
-                    imgWrapperToDelete = null;
-                });
+                .catch(error => console.error('Error checking subscription:', error));
+                
+
             }
         });
     }
 
+    if (extractTextButton) {
+        extractTextButton.addEventListener('click', () => {
+            extractTextModal.classList.remove('hidden');
+            fetch('/subjects')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.subjects && data.subjects.length > 0) {
+                        subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
+                        data.subjects.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.subject_id;
+                            option.textContent = subject.name;
+                            subjectDropdown.appendChild(option);
+                        });
+
+                        if (!subjectDropdownListenerAdded) {
+                            subjectDropdown.addEventListener('change', handleSubjectDropdownChange);
+                            subjectDropdownListenerAdded = true;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching subjects:', error));
+        });
+    }
+
+    if (closeExtractTextModal) {
+        closeExtractTextModal.addEventListener('click', () => {
+            extractTextModal.classList.add('hidden');
+        });
+    }
+
+    });
     </script>
 </x-layout>

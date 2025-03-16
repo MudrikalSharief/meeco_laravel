@@ -172,6 +172,8 @@
         </div>
     </div>    
 
+    <x-confirmation_modal id="dynamicModal" title="" titleColor="" message="" buttonId="dynamicModalButton" buttonText="OK" />
+
     </div>
     
     {{-- Loader --}}
@@ -196,6 +198,28 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        const imageContainer = document.getElementById('imageContainer');
+        const modal = document.getElementById('dynamicModal');
+        const modalTitle = document.getElementById('dynamicModal-title');
+        const modalMessage = document.getElementById('dynamicModal-message');
+        const modalButton = document.getElementById('dynamicModalButton');
+
+        // Function to show the dynamic modal
+        function showModal(title = '', message = '', titleColor = '', buttonText = '') {
+            modalTitle.textContent = title;
+            modalTitle.className = `text-lg font-semibold mb-4 ${titleColor}`;
+            modalMessage.textContent = message;
+            modalButton.textContent = buttonText;
+            modal.classList.remove('hidden');
+        }
+
+             // Close the modal when the close button is clicked
+                document.getElementById('dynamicModal-close').addEventListener('click', function() {
+            document.getElementById('dynamicModal').classList.add('hidden');
+        });
+
+
         // this will go to the reviewer page
         const urlParams = new URLSearchParams(window.location.search);
         const topicId = urlParams.get('topicId');
@@ -550,9 +574,11 @@
                 if (data.success) {
                     console.log(data);
                     if(data.quizLimitReached){
-                        alert('You have reached the maximum number of Quiz. Please upgrade your subscription to add more reviewers.');
+                        showModal('Error', 'Please upgrade your subscription to add more reviewers.', 'text-red-500', 'OK');
+                        modalButton.classList.add('hidden');
                     }else if(data.notSubscribed){
-                        alert('Your are not subscribed to any promo yet.');
+                        showModal('Error', 'Your are not subscribed to any promo yet.', 'text-red-500', 'OK');
+                        modalButton.classList.add('hidden');
                     }
                     else{
                         //================================================================================================

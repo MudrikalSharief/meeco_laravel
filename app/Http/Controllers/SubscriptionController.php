@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Laravel\Pail\ValueObjects\Origin\Console;
 
 class SubscriptionController extends Controller
 {   
@@ -102,12 +103,22 @@ class SubscriptionController extends Controller
     
         // Check if the user has an active subscription
         $subscription = Subscription::where('user_id', $user->user_id)
-            ->where('end_date', '>=', Carbon::now())
             ->whereIn('status', ['Active', 'Limit Reached'])
             ->with('promo')
             ->orderBy('start_date', 'desc')
             ->first();
     
+
+        // Check if the subscription has expired
+        if ($subscription) {
+            if ($subscription->status == 'Limit Reached'  && $subscription->end_date < Carbon::now()) {
+               Log::info('Subscription has expired', ['end_date' => $subscription->end_date]);
+                $subscription->status = 'Expired';
+                $subscription->save();
+            }
+        }
+
+        
         if (!$subscription) {
             // Check if the user had a subscription that expired recently (e.g., within the last 7 days)
             $recentlyExpiredSubscription = Subscription::where('user_id', $user->user_id)

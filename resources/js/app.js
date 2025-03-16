@@ -34,20 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const imageContainer = document.getElementById('imageContainer');
-    const extractTextButton = document.getElementById('extractTextButton');
 
-    function toggleExtractButton() {
-        if (imageContainer.children.length > 0) {
-            extractTextButton.classList.remove('hidden');
-        } else {
-            extractTextButton.classList.add('hidden');
-        }
-    }
-
-    if(extractTextButton){
-        toggleExtractButton();
-    }
 
     const fileInput = document.getElementById('imageInput');
     const uploadButton = document.getElementById('uploadButton');
@@ -63,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fileInput && uploadButton) {
         // Disable the upload button initially
         uploadButton.disabled = true;
+        
+        
 
         // Enable the upload button only if a file is selected
         fileInput.addEventListener('change', () => {
@@ -94,25 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const zoomModal = document.getElementById('zoomModal');
-    const zoomedImage = document.getElementById('zoomedImage');
 
-    if (imageContainer) {
-        imageContainer.addEventListener('click', (event) => {
-            if (event.target.tagName === 'IMG') {
-                zoomedImage.src = event.target.src;
-                zoomModal.classList.remove('hidden');
-            }
-        });
-    }
-
-    if (zoomModal) {
-        zoomModal.addEventListener('click', (event) => {
-            if (event.target === zoomModal) {
-                zoomModal.classList.add('hidden');
-            }
-        });
-    }
 
     //This is for the add Subject
     const topics_container = document.getElementById('topics-container');
@@ -484,20 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
     }
 
-    const imageContainer = document.getElementById('imageContainer');
-        const imageNamesContainer = document.getElementById('imageNamesContainer');
-        const extractTextButton = document.getElementById('extractTextButton');
 
-        function toggleExtractButton() {
-            if(imageContainer){
-
-                    if (imageContainer.children.length > 0) {
-                        extractTextButton.classList.remove('hidden');
-                    } else {
-                        extractTextButton.classList.add('hidden');
-                    }
-            }
-        }
   
 
   
@@ -561,89 +519,6 @@ if (closeCamera) {
     });
 }
 
-if (captureImage) {
-    captureImage.addEventListener('click', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = cameraFeed.videoWidth;
-        canvas.height = cameraFeed.videoHeight;
-        const context = canvas.getContext('2d');
-        context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob(blob => {
-            const formData = new FormData();
-            formData.append('images[]', blob, 'captured-image.png');
-
-            fetch('/capture/upload', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                cameraModal.classList.add('hidden');
-                if (data.success) {
-                    captureConfirmMessage.textContent = 'Image captured and uploaded successfully!';
-                } else {
-                    captureConfirmMessage.textContent = data;
-                }
-                captureConfirmModal.classList.remove('hidden');
-                if (cameraFeed.srcObject) {
-                    const stream = cameraFeed.srcObject;
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                    cameraFeed.srcObject = null;
-                }
-                // Refresh the image list
-                fetch('/capture/images')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.images && data.images.length > 0) {
-                        imageContainer.innerHTML = '';
-                        data.images.forEach((url, index) => {
-                            const imgWrapper = document.createElement('div');
-                            imgWrapper.className = 'm-2 img-wrapper relative';
-
-                            const img = document.createElement('img');
-                            img.src = url;
-                            img.alt = 'Uploaded Image';
-                            img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
-                            img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
-
-                            const deleteIcon = document.createElement('span');
-                            deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
-                            deleteIcon.textContent = '×';
-
-                            const name = document.createElement('p');
-                            name.textContent = `Image ${index + 1}`;
-                            name.className = 'text-center';
-
-                            imgWrapper.appendChild(img);
-                            imgWrapper.appendChild(deleteIcon);
-                            imgWrapper.appendChild(name);
-                            imageContainer.appendChild(imgWrapper);
-                        });
-                        toggleExtractButton();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            })
-            .catch(error => {
-                cameraModal.classList.add('hidden');
-                captureConfirmMessage.textContent = 'Failed to upload captured image.';
-                captureConfirmModal.classList.remove('hidden');
-                console.error('Error:', error);
-            });
-        }, 'image/png');
-    });
-}
-
-if (closeCaptureConfirm) {
-    closeCaptureConfirm.addEventListener('click', () => {
-        captureConfirmModal.classList.add('hidden');
-    });
-}
 
 // ...existing code...
 
@@ -747,91 +622,8 @@ if (closeCaptureConfirm) {
     }
 
 
-    if (extractTextButton) {
-        extractTextButton.addEventListener('click', () => {
-            extractTextModal.classList.remove('hidden');
-            fetch('/subjects')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.subjects && data.subjects.length > 0) {
-                        subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
-                        data.subjects.forEach(subject => {
-                            const option = document.createElement('option');
-                            option.value = subject.subject_id;
-                            option.textContent = subject.name;
-                            subjectDropdown.appendChild(option);
-                        });
-
-                        if (!subjectDropdownListenerAdded) {
-                            subjectDropdown.addEventListener('change', handleSubjectDropdownChange);
-                            subjectDropdownListenerAdded = true;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error fetching subjects:', error));
-        });
-    }
-
-    if (closeExtractTextModal) {
-        closeExtractTextModal.addEventListener('click', () => {
-            extractTextModal.classList.add('hidden');
-        });
-    }
-
-    if (confirmExtractText) {
-        confirmExtractText.addEventListener('click', () => {
-            if (!subjectDropdown.value) {
-                subjectReminder.classList.remove('hidden');
-                noTopicsMessage.classList.add('hidden');
-            } else if (!topicDropdown.value) {
-                subjectReminder.classList.add('hidden');
-                noTopicsMessage.classList.remove('hidden');
-            } else {
-                subjectReminder.classList.add('hidden');
-                noTopicsMessage.classList.add('hidden');
-                extractTextModal.classList.add('hidden');
-
-                
-                //check if the user exceeded the reviewer generation yet
-                fetch('/subscription/check', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log(data);
-                        if(data.reviewerLimitReached){
-                            alert('You have reached the maximum number of reviewers. Please upgrade your subscription to add more reviewers.');
-                        }
-                        else{
-                            const topicId = topicDropdown.value;
-                            const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
-                            const form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = '/capture/extract';
-                            form.innerHTML = `
-                                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
-                                <input type="hidden" name="topic_id" value="${topicId}">
-                                <input type="hidden" name="topic_name" value="${topicName}">
-                            `;
-                            document.body.appendChild(form);
-                            form.submit();
-                        }
-                    } else {
-                        console.log(data);
-                    }
-                })
-                .catch(error => console.error('Error checking subscription:', error));
-                
-
-            }
-        });
-    }
+  
+   
     
    
         

@@ -1,12 +1,12 @@
 <x-layout>
     <div class="container mx-auto px-6 py-8 min-h-screen flex flex-col">
         @if(session('success'))
-            <div class="bg-green-500 text-white p-4 rounded mb-4">
+            <div id="success-notification" class="bg-green-500 text-white p-4 rounded mb-4">
                 {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
-            <div class="bg-red-500 text-white p-4 rounded mb-4">
+            <div id="error-notification" class="bg-red-500 text-white p-4 rounded mb-4">
                 {{ session('error') }}
             </div>
         @endif
@@ -116,6 +116,22 @@
     </div> --}}
 
     <script>
+
+            // Remove notifications after 3 seconds with slide-out animation
+            setTimeout(function() {
+                const successNotification = document.getElementById('success-notification');
+                const errorNotification = document.getElementById('error-notification');
+                if (successNotification) {
+                    successNotification.classList.add('slide-out');
+                    setTimeout(() => successNotification.style.display = 'none', 500); // Match the duration of the slide-out animation
+                }
+                if (errorNotification) {
+                    errorNotification.classList.add('slide-out');
+                    setTimeout(() => errorNotification.style.display = 'none', 500); // Match the duration of the slide-out animation
+                }
+            }, 3000);
+
+
         const openModal = document.getElementById('openModal');
         const closeModal = document.getElementById('closeModal');
         if(openModal){
