@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -109,9 +110,9 @@ class AUTHcontroller extends Controller
                 $endDate = \Carbon\Carbon::parse($subscription->end_date);
 
                 // Debugging: Log the end date and current date
-                \Log::info('Subscription end date: ' . $endDate);
-                \Log::info('Current date: ' . now());
-                \Log::info('Current timezone: ' . config('app.timezone'));
+                Log::info('Subscription end date: ' . $endDate);
+                Log::info('Current date: ' . now());
+                Log::info('Current timezone: ' . config('app.timezone'));
 
                 // Check if the subscription's end date and time have already passed the current date and time
                 if ($endDate->isPast()) {
@@ -288,11 +289,11 @@ class AUTHcontroller extends Controller
             if (count(Mail::failures()) > 0) {
                 // Store error message for display
                 Session::flash('email_error', 'Could not send email. Your verification code is: ' . $code);
-                \Log::error('Failed to send email to ' . $email . '. Mail failures: ' . json_encode(Mail::failures()));
+                Log::error('Failed to send email to ' . $email . '. Mail failures: ' . json_encode(Mail::failures()));
             }
         } catch (\Exception $e) {
             // Log the error and store the code to display to the user
-            \Log::error('Email sending failed: ' . $e->getMessage());
+            Log::error('Email sending failed: ' . $e->getMessage());
             Session::flash('email_error', 'Email could not be sent due to server configuration. Your verification code is: ' . $code);
         }
     }
