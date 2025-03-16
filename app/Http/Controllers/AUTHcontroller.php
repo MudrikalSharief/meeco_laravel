@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 class AUTHcontroller extends Controller
 {   
@@ -161,5 +163,175 @@ class AUTHcontroller extends Controller
 
         //redirect the users
         return redirect('login');
+    }
+
+    /**
+     * Store registration data in session and redirect to verification page
+     */
+    public function storeRegistration(Request $request)
+    {
+        // Validate user input
+        $validatedData = $request->validate([
+            'firstname' => ['required', 'max:255'],
+            'middlename' => ['nullable', 'max:255'],
+            'lastname' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'min:3', 'confirmed']
+        ]);
+
+        // Store registration data in session
+        Session::put('registration_data', $validatedData);
+        
+        // Generate and send verification code
+        $verificationCode = $this->generateVerificationCode();
+        Session::put('verification_code', $verificationCode);
+        
+        // Send the verification code via email
+        $this->sendVerificationEmail($validatedData['email'], $verificationCode);
+        
+        // Redirect to verification page
+        return redirect()->route('verify.show');
+    }
+
+    /**
+     * Show the verification form
+     */
+    public function showVerificationForm()
+    {
+        // Check if there's registration data in the session
+        if (!Session::has('registration_data')) {
+            return redirect()->route('register')->with('error', 'Please complete registration first.');
+        }
+        
+        // Get the email for display
+        $email = Session::get('registration_data')['email'];
+        
+        // Pass email to the view
+        return view('auth.verify-user', ['email' => $email]);
+    }
+
+    /**
+     * Verify the email with the provided code
+     */
+    public function verifyEmail(Request $request)
+    {
+        // Get the verification code from the request
+        $inputCode = implode('', $request->input('code'));
+        
+        // Get the stored verification code from session
+        $storedCode = Session::get('verification_code');
+        
+        // If codes don't match, redirect back with error
+        if ($inputCode !== $storedCode) {
+            return back()->withErrors(['verification_code' => 'Invalid verification code. Please try again.']);
+        }
+        
+        // Get registration data from session
+        $registrationData = Session::get('registration_data');
+        
+        // Create new user
+        $user = User::create($registrationData);
+        
+        // Find the 'FreeTrial' promo
+        $promo = Promo::where('name', 'Free Trial')->first();
+        
+        // Create a subscription for the user if promo exists
+        if ($promo) {
+            Subscription::create([
+                'user_id' => $user->user_id,
+                'promo_id' => $promo->promo_id,
+                'reference_number' => 'Free Trial Promo ' . $user->user_id,
+                'reviewer_created' => 0,
+                'quiz_created' => 0,
+                'status' => 'active',
+                'subscription_type' => 'Admin Granted',
+                'start_date' => now(),
+                'end_date' => now()->addDays($promo->duration),
+            ]);
+        }
+        
+        // Clear session data
+        Session::forget(['registration_data', 'verification_code']);
+        
+        // Login the user
+        Auth::login($user);
+        
+        return redirect()->route('capture');
+    }
+
+    /**
+     * Generate a random 6-digit verification code
+     */
+    private function generateVerificationCode()
+    {
+        return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Send verification email using Mailgun
+     */
+    private function sendVerificationEmail($email, $code)
+    {
+        $data = [
+            'email' => $email,
+            'code' => $code,
+            'name' => Session::get('registration_data')['firstname']
+        ];
+        
+        try {
+            Mail::send('emails.verification', $data, function($message) use ($email) {
+                $message->to($email)
+                        ->subject('Verify Your Account');
+            });
+            
+            // Check if mail was sent successfully
+            if (count(Mail::failures()) > 0) {
+                // Store error message for display
+                Session::flash('email_error', 'Could not send email. Your verification code is: ' . $code);
+                \Log::error('Failed to send email to ' . $email . '. Mail failures: ' . json_encode(Mail::failures()));
+            }
+        } catch (\Exception $e) {
+            // Log the error and store the code to display to the user
+            \Log::error('Email sending failed: ' . $e->getMessage());
+            Session::flash('email_error', 'Email could not be sent due to server configuration. Your verification code is: ' . $code);
+        }
+    }
+
+    /**
+     * Resend verification code
+     */
+    public function resendVerificationCode()
+    {
+        // Check if registration data exists in session
+        if (!Session::has('registration_data')) {
+            return redirect()->route('register')->with('error', 'Please complete registration first.');
+        }
+        
+        $registrationData = Session::get('registration_data');
+        
+        // Generate new verification code
+        $verificationCode = $this->generateVerificationCode();
+        Session::put('verification_code', $verificationCode);
+        
+        // Send the verification code via email
+        $this->sendVerificationEmail($registrationData['email'], $verificationCode);
+        
+        return back()->with('message', 'Verification code has been resent.');
+    }
+    
+    /**
+     * For testing purposes only - show current verification code
+     * Remove this in production
+     */
+    public function showCurrentCode()
+    {
+        if (!Session::has('verification_code')) {
+            return redirect()->route('register')->with('error', 'No verification code found.');
+        }
+        
+        return response()->json([
+            'code' => Session::get('verification_code'),
+            'message' => 'This endpoint is for testing purposes only.'
+        ]);
     }
 }
