@@ -116,12 +116,17 @@
     </div> --}}
 
     <script>
-        document.getElementById('openModal').addEventListener('click', function () {
-            document.getElementById('modal').classList.remove('hidden');
-        });
-
-        document.getElementById('closeModal').addEventListener('click', function () {
-            document.getElementById('modal').classList.add('hidden');
-        });
+        const openModal = document.getElementById('openModal');
+        const closeModal = document.getElementById('closeModal');
+        if(openModal){
+            openModal.addEventListener('click', function () {
+                document.getElementById('modal').classList.remove('hidden');
+            });
+        }
+        if(closeModal){
+            closeModal.addEventListener('click', function () {
+                document.getElementById('modal').classList.add('hidden');
+            });
+        }
     </script>
 </x-layout>

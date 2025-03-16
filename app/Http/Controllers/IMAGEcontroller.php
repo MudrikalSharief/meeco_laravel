@@ -11,22 +11,31 @@ class IMAGEcontroller extends Controller
 {
     public function upload(Request $request)
     {
-        $request->validate([
-            'images.*' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:5120'],
-        ]);
+        try {
+            $request->validate([
+                'images.*' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:5120'],
+            ], [
+                'images.*.required' => 'Please upload an image.',
+                'images.*.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg.',
+                'images.*.max' => 'The image size must not exceed 5MB.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => $e->errors()]);
+        }
     
         $user = $request->user();
         $userid = $user->user_id;
-
+    
         $subscription = Subscription::where('user_id', $userid)
                         ->whereIn('status', ['Active','Limit Reached'])
                         ->with('promo')
                         ->first();
-
+    
         $imageLimit = $subscription->promo->image_limit ?? 0;
         if(!$subscription) {
-            return response()->json(['success' => false, 'message' => 'You are not subscribe to any promos yet.']);
+            return response()->json(['success' => false, 'message' => 'You are not subscribed to any promos yet.']);
         }
+    
         // Get the current number of uploaded images
         $directory = storage_path('app/public/uploads/image' . $userid);
         $currentImageCount = 0;
@@ -34,22 +43,22 @@ class IMAGEcontroller extends Controller
             $files = array_diff(scandir($directory), ['.', '..']);
             $currentImageCount = count($files);
         }
-
+    
         $uploadedFiles = [];
         if ($request->hasFile('images')) {
             $newImagesCount = count($request->file('images'));
             if ($currentImageCount + $newImagesCount > $imageLimit) {
-            return response()->json(['success' => false, 'message' => 'Image limit exceeded, Upload only '. $imageLimit .' image or less.','imageLimit' => $imageLimit]);
+                return response()->json(['success' => false, 'message' => 'Image limit exceeded, Upload only '. $imageLimit .' image or less.','imageLimit' => $imageLimit]);
             }
-
+    
             foreach ($request->file('images') as $file) {
-            // Create a folder named image{userid} for each user if it doesn't exist
-            $folder = 'uploads/image' . $userid;
-            if (!Storage::disk('public')->exists($folder)) {
-                Storage::disk('public')->makeDirectory($folder);
-            }
-            $path = $file->store($folder, 'public');
-            $uploadedFiles[] = $path;
+                // Create a folder named image{userid} for each user if it doesn't exist
+                $folder = 'uploads/image' . $userid;
+                if (!Storage::disk('public')->exists($folder)) {
+                    Storage::disk('public')->makeDirectory($folder);
+                }
+                $path = $file->store($folder, 'public');
+                $uploadedFiles[] = $path;
             }
         }
     
