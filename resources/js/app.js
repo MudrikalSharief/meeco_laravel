@@ -524,7 +524,7 @@ if (closeCamera) {
 
     
     const extractTextModal = document.getElementById('extractTextModal');
-    const closeExtractTextModal = document.getElementById('closeExtractTextModal');
+    
     const cancelExtractTextModal = document.getElementById('cancelExtractTextModal');
     const subjectDropdown = document.getElementById('subjectDropdown');
     const topicsContainer = document.getElementById('topicsDropdownContainer');

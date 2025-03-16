@@ -32,23 +32,35 @@
         </div>
 
          <!-- Subscription Status (Same Size as User Info) -->
-         <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+         <div class="  rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-bold text-blue-700">Subscription Status</h3>
+                <h3 class="text-xl font-bold text-gray-700">Subscription Status</h3>
             </div>
             @if($subscription)
-                <div class="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <p class="text-gray-700"><span class="font-semibold">Promo :</span> {{ $subscription->promo->name }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Status :</span> {{ $subscription->status }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Duration:</span> {{ $subscription->promo->duration }} days</p>
-                    <p class="text-gray-700"><span class="font-semibold">Reviewer created:</span> {{ $subscription->reviewer_created }} / {{ $subscription->promo->reviewer_limit }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Quiz created:</span> {{ $subscription->quiz_created }} /  {{ $subscription->promo->quiz_limit }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Quiz Question Limit:</span> {{ $subscription->promo->quiz_questions_limit }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Mixed Quiz :</span> {{ $subscription->promo->can_mix_quiz ? 'Yes' : 'No' }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Mixed Question Limit:</span> {{ $subscription->promo->mix_quiz_limit }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Max Image per Upload:</span> {{ $subscription->promo->image_limit }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">Start Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y g:i A') }}</p>
-                    <p class="text-gray-700"><span class="font-semibold">End Date and Time:</span> {{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y g:i A') }}</p>
+                <div class="mt-4 text-xs rounded-lg ">
+                    <hr class="my-3">
+                    <p class="text-blue-500">Promo <span class="font-semibold text-gray-700"> {{ $subscription->promo->name }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Status <span class="font-semibold text-gray-700">{{ $subscription->status }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Duration <span class="font-semibold text-gray-700"> {{ $subscription->promo->duration }} days </span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Reviewer created <span class="font-semibold text-gray-700"> {{ $subscription->reviewer_created }} / {{ $subscription->promo->reviewer_limit }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Quiz created<span class="font-semibold text-gray-700"> {{ $subscription->quiz_created }} /  {{ $subscription->promo->quiz_limit }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Quiz Question Limi<span class="font-semibold text-gray-700"> {{ $subscription->promo->quiz_questions_limit }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Mixed Quiz <span class="font-semibold text-gray-700"> {{ $subscription->promo->can_mix_quiz ? 'Yes' : 'No' }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Mixed Question Limit<span class="font-semibold text-gray-700"> {{ $subscription->promo->mix_quiz_limit }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Max Image per Upload <span class="font-semibold text-gray-700"> {{ $subscription->promo->image_limit }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">Start Date and Time <span class="font-semibold text-gray-700"> {{ \Carbon\Carbon::parse($subscription->start_date)->format('F j, Y g:i A') }}</span></p>
+                    <hr class="my-3">
+                    <p class="text-blue-500">End Date and Time <span class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($subscription->end_date)->format('F j, Y g:i A') }}</span></p>
+                    <hr class="my-3">
                 </div>
                 <div class="flex justify-end mt-4">
                 

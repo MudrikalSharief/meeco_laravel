@@ -581,7 +581,7 @@
                 .catch(error => console.error('Error fetching subjects:', error));
         });
     }
-
+    const closeExtractTextModal = document.getElementById('closeExtractTextModal');
     if (closeExtractTextModal) {
         closeExtractTextModal.addEventListener('click', () => {
             extractTextModal.classList.add('hidden');

@@ -9,9 +9,112 @@ use Illuminate\Http\Request;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class ReviewerController extends Controller
 {
+    public function downloadPdf(Request $request)
+    {
+        try {
+            // Validate topic ID
+            $validated = $request->validate([
+                'topicId' => 'required|int',
+            ]);
+            $topicId = $validated['topicId'];
+            
+            // Log inputs for debugging
+            \Log::info('PDF Download Request:', [
+                'topicId' => $topicId,
+            ]);
+            
+            // Get topic name
+            $topic = Topic::find($topicId);
+            if (!$topic) {
+                \Log::warning('Topic not found', ['topicId' => $topicId]);
+                return response()->json(['success' => false, 'message' => 'Topic not found.']);
+            }
+            
+            $topicName = $topic->name;
+            
+            // Fetch reviewer content from the database
+            $reviewer = Reviewer::where('topic_id', $topicId)->get();
+            if ($reviewer->isEmpty()) {
+                \Log::warning('No reviewers found for this topic', ['topicId' => $topicId]);
+                return response()->json(['success' => false, 'message' => 'No reviewers found for this topic.']);
+            }
+            
+            $reviewerContent = '';
+            foreach ($reviewer as $item) {
+                $about = htmlspecialchars($item->reviewer_about, ENT_QUOTES, 'UTF-8');
+                $text = htmlspecialchars($item->reviewer_text, ENT_QUOTES, 'UTF-8');
+                $reviewerContent .= '<p>' . $text . '</p>';
+            }
+            
+            // Clean up HTML content
+            $cleanContent = $this->sanitizeHtml($reviewerContent);
+            
+            // Create a file name that is filesystem safe
+            $safeFileName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $topicName);
+            $fileName = $safeFileName . '.pdf';
+            
+            \Log::info('Generating PDF', ['fileName' => $fileName]);
+            
+            // Generate PDF with UTF-8 encoding
+            $pdf = PDF::loadView('pdf.reviewer', [
+                'reviewerContent' => $cleanContent,
+                'topicName' => $topicName
+            ]);
+            
+            // Set paper size and orientation
+            $pdf->setPaper('a4', 'portrait');
+            
+            // Set the encoding
+            $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+            $pdf->getDomPDF()->set_option('isPhpEnabled', true);
+            $pdf->getDomPDF()->set_option('isFontSubsettingEnabled', true);
+            $pdf->getDomPDF()->set_option('defaultMediaType', 'print');
+            
+            // Save PDF to storage
+            $pdfPath = 'pdfs/' . $fileName;
+            Storage::disk('local')->put($pdfPath, $pdf->output());
+            
+            \Log::info('PDF generated successfully', ['path' => $pdfPath]);
+            
+            // Return the PDF as a download
+            return $pdf->download($fileName);
+            
+        } catch (\Exception $e) {
+            // Log detailed error information
+            \Log::error('PDF Generation Error: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json([
+                'success' => false, 
+                'message' => 'An error occurred while downloading the PDF: ' . $e->getMessage()
+            ]);
+        }
+    }
+    
+    /**
+     * Sanitize HTML content for PDF generation
+     * 
+     * @param string $html
+     * @return string
+     */
+    private function sanitizeHtml($html)
+    {
+        // Replace potentially problematic HTML elements
+        $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
+        
+        // Convert special characters to HTML entities
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        
+        return $html;
+    }
     public function storeReviewer(Request $request)
     {
         // Validate the request
@@ -72,36 +175,5 @@ class ReviewerController extends Controller
     }
     //=======================================================================================================
 
-    public function downloadReviewer(Request $request)
-    {
-        try {
-            $topicId = $request->input('topicId');
-            $content = $request->input('content');
-            $topicName = Topic::where('topic_id', $topicId)->pluck('name')->first();
-            if (empty($content)) {
-                return response()->json(['success' => false, 'message' => 'No reviewer content found for this topic.']);
-            }
     
-            $fileName = $topicName . '.txt';
-            Storage::disk('local')->put($fileName, $content);
-    
-            return response()->json(['success' => true, 'file' => $fileName]);
-        } catch (\Exception $e) {
-            // Log the error for debugging purposes
-            Log::error('Error downloading reviewer: ' . $e->getMessage());
-    
-            // Return a JSON response with the error message
-            return response()->json(['success' => false, 'message' => 'An error occurred while downloading the reviewer. Please try again later.']);
-        }
-    }
-
-    public function serveFile($fileName)
-    {
-        $filePath = storage_path('app/' . $fileName);
-        if (file_exists($filePath)) {
-            return response()->download($filePath)->deleteFileAfterSend(true);
-        } else {
-            return response()->json(['success' => false, 'message' => 'File not found.']);
-        }
-    }
 }

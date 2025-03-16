@@ -89,8 +89,10 @@ Route::middleware('auth')->group(function (){
     Route::view('/cards','posts.cards')->name('card');
 
    //this is for download
-    Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
-    Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
+   Route::post('/download-pdf', [ReviewerController::class, 'downloadPdf'])->name('downloadpdf');
+   Route::view('posts.pdf_reviewer', 'posts.pdf_reviewer')->name('pdf.reviewer');
+    // Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
+    // Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
 
     //this is for the checking of subcription
     Route::post('/subscription/check', [SubscriptionController::class, 'checkSubscription'])->name('subscription.check');

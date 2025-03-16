@@ -143,18 +143,32 @@
 
             // This handles the download Reviewer
             downloadButton.addEventListener('click', function() {
-                const reviewerContent = document.querySelector('.reviewer_holder').innerText;
+                const reviewerContent = document.querySelector('.reviewer_holder').innerHTML;
                 const topicId = @json($topic->topic_id);
-
-                const blob = new Blob([reviewerContent], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = `${topicId}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
+                console.log(reviewerContent);
+                fetch('/download-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        topicId: topicId,
+                        reviewerContent: reviewerContent
+                    })
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `${topicId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error:', error));
             });
          
         });
