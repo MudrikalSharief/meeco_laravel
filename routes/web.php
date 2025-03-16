@@ -146,7 +146,12 @@ Route::middleware('auth')->group(function (){
 Route::middleware('guest')->group(function (){
     
     Route::view('/register', 'auth.register')->name('register');
-    Route::post('/register', [AUTHcontroller::class, 'register_user']);
+    Route::post('/register-store', [AUTHcontroller::class, 'storeRegistration'])->name('register.store');
+    
+    // Verification routes
+    Route::get('/verify-user', [AUTHcontroller::class, 'showVerificationForm'])->name('verify.show');
+    Route::post('/verify-email', [AUTHcontroller::class, 'verifyEmail'])->name('verify.email');
+    Route::post('/resend-code', [AUTHcontroller::class, 'resendVerificationCode'])->name('verify.resend');
     
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AUTHcontroller::class, 'login_user']);
@@ -162,9 +167,13 @@ Route::middleware('guest')->group(function (){
     Route::view('/terms', 'website.footer.terms')->name('terms');
     Route::view('/privacy', 'website.footer.privacy')->name('privacy');
 
-
+    // For testing purposes - remove in production
+    Route::get('/show-code', [AUTHcontroller::class, 'showCurrentCode'])->name('show.code');
 
 });
+
+// Remove this commented route since we've now implemented it
+// Route::post('/register-store', [AUTHcontroller::class, 'storeRegistration'])->name('register.store');
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
@@ -248,6 +257,10 @@ Route::middleware(['auth:admin'])->group(function () {
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+    //New Statistic Route
+    Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
+    Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
 });
 
 
