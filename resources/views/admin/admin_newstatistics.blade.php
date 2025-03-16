@@ -97,7 +97,4 @@
         </div>
     </main>
 
-    <script>
-        
-    </script>
 </x-admin_layout>
