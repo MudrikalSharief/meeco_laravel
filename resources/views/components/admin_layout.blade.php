@@ -15,7 +15,7 @@
       onload="this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])
@@ -87,6 +87,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <span class="nav-text md:inline-block hidden">Statistics</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.newstatistics') }}" class="menu-item {{ Request::is('admin/newstatistics*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="nav-text md:inline-block hidden">New Statistics</span>
                 </a>
             </li>
             <li>
