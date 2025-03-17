@@ -4,10 +4,10 @@
         <div class="w-full max-w-2xl">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
-                    <a href="{{ route('subject') }}"><h1 class="py-3 px-2 text-l font-semibold text-blue-500">Subjects</h1></a>
-                    <h2 class=" text-l font-bold text-blue-500"> > Topics</h2>
+                    <a href="{{ route('subject') }}"><h1 class="py-3 text-xl font-bold text-blue-800">Subjects </h1></a>
+                    <h2 class="pl-2 text-l font-bold text-blue-500"> → {{ $subject->name }}  </span></h2>
                 </div>
-                <button id="addTopicButton" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Topic</button>
+                <button id="addTopicButton" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded hidden">Add Topic</button>
             </div>
      
         <!-- Add Topic Button -->

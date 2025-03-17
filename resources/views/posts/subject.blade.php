@@ -2,8 +2,8 @@
     <div class="p-6 w-full h-full flex flex-col items-center">
         <div class="w-full max-w-2xl">
             <div class="flex justify-between items-center">
-                <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Subjects</h1>
-                <button id="addSubjectButton" class="mb-3 bg-blue-500 text-white py-2 px-4 rounded">Add Subject</button>
+                <h1 class="py-3 text-xl font-bold text-blue-800">Subjects</h1>
+                <button id="addSubjectButton" class="mb-3 bg-blue-500 text-white py-2 px-4 rounded hidden">Add Subject</button>
             </div>
         <div id="subjectsContainer" class="w-full max-w-2xl"></div>
         <p id="noSubjectsMessage" class="text-gray-500 mt-2 hidden text-center">No Subjects to Show</p>

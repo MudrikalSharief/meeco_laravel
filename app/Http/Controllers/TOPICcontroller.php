@@ -38,13 +38,13 @@ class TOPICcontroller extends Controller
     {
         $checksubject = Subject::where('subject_id', $subjectId)
                     ->where('user_id', auth()->user()->user_id)          
-                    ->firstOrFail()->subject_id;
-        $topics = Topic::where('subject_id', $checksubject)
+                    ->get(['subject_id', 'name']);
+        $topics = Topic::where('subject_id', $checksubject[0]->subject_id)
                     ->get(['topic_id', 'name']);
         if($topics->isEmpty()){
             return response()->json(['message'=>'No topics found for subject id: ' . $subjectId]);
         }
-        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId]);
+        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId , 'name' => $checksubject[0]->name]);
     }
 
     public function getTopicsBySubjectName($subjectID)

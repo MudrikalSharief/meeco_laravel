@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.success) {
                         const subjectButton = document.createElement('a');
                         subjectButton.href = `/subjects/${data.subject.subject_id}`;
-                            subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300"> ${data.subject.name}
+                            subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md bg-white rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300"> ${data.subject.name}
                                                          <span class="delete-subject text-red-500 h-full" data-subject-id="${data.subject.subject_id}"> <img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                         </button>`;
                             subjectsContainer.appendChild(subjectButton);
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.subjects.forEach((subject, index) => {
                         const subjectButton = document.createElement('a');
                         subjectButton.href = `/subjects/${subject.subject_id}`;
-                        subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
+                        subjectButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between bg-white items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                         <span>${subject.name}</span>
                                                         <span class="delete-subject text-red-500 h-full" data-subject-id="${subject.subject_id}"> <img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                     </button>`;
