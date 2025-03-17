@@ -134,7 +134,7 @@
                 <h2 class="text-gradient text-4xl sm:text-5xl font-bold mb-2">Welcome to Meeco</h2>
                 <p class="text-blue-100 text-lg mb-10">Recover your account access</p>
             </div>
-            <img src="{{asset('logo_icons/pictures/present.png')}}" alt="Info Digest Mascot" 
+            <img src="{{asset('logo_icons/pictures/head-scratch.png')}}" alt="Info Digest Mascot" 
                  class="max-w-full h-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500 border-4 border-white/20">
         </div>
     </div>
