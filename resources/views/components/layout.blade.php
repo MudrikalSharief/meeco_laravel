@@ -59,15 +59,15 @@
 <body class="relative min-h-screen flex flex-col bg_base_lightmode">
 
     {{-- Upper Navigation --}}
-    <div id="upper_nav" class="fixed bg-gray-100 h-12 w-full  z-50 flex justify-center items-center border-b">
-        <div class="flex items-center justify-between max-w-2xl min-h-64 w-full">
+    <div id="upper_nav" class="fixed  h-12 w-full bg-white px-4 z-50 flex justify-center items-center border-b shadow-sm">
+        <div class="flex items-center justify-between max-w-2xl w-full">
 
             <div class="logo_holder flex justify-start items-center gap-3 pl-4 w-full">
                 <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
                 <p class="nav_text blue_text text-xl font-bold">Meeco</p>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 w-full">
                 
                 <a href="{{ route('profile') }}" class="flex items-center ml-auto">
                     @auth
@@ -122,8 +122,10 @@
         </ul>
     </nav>
     
-    <div class=" pt-1 w-full flex-grow mb-20 mt-12 ">
-        {{ $slot ?? '' }}
+    <div class=" pt-1 w-full  mb-20 mt-12 flex justify-center items-center">
+        <div class="max-w-2xl w-full">
+            {{ $slot ?? '' }}
+        </div>
     </div>
     
     <script>
