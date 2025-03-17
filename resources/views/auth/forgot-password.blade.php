@@ -47,7 +47,7 @@
       </a>
     </div>
 
-    <!-- Left side - Login Form -->
+    <!-- Left side - Forgot Password Form -->
     <div class="w-full md:w-1/2 flex items-center justify-center p-8 animate-fade-in">
         <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative overflow-hidden">
             <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-400 to-blue-600"></div>
@@ -55,57 +55,59 @@
             <div class="flex justify-center mb-8">
                 <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </div>
             </div>
             
-            <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Welcome Back</h1>
-            <p class="text-gray-500 text-center mb-6 text-sm">Sign in to continue your journey</p>
+            <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Forgot Password?</h1>
+            <p class="text-gray-500 text-center mb-6 text-sm">Enter your email and we'll send you a reset link</p>
             
-            <form action="{{ route('login') }}" class="space-y-5" method="POST">
-                @csrf
+            @if (session('status'))
+                <div class="animate-fade-in">
+                    <div class="mb-6 py-4 px-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <p class="font-medium">Success</p>
+                        </div>
+                        <p class="text-sm">{{ session('status') }}</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center py-6">
+                        <p class="text-gray-600 text-center mb-6">Check your email inbox and follow the instructions to reset your password.</p>
+                        <a href="{{ route('login') }}" class="btn-hover-effect bg-blue-600 w-full text-center text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200">
+                            Return to Login
+                        </a>
+                    </div>
+                </div>
+            @else
+                <form action="{{ route('password.email') }}" class="space-y-5" method="POST">
+                    @csrf
 
-              <!-- Email Field -->
-              <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="text" name="email" id="email" placeholder="Enter your email" value="{{ old('email')}}" 
-                class="input-focus-effect mt-1 w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200">
-                @error('email')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-              </div>
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" name="email" id="email" placeholder="Enter your email" value="{{ old('email')}}" 
+                        class="input-focus-effect mt-1 w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200">
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-              <!-- Password Field -->
-              <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" name="password" id="password" placeholder="Enter your password" 
-                class="input-focus-effect text-sm mt-1 w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all duration-200">
-                @error('password')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-              </div>
-
-             {{-- CheckBox --}}
-             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <input type="checkbox" name="remember" id="remember" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
-                <label for="remember" class="text-sm text-gray-600">Remember me</label>
-              </div>
-              <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-all">Forgot Password?</a>
-            </div>
-              <!-- Submit Button -->
-              <button type="submit" class="btn-hover-effect bg-blue-600 w-full text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200">Sign In</button>
-            </form>
-            
-            <div class="mt-6 pt-4 border-t border-gray-100">
-                <p class="text-sm text-center text-gray-600">Don't have an Account yet? 
-                    <a class="text-blue-600 hover:text-blue-800 font-medium hover:underline" href="{{ route('register')}}">Sign Up</a>
-                </p> 
-                @error('failed')
-                    <p class="text-red-500 text-xs text-center mt-2">{{ $message }}</p>
-                @enderror
-            </div>
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-hover-effect bg-blue-600 w-full text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200">
+                        Send Password Reset Link
+                    </button>
+                </form>
+                
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <p class="text-sm text-center text-gray-600">
+                        <a class="text-blue-600 hover:text-blue-800 font-medium hover:underline" href="{{ route('login')}}">Back to Login</a>
+                    </p>
+                </div>
+            @endif
         </div>
     </div>
     
@@ -130,9 +132,9 @@
         <div class="z-10 flex flex-col items-center justify-center w-full">
             <div class="animate-text-reveal text-center w-full px-4">
                 <h2 class="text-gradient text-4xl sm:text-5xl font-bold mb-2">Welcome to Meeco</h2>
-                <p class="text-blue-100 text-lg mb-10">Organize, Connect, Discover</p>
+                <p class="text-blue-100 text-lg mb-10">Recover your account access</p>
             </div>
-            <img src="{{asset('logo_icons/pictures/present.png')}}" alt="Info Digest Mascot" 
+            <img src="{{asset('logo_icons/pictures/head-scratch.png')}}" alt="Info Digest Mascot" 
                  class="max-w-full h-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500 border-4 border-white/20">
         </div>
     </div>
