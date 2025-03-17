@@ -221,10 +221,9 @@ Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
 Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
 
 //Transaction ROute
-
-Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
-Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
+Route::get('admin/transactions', [TransactionController::class, 'get_transactions'])->name('admin.transactions');
 Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+Route::get('admin/search-transactions', [TransactionController::class, 'search_transactions'])->name('admin.search-transactions');
 Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
 
 
