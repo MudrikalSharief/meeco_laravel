@@ -1,14 +1,14 @@
 <x-layout>
 
-    <div class="max-w-2xl h-full mx-auto  bg-white  rounded-lg">
+    <div class="max-w-2xl h-full  mx-auto ] rounded-lg">
         
-        <div class="w-full max-w-2xl">
+        <div class="w-full max-w-2xl ">
 
-            <div id="opened_quizz_holder" class=" bg-blue-100 h-full w-full px-6 py-3">
+            <div id="opened_quizz_holder" class=" bg-white rounded-xl h-full w-full px-6 py-3 my-3">
                 <!-- Quiz info will be dynamically inserted here -->
             </div>
 
-            <div id="quiz_result" class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5 pb-3 bg_base_lightmode">
+            <div id="quiz_result" class="quiz-container text-sm mt-2 rounded-lg   px-5 pt-5 pb-3 bg-white">
                 <!-- Quiz result will be dynamically inserted here -->
             </div>
         </div>
@@ -49,11 +49,15 @@
                         quizInfoDiv.id = 'quiz_info';
                         quizInfoDiv.classList.add('w-full', 'max-w-2xl');
                         quizInfoDiv.innerHTML = `
-                            <h1 id = "backbutton" class=" cursor-pointer text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
-                            <p><span class="text-sm text-gray-600">Quiz Name:</span> ${data.question.question_title}</p>
-                            <p><span class="text-sm text-gray-600">Quiz Type:</span> ${data.question.question_type}</p>
-                            <p><span class="text-sm text-gray-600">Question Count:</span> ${data.question.number_of_question}</p>
-                            <p><span class="text-sm text-gray-600">Score:</span> ${data.question.score} / ${data.question.number_of_question}</p>
+                            <h1 id = "backbutton" class="pt-2 cursor-pointer text-sm text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
+                            <div class="flex justify-between mb-2">
+                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Quiz Name<br></span> ${data.question.question_title}</p>
+                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Quiz Type<br></span> ${data.question.question_type}</p>
+                            </div>
+                            <div class="flex justify-between">
+                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Question Count<br></span> ${data.question.number_of_question}</p>
+                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Score<br></span> ${data.question.score} / ${data.question.number_of_question}</p>
+                            </div>
                             <p class="mt-5 "><span class="text-sm text-blue-600">Start Quiz Noww!!</span></p>
                         `;
                         opened_quizz_holder.appendChild(quizInfoDiv);
@@ -121,7 +125,7 @@
                                             
                                             if (type === 'multiple_choice') {
                                                 questionDiv.innerHTML = `
-                                                    <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                                    <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                                     <p class ="text-green-500">Correct Answer : ${question.answer}</p>
                                                     <ul>
                                                         <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
@@ -132,7 +136,7 @@
                                                 `;
                                             } else if (type === 'true_or_false') {
                                                 questionDiv.innerHTML = `
-                                                    <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                                    <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                                     <p class ="text-green-500">Correct Answer : ${question.answer}</p>
                                                     <ul>
                                                         <li><label class = "choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="True">True </label></li>
@@ -141,7 +145,7 @@
                                                 `;
                                             } else if (type === 'identification') {
                                                 questionDiv.innerHTML = `
-                                                    <p class ="text-blue-500">${questionCounter}) ${question.question_text} <span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                                    <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text} <span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                                     <p class ="text-green-500">Correct Answer : ${question.answer} </p>
                                                     <ul>
                                                         <li><label class = "choices w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center" ><input class = "w-full  px-1" type="text" disabled name="question_${index}" value="${question.user_answer}"> </label></li>
@@ -206,7 +210,7 @@
                                     if(data.type === 'Multiple Choice'){
                                         console.log('multiple');
                                         questionDiv.innerHTML = `
-                                            <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                            <p class ="text-gray-700 font-semibold">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                             <p class ="text-green-500">Correct Answer : ${question.answer}</p>
                                             <ul>
                                                 <li><label class = "choices${index}A w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="A"> A) ${question.A}</label></li>
@@ -219,7 +223,7 @@
                                     else if(data.type === 'True or false'){
                                         console.log('TF?');
                                         questionDiv.innerHTML = `
-                                            <p class ="text-blue-500">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                            <p class ="text-gray-700 font-semibold">${index + 1}) ${question.question_text}<span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                             <p class ="text-green-500">Correct Answer : ${question.answer}</p>
                                             <ul>
                                                 <li><label class = "choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center " ><input type="radio"  disabled name="question_${index}" value="True">True </label></li>
@@ -231,7 +235,7 @@
                                         const lower = question.user_answer;
                                         console.log('ID?');
                                         questionDiv.innerHTML = `
-                                            <p class ="text-blue-500">${index + 1}) ${question.question_text} <span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
+                                            <p class ="text-gray-700 font-semibold">${index + 1}) ${question.question_text} <span id="q${index+1}" class = "text-red-500 pl-2"></span></p>
                                             <p class ="text-green-500">Correct Answer : ${question.answer} </p>
                                             <ul>
                                                 <li><label class = "choices w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center" ><input class = "w-full  px-1" type="text" disabled name="question_${index}" value="${question.user_answer}"> </label></li>

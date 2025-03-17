@@ -251,7 +251,7 @@
                 if (data.success) {
                     data.questions.forEach(quiz => {
                         const button = document.createElement('button');
-                        button.classList.add('question_button', 'gap-1', 'w-full', 'bg-blue-50','text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-200', 'delay-75', 'hover:shadow-lg', 'transition', 'duration-300');
+                        button.classList.add('question_button', 'gap-1', 'w-full', 'bg-white','text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-200', 'delay-75', 'hover:shadow-lg', 'transition', 'duration-300');
                         button.id = quiz.question_id;
                         button.innerHTML = `
                             <p class="w-2/5 ">${quiz.question_title}</p>
@@ -630,7 +630,7 @@
                                         quizContainer.innerHTML="";
                                         data.questions.forEach(quiz => {
                                             const button = document.createElement('button');
-                                            button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
+                                            button.classList.add('question_button','gap-1','w-full','bg-white', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
                                             button.id = quiz.question_id;
                                             button.innerHTML = `
                                                 <p class="w-2/5 ">${quiz.question_title}</p>
