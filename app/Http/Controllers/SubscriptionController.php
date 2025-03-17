@@ -457,16 +457,17 @@ class SubscriptionController extends Controller
                 'to_date' => $toDate->format('Y-m-d')
             ]);
             
-            // First, get the raw data with direct SQL to debug
+            // Modify the query to exclude "Free Trial" promos
             $rawData = DB::select('
                 SELECT s.start_date, p.price 
                 FROM subscriptions s
                 JOIN promos p ON s.promo_id = p.promo_id
                 WHERE s.start_date BETWEEN ? AND ?
+                AND p.name != "Free Trial"
                 ORDER BY s.start_date
             ', [$fromDate->startOfDay()->toDateTimeString(), $toDate->endOfDay()->toDateTimeString()]);
             
-            Log::info('Raw subscription data count: ' . count($rawData));
+            Log::info('Raw subscription data count (excluding Free Trials): ' . count($rawData));
             
             // Initialize the day-by-day data structure
             $dailyData = [];
@@ -571,7 +572,7 @@ class SubscriptionController extends Controller
             
             Log::info('Fetching monthly subscription stats for year: ' . $year);
             
-            // Get raw monthly totals using SQL for better performance
+            // Modify the SQL to exclude "Free Trial" promos
             $monthlyData = DB::select('
                 SELECT 
                     MONTH(s.start_date) as month,
@@ -580,11 +581,12 @@ class SubscriptionController extends Controller
                 FROM subscriptions s
                 JOIN promos p ON s.promo_id = p.promo_id
                 WHERE YEAR(s.start_date) = ?
+                AND p.name != "Free Trial"
                 GROUP BY MONTH(s.start_date)
                 ORDER BY MONTH(s.start_date)
             ', [$year]);
             
-            Log::info('Monthly data rows found: ' . count($monthlyData));
+            Log::info('Monthly data rows found (excluding Free Trials): ' . count($monthlyData));
             
             // Initialize array with all months
             $months = [
