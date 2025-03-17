@@ -59,32 +59,35 @@
 <body class="relative min-h-screen flex flex-col bg_base_lightmode">
 
     {{-- Upper Navigation --}}
-    <div id="upper_nav" class="fixed pr-3 bg-gray-100 h-12 w-full flex items-center justify-between z-50">
-        <div class="logo_holder flex justify-start items-center gap-3 pl-4">
-            <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
-            <p class="nav_text blue_text text-xl font-bold">Meeco</p>
-        </div>
-        
-        <div class="flex items-center gap-2">
+    <div id="upper_nav" class="fixed bg-gray-100 h-12 w-full  z-50 flex justify-center items-center border-b">
+        <div class="flex items-center justify-between max-w-2xl min-h-64 w-full">
 
-            <a href="{{ route('profile') }}" class="flex items-center ml-auto">
-                @auth
-                    <p class="name mr-1 hidden md:block">{{ auth()->user()->firstname}} {{ auth()->user()->middlename}} {{ auth()->user()->lastname}}</p>
-                @endauth
-                <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
-                    <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
-                </div>
-            </a>
-            {{-- for notif --}}
-            <div id="lottie-container" class="w-6 h-6 relative cursor-pointer flex justify-center items-center">
-                <img id="bell_icon" class="w-5 h-5" src="{{asset('logo_icons/notification.svg')}}" alt="">
-                <div id="notification-box" class="text-sm hidden absolute right-0 mt-2 w-64 border border-gray-300 rounded-lg shadow-lg">
-                    <div class="p-4 ">
-                        <p class="text-gray-700 text-sm ">No new notifications</p>
-                    </div>
-                </div>
+            <div class="logo_holder flex justify-start items-center gap-3 pl-4 w-full">
+                <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
+                <p class="nav_text blue_text text-xl font-bold">Meeco</p>
             </div>
             
+            <div class="flex items-center gap-2">
+                
+                <a href="{{ route('profile') }}" class="flex items-center ml-auto">
+                    @auth
+                        <p class="name mr-1 hidden md:block">{{ auth()->user()->firstname}} {{ auth()->user()->middlename}} {{ auth()->user()->lastname}}</p>
+                        @endauth
+                        <div class="profile_holder w-9 h-9 rounded-full overflow-hidden border">
+                        <img class="w-full h-full object-contain" src="{{ asset('logo_icons/3.jpg') }}" alt="Profile">
+                    </div>
+                </a>
+                {{-- for notif --}}
+                <div id="lottie-container" class="w-6 h-6 relative cursor-pointer flex justify-center items-center">
+                    <img id="bell_icon" class="w-5 h-5" src="{{asset('logo_icons/notification.svg')}}" alt="">
+                    <div id="notification-box" class="text-sm hidden absolute right-0 mt-2 w-64 border border-gray-300 rounded-lg shadow-lg">
+                        <div class="p-4 ">
+                            <p class="text-gray-700 text-sm ">No new notifications</p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
         </div>
 
     </div>
