@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\OpenAIHelper;
 use App\Models\Identification;
 use App\Models\multiple_choice;
 use App\Models\Question;
 use App\Models\Reviewer;
+use App\Models\Subscription;
 use App\Models\Topic;
 
 use App\Models\true_or_false;
@@ -28,6 +30,9 @@ class OPENAIController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
 
+
+        \Log::info('OPENAI_API_KEY: ' . env('OPENAI_API_KEY'));
+
         $true = Reviewer::where(['topic_id' => $request->post('topic_id')])->get();
         if(!$true->isEmpty()){
             return response()->json(['success' => true, 'message' => "Reviewer Already Created"]);
@@ -40,7 +45,7 @@ class OPENAIController extends Controller
                 ])
                 ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    "model" => "gpt-4-turbo",
+                    "model" => "gpt-4o-mini-2024-07-18",
                     "messages" => [
                         [
                             "role" => "user",
@@ -70,15 +75,16 @@ class OPENAIController extends Controller
                     "max_tokens" => 4096
                 ]);
         
-                if ($response->failed()) {
-                    return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
-                }
-        
                 $responseBody = $response->body();
                 $responseData = json_decode($responseBody, true);
+                
+                if ($response->failed()) {
+                    return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.', 'data' => $responseData]);
+                }
+        
         
                 if (!isset($responseData['choices'][0]['message']['content'])) {
-                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
+                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.', 'data' => $responseData]);
                 }
         
                 $content = json_decode($responseData['choices'][0]['message']['content'], true);
@@ -91,8 +97,17 @@ class OPENAIController extends Controller
                     $reviewer->reviewer_text = $item['Description'];
                     $reviewer->save();
                 }
+            
+                // Calculate and log the cost using the helper function
+                Log::info('Action : Generate Reviewer');
+                OpenAIHelper::calculateAndLogCost($responseData);
+
+                // Update the reviewer count in the subscription
+                $subscription = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($subscription) {
+                    $subscription->increment('reviewer_created');
+                }
                 
-    
                 return response()->json(['success' => true, 'data' => $content, 'topic_id' => $request->post('topic_id')]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
@@ -149,17 +164,25 @@ class OPENAIController extends Controller
                     'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
                 ])
-                ->timeout(120)
+                ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4-turbo',
+                    'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate ". $number ." multiple-choice quiz questions. Each question must have four options labeled A, B, C, and D. Only one option should be correct. Format your response in JSON like this: 
-        
+                        ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that require analysis. Each question must encourage critical thinking by asking the user to compare, categorize, identify relationships, recognize patterns, or evaluate cause and effect. 
+                
+                        Guidelines:
+                        - Each question must have four options labeled A, B, C, and D.
+                        - Only one option should be correct.
+                        - Ensure that the questions challenge the user to analyze the information, not just recall facts.
+                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+                
+                        Format your response in JSON like this: 
+                
                         {
                         \"questions\": [
                             {
-                            \"question\": \"Question in here?\",
+                            \"question\": \"Which of the following best explains the relationship between X and Y?\",
                             \"choices\": {
                                 \"A\": \"choice\",
                                 \"B\": \"choice\",
@@ -170,8 +193,8 @@ class OPENAIController extends Controller
                             }
                         ]
                         } 
-        
-                        Text: " . $text . " the order of the question is must be not the same as the order of the Text i gave to you, re arrenge the order of the question."]
+                
+                        Text: " . $text ]
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 4096
@@ -187,15 +210,19 @@ class OPENAIController extends Controller
         
                 if (!isset($responseData['choices'][0]['message']['content'])) {
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
-                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
+                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.', 'data' => $responseData]);
                 }
-        
-                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                
+                // Strip the code block formatting
+                $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+
+                $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
+                Log::info('Json to be Decoded:', ['json' => $responseData['choices'][0]['message']['content']]);
         
                 if (empty($content['questions'])) {
                     Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
-                    return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
+                    return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text , 'response' => $responseData]);
                 }
                 
                 $question = Question::create([
@@ -220,6 +247,16 @@ class OPENAIController extends Controller
                         'D' => $questionData['choices']['D'],
                     ]);
                 }
+
+                // Calculate and log the cost using the helper function
+                Log::info('Action : Generate Quiz Multple Choice');
+                OpenAIHelper::calculateAndLogCost($responseData);
+
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
         
                 return response()->json(['success' => true, 'data' => $content]);
         
@@ -237,21 +274,28 @@ class OPENAIController extends Controller
                 ])
                 ->timeout(120)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4-turbo',
+                    'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate ". $number ." true or false quiz questions. Each question must have one answer either True or False. Format your response in JSON like this: 
-        
+                        ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " true or false quiz questions that require analysis. Each question must challenge the user to evaluate relationships, identify patterns, assess cause and effect, or detect logical inconsistencies.
+
+                        Guidelines:
+                        - Ensure that the statements require analysis rather than simple recall.
+                        - Some statements should contain subtle logical twists or require recognizing underlying principles.
+                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+
+                        Format your response in JSON like this: 
+
                         {
                         \"questions\": [
                             {
-                            \"question\": \"Question in here?\",
-                            \"correct_answer\": \"True or False\"
+                            \"question\": \"Analyzing X and Y, it can be concluded that Z is a direct result. True or False?\",
+                            \"correct_answer\": \"True\"
                             }
                         ]
                         } 
-        
-                        Text: " . $text . " the order of the question is must be not the same as the order of the Text i gave to you, re arrenge the order of the question."]
+
+                        Text: " . $text ]
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 4096
@@ -269,8 +313,11 @@ class OPENAIController extends Controller
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
-        
-                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                
+                // Strip the code block formatting
+                $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+
+                $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
         
                 if (empty($content['questions'])) {
@@ -296,7 +343,17 @@ class OPENAIController extends Controller
                         'answer' => $questionData['correct_answer'],
                     ]);
                 }
-        
+                
+                // Calculate and log the cost using the helper function
+                Log::info('Action : Generate Quiz True or false');
+                OpenAIHelper::calculateAndLogCost($responseData);
+
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+
                 return response()->json(['success' => true, 'data' => $content]);
         
             } catch (\Exception $e) {
@@ -311,23 +368,30 @@ class OPENAIController extends Controller
                     'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
                 ])
-                ->timeout(120)
+                ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4-turbo',
+                    'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates Identification quiz questions. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate ". $number ."Identification quiz questions. Each question must have one word answer. Format your response in JSON like this: 
-        
+                        ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " identification quiz questions that require analysis. Each question must challenge the user to recognize relationships, identify causes, classify concepts, or draw conclusions based on the given text.
+                
+                        Guidelines:
+                        - The question must require critical thinking rather than simple recall.
+                        - Ensure that the answer is a **single word or a short phrase**.
+                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+                
+                        Format your response in JSON like this: 
+                
                         {
                         \"questions\": [
                             {
-                            \"question\": \"Question in here?\",
-                            \"correct_answer\": \"Answer\"
+                            \"question\": \"What process involves the breakdown of complex molecules into simpler ones to release energy?\",
+                            \"correct_answer\": \"Catabolism\"
                             }
                         ]
                         } 
-        
-                        Text: " . $text . " the order of the question is must be not the same as the order of the Text i gave to you, re arrenge the order of the question."]
+                
+                        Text: " . $text ]
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 4096
@@ -346,7 +410,10 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
         
-                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                // Strip the code block formatting
+                $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+
+                $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
         
                 if (empty($content['questions'])) {
@@ -362,6 +429,7 @@ class OPENAIController extends Controller
                 ]);
         
                 // Log the created question to check if the id is set
+                Log::info('Action : Generate Quiz Identification');
                 Log::info('Created Question:', ['question' => $question]);
         
                 // Save the questions and multiple choices
@@ -372,8 +440,18 @@ class OPENAIController extends Controller
                         'answer' => $questionData['correct_answer'],
                     ]);
                 }
-        
+                
+                // Calculate and log the cost using the helper function
+                OpenAIHelper::calculateAndLogCost($responseData);
+                
+                // Update the Quiz count in the subscription
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+
                 return response()->json(['success' => true, 'data' => $content]);
+                
         
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
@@ -385,22 +463,24 @@ class OPENAIController extends Controller
             $prompt = "Based on the following text, generate ";
             $quizTypes = [];
             $jsonFormat = "{\n";
-
+            
             if ($multiple > 0) {
-                $quizTypes[] = "$multiple multiple-choice quiz questions";
-                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"question\": \"Question in here?\",\n            \"choices\": {\n                \"A\": \"choice\",\n                \"B\": \"choice\",\n                \"C\": \"choice\",\n                \"D\": \"choice\"\n            },\n            \"correct_answer\": \"C\"\n        }\n    ],\n";
+                $quizTypes[] = "$multiple multiple-choice quiz questions that assess analytical thinking";
+                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"question\": \"Which of the following best explains the relationship between X and Y?\",\n            \"choices\": {\n                \"A\": \"Choice 1\",\n                \"B\": \"Choice 2\",\n                \"C\": \"Choice 3\",\n                \"D\": \"Choice 4\"\n            },\n            \"correct_answer\": \"B\"\n        }\n    ],\n";
             }
+            
             if ($true_or_false > 0) {
-                $quizTypes[] = "$true_or_false true or false quiz questions";
-                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"question\": \"Question in here?\",\n            \"correct_answer\": \"True or False\"\n        }\n    ],\n";
+                $quizTypes[] = "$true_or_false true or false quiz questions that require analysis";
+                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"question\": \"Given the cause-and-effect relationship between X and Y, does Z logically follow? True or False?\",\n            \"correct_answer\": \"True\"\n        }\n    ],\n";
             }
+            
             if ($identification > 0) {
-                $quizTypes[] = "$identification identification quiz questions";
-                $jsonFormat .= "    \"identification\": [\n        {\n            \"question\": \"Question in here?\",\n            \"correct_answer\": \"Answer\"\n        }\n    ],\n";
+                $quizTypes[] = "$identification identification quiz questions that assess understanding of relationships and classification";
+                $jsonFormat .= "    \"identification\": [\n        {\n            \"question\": \"What principle explains the connection between A and B?\",\n            \"correct_answer\": \"Correct Answer\"\n        }\n    ],\n";
             }
-
-            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}\n\nText: " . $text . " The order of the questions must not be the same as the order of the text I gave you. Rearrange the order of the questions.";
-
+            
+            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}\n\nText: " . $text . " The order of the questions must not be the same as the order of the text I gave you. Rearrange the order of the questions to promote deeper understanding.";
+            
             try {
                 $response = Http::withHeaders([
                     'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
@@ -408,9 +488,9 @@ class OPENAIController extends Controller
                 ])
                 ->timeout(120)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4-turbo',
+                    'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates quiz questions. Return the response in JSON format.'],
+                        ['role' => 'system', 'content' => 'You are an AI that generates quiz questions to test analytical thinking at Level 4 of Bloom\'s Taxonomy. Return the response in JSON format.'],
                         ['role' => 'user', 'content' => $prompt]
                     ],
                     'temperature' => 0.7,
@@ -430,7 +510,10 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
 
-                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                // Strip the code block formatting
+                $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+
+                $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
 
                 if (empty($content['multiple_choice']) && empty($content['true_or_false']) && empty($content['identification'])) {
@@ -481,6 +564,15 @@ class OPENAIController extends Controller
                     }
                 }
 
+                // Calculate and log the cost using the helper function
+                Log::info('Action : Generate Quiz Mixed');
+                OpenAIHelper::calculateAndLogCost($responseData);
+
+                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+                
                 return response()->json(['success' => true, 'data' => $content]);
 
             } catch (\Exception $e) {

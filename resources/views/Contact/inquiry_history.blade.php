@@ -29,7 +29,10 @@
                         </td>
                         <td class="p-4 text-gray-600 border-b border-gray-200">{{ $inquiry->status }}</td>
                         <td class="p-4 border-b border-gray-200">
-                            <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-400 text-white border-none py-2 px-6 rounded cursor-pointer text-sm hover:bg-blue-600">Reply</a>
+                            <a href="{{ route('inquiry.details', ['ticket_reference' => $inquiry->ticket_reference]) }}" 
+                               class="{{ $inquiry->status == 'Closed' ? 'bg-red-500' : 'bg-blue-400 hover:bg-blue-600' }} text-white border-none py-2 px-6 rounded cursor-pointer text-sm">
+                               {{ $inquiry->status == 'Closed' ? 'Closed' : 'Reply' }}
+                            </a>
                         </td>
                     </tr>
                     @endforeach

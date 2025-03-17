@@ -17,7 +17,7 @@
     
         <h1 class="text-xl font-bold text-blue-500 text-center mb-4">Create your profile</h1>
         
-        <form action="{{ route('register') }}" class="space-y-4" method="POST">
+        <form action="{{ route('register.store') }}" class="space-y-4" method="POST">
             @csrf
 
           <!-- Firstname Field -->
@@ -73,7 +73,7 @@
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class=" bg-blue-500  w-full text-white py-1 rounded-md text-sm ">CREATE ACCOUNT</button>
+          <button type="submit" class=" bg-blue-500 w-full text-white py-1 rounded-md text-sm ">CREATE ACCOUNT</button>
         </form>
         <p class="text-xs mt-2">Already Have an Account? <a class="text-blue-500" href="{{ route('login')}}">Log in</a>.</p> 
       </div>

@@ -156,24 +156,14 @@ class ContactUsController extends Controller
         
         $reply->save();
 
-        // Update the status to "Responded"
-        ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Responded']);
+       // Update the status to "Responded"
+       ContactUs::where('ticket_id', $inquiry->ticket_id)->update(['status' => 'Responded']);
 
-        return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
+       return redirect()->route('admin.reply', ['ticket_reference' => $ticket_reference])->with('success', 'Reply submitted successfully.');
     }
 
-    public function closeInquiry($ticket_reference)
-    {
-        $inquiry = ContactUs::where('ticket_reference', $ticket_reference)->firstOrFail();
-        $inquiry->status = 'Closed';
-        $inquiry->save();
+ 
 
-        return redirect()->route('inquiry.details', ['ticket_reference' => $ticket_reference])->with('success', 'Inquiry closed successfully.');
-    }
-
-    /**
-     * Filter inquiries by status and search for admin
-     */
     public function filterInquiriesByStatus(Request $request)
     {
         $query = ContactUs::query();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Promo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,11 +13,29 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+        
         $subscription = Subscription::where('user_id', $user->user_id)
-                    ->where('status', 'active')
-                    ->with('promo')
-                    ->first();
+                ->with('promo')
+                ->orderBy('start_date', 'desc')
+                ->first();
+        
+        // Check the limits for reviewers and quizzes
+        $reviewerLimit = $subscription->promo->reviewer_limit;
+        $quizLimit = $subscription->promo->quiz_limit;
 
+        $reviewerCreated = $subscription->reviewer_created;
+        $quizCreated = $subscription->quiz_created;
+    
+
+        $reviewerLimitReached = $reviewerCreated >= $reviewerLimit ;
+        $quizLimitReached = $quizCreated >= $quizLimit;
+
+        // if($reviewerLimitReached && $quizLimitReached){
+        //     if($subscription->status == 'Active'){
+        //         $subscription->status = 'Limit Reached';
+        //         $subscription->save();
+        //     }
+        // }
         return view('components.profile', compact('user', 'subscription'));
     }
 
@@ -44,7 +63,8 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $subscription = Subscription::where('user_id', $user->user_id)
-                                    ->where('status', 'active')
+                                    ->whereIn('status', ['Active', 'Limit Reached',])
+                                    ->orderBy('start_date', 'desc')
                                     ->first();
 
         if ($subscription) {

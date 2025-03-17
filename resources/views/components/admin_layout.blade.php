@@ -15,7 +15,7 @@
       onload="this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])
@@ -74,11 +74,27 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.newtransactions') }}" class="menu-item {{ Request::is('admin/newtransactions*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="nav-text md:inline-block hidden">New Subscription</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.statistics') }}" class="menu-item {{ Request::is('admin/statistics*') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <span class="nav-text md:inline-block hidden">Statistics</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.newstatistics') }}" class="menu-item {{ Request::is('admin/newstatistics*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="nav-text md:inline-block hidden">New Statistics</span>
                 </a>
             </li>
             <li>
@@ -89,6 +105,7 @@
                     <span class="nav-text md:inline-block hidden">Promos</span>
                 </a>
             </li>
+            
             {{-- <li>
                 <a href="{{ route('admin.account') }}" class="menu-item {{ request()->routeIs('admin.account') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

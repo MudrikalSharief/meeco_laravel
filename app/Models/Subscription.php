@@ -13,7 +13,6 @@ class Subscription extends Model
         'user_id',
         'promo_id',
         'reference_number',
-        'duration',
         'start_date', 
         'end_date', 
         'status',

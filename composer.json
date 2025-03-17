@@ -10,11 +10,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "barryvdh/laravel-dompdf": "*",
+        "barryvdh/laravel-dompdf": "^3.1",
         "google/cloud-vision": "^1.10",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "orhanerday/open-ai": "^5.2"
+        "orhanerday/open-ai": "^5.2",
+        "symfony/http-client": "^7.2",
+        "symfony/mailgun-mailer": "^7.2",
+        "vlucas/phpdotenv": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

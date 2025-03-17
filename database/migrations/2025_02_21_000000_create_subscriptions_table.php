@@ -16,10 +16,11 @@ return new class extends Migration {
             $table->unsignedBigInteger('promo_id');
             $table->foreign('promo_id')->references('promo_id')->on('promos')->onDelete('cascade'); 
             $table->string('reference_number')->unique()->nullable();
-            $table->string('duration');
-            $table->date('start_date')->nullable(); 
-            $table->date('end_date')->nullable(); 
-            $table->enum('status', ['active', 'inactive'])->default('active'); 
+            $table->integer('reviewer_created')->default(0);
+            $table->integer('quiz_created')->default(0);
+            $table->dateTime('start_date')->nullable(); 
+            $table->dateTime('end_date')->nullable(); 
+            $table->enum('status', ['Active', 'Expired','Cancelled','Limit Reached'])->default('active'); 
             $table->enum('subscription_type', ['Admin Granted', 'Subscribed'])->default('Subscribed'); 
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();

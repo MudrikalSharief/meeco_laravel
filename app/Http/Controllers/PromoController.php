@@ -53,35 +53,51 @@ class PromoController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'duration' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'status' => 'required|string',
-            'perks' => 'nullable|string',
+            'name' => ['required', 'string', 'min:3', 'max:50'],
+            'price' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/', 'min:1'],
+            'duration' => ['required', 'integer', 'min:1', 'max:365'],
+            'image_limit' => ['required', 'integer', 'min:1'], 
+            'reviewer_limit' => ['required', 'integer', 'min:1'], 
+            'quiz_limit' => ['required', 'integer', 'min:1'], 
+            'quiz_questions_limit' => ['required', 'integer', 'min:1', 'max:40'], 
+            'can_mix_quiz' => ['required', 'boolean'],
+            'mix_quiz_limit' => ['required_if:can_mix_quiz,1', 'integer', 'min:1', 'max:40'],
+            'perks' => ['required', 'string', function ($attribute, $value, $fail) {
+                if (trim($value) === '') {
+                    $fail('Perks field cannot be empty or whitespace only.');
+                }
+            }],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after:start_date'],
+            'status' => ['required', 'string', 'in:active,inactive'],
         ]);
 
-        Promo::updateOrCreate(['promo_id' => $request->id], $data);
-
+        $create = Promo::updateOrCreate(['promo_id' => $request->id], $data);
+    
         return redirect()->route('admin.subscription')->with('success', 'Promo saved successfully!');
     }
 
     // Update the specified promo in the database
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
+            'perks' => 'nullable|string',
             'duration' => 'required|integer',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'image_limit' => 'required|integer',
+            'reviewer_limit' => 'required|integer',
+            'quiz_limit' => 'required|integer',
+            'quiz_questions_limit' => 'required|integer',
+            'can_mix_quiz' => 'required|boolean',
+            'mix_quiz_limit' => 'required_if:can_mix_quiz,1|integer',
             'status' => 'required|string|in:active,inactive',
-            'perks' => 'nullable|string',
         ]);
 
         $promo = Promo::findOrFail($id);
-        $promo->update($request->all());
+        $promo->update($data);
 
         return redirect()->route('promos.index')->with('success', 'Promo updated successfully.');
     }
@@ -99,11 +115,11 @@ class PromoController extends Controller
     public function showPromos()
     {
         $user = Auth::user();
-        $promos = Promo::all();
+        $promos = Promo::where('status', 'active')->get();
     
         // Add a subscribed attribute to each promo
         foreach ($promos as $promo) {
-            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->exists();
+            $promo->subscribed = $user->subscriptions()->where('promo_id', $promo->promo_id)->where('status', 'active')->exists();
         }
     
         return view('subscriptionFolder.upgrade', compact('promos'));

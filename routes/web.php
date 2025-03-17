@@ -16,6 +16,9 @@ use App\Http\Controllers\RawController;
 use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AdminLogController;
+
+
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
 
@@ -60,7 +63,6 @@ Route::middleware('auth')->group(function (){
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
     Route::view('/profile', 'components.profile')->name('profile');
-    Route::view('/profile/cancelled', 'components.cancelled')->name('profile.cancelled');
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
@@ -87,8 +89,15 @@ Route::middleware('auth')->group(function (){
     Route::view('/cards','posts.cards')->name('card');
 
    //this is for download
-    Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
-    Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
+   Route::post('/download-pdf', [ReviewerController::class, 'downloadPdf'])->name('downloadpdf');
+   Route::view('posts.pdf_reviewer', 'posts.pdf_reviewer')->name('pdf.reviewer');
+    // Route::post('/download-reviewer', [ReviewerController::class, 'downloadReviewer'])->name('download.reviewer');
+    // Route::get('/serve-file/{fileName}', [ReviewerController::class, 'serveFile']);
+
+    //this is for the checking of subcription
+    Route::post('/subscription/check', [SubscriptionController::class, 'checkSubscription'])->name('subscription.check');
+    Route::post('/subscription/get-quiz-question-limit', [SubscriptionController::class, 'getQuizQuestionLimit'])->name('subscription.getQuizQuestionLimit');
+
 
     //for quiz
     Route::post('/generate-quiz/{topicId}',[OPENAIController::class,'generate_quiz'])->name('generate.quiz');
@@ -101,6 +110,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/quiz', 'posts.quiz')->name('quiz');
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
+    Route::delete('/deletequiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete.quiz');
 
     //route for paymonggo
     Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
@@ -121,9 +131,14 @@ Route::middleware('auth')->group(function (){
     Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
     Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    //profile
+    Route::get('/profile/cancelled', function () {
+        return view('profile.cancelled');
+    })->name('profile.cancelled');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
     Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
+
 });
 
 
@@ -131,7 +146,12 @@ Route::middleware('auth')->group(function (){
 Route::middleware('guest')->group(function (){
     
     Route::view('/register', 'auth.register')->name('register');
-    Route::post('/register', [AUTHcontroller::class, 'register_user']);
+    Route::post('/register-store', [AUTHcontroller::class, 'storeRegistration'])->name('register.store');
+    
+    // Verification routes
+    Route::get('/verify-user', [AUTHcontroller::class, 'showVerificationForm'])->name('verify.show');
+    Route::post('/verify-email', [AUTHcontroller::class, 'verifyEmail'])->name('verify.email');
+    Route::post('/resend-code', [AUTHcontroller::class, 'resendVerificationCode'])->name('verify.resend');
     
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AUTHcontroller::class, 'login_user']);
@@ -147,13 +167,19 @@ Route::middleware('guest')->group(function (){
     Route::view('/terms', 'website.footer.terms')->name('terms');
     Route::view('/privacy', 'website.footer.privacy')->name('privacy');
 
-
+    // For testing purposes - remove in production
+    Route::get('/show-code', [AUTHcontroller::class, 'showCurrentCode'])->name('show.code');
 
 });
 
+// Remove this commented route since we've now implemented it
+// Route::post('/register-store', [AUTHcontroller::class, 'storeRegistration'])->name('register.store');
+
 Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin-dashboard', 'admin.admin_view')->name('admin.dashboard');
-    Route::view('/admin/users', 'admin.admin_users')->name('admin.users');
+    Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
+    Route::put('/admin/users/update', [AUTHadminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/admin/users/delete/{id}', [AUTHadminController::class, 'deleteUser'])->name('admin.users.delete');
     // Route::view('/admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
     Route::get('/admin/subscription', [PromoController::class, 'index'])->name('admin.subscription');
     Route::get('/gcash/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('gcash.number');
@@ -163,6 +189,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
     Route::patch('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::view('/admin/account', 'admin.admin_account')->name('admin.account');
+    Route::view('/admin/support', 'admin.admin_support')->name('admin.support');
     Route::view('/admin/logs', 'admin.admin_logs')->name('admin.logs');
     Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
     Route::get('/admin/manage_admin', [AUTHadminController::class, 'index'])->name('admin.admin-manage');
@@ -193,7 +220,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/users', [AUTHadminController::class, 'showUsers'])->name('admin.users');
     Route::get('/admin/users/{id}', [AUTHadminController::class, 'getUserById'])->name('admin.users.detail');
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
-    Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete');
+    /* Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete'); */
     
     Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
@@ -206,14 +233,36 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
-    
+   
+
     // Remove or comment out these redundant routes since they are now handled by ContactUsController
     // Route::get('/admin/support', [AdminController::class, 'support'])->name('admin.support');
     // Route::get('/admin/filter-inquiries', [AdminController::class, 'filterInquiries'])->name('filter.inquiries');
 
     // Make sure you have these routes defined:
+    
+    //Transaction ROute
 
+    Route::view('admin/transactions', 'admin.admin_transactions')->name('admin.transactions');
+    Route::get('admin/get-transactions', [TransactionController::class, 'get_transactions'])->name('admin.get-transactions');
+    Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
+    Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+
+
+    //New Transaction Route
+    Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
+    Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
+    Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
+
+    //Statistic Route
+    Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+    //New Statistic Route
+    Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
+    Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
 });
+<<<<<<< HEAD
 Route::view('/admin', 'auth.login-admin')->name('admin.login');
 Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
 Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
@@ -225,12 +274,19 @@ Route::get('admin/transactions', [TransactionController::class, 'get_transaction
 Route::post('admin/filter-transaction', [TransactionController::class, 'filter_transactions'])->name('admin.filter-transactions');
 Route::get('admin/search-transactions', [TransactionController::class, 'search_transactions'])->name('admin.search-transactions');
 Route::post('admin/sort-transaction', [TransactionController::class, 'sort_transactions'])->name('admin.sort-transactions');
+=======
+>>>>>>> main
 
 
-//Statistic Route
-Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
-Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
+
+// Admin public routes for login/register
+    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
+    Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+
 
 // Redirect to admin login if not authenticated
 Route::middleware(['auth:admin/login'])->group(function () {
@@ -239,11 +295,4 @@ Route::middleware(['auth:admin/login'])->group(function () {
     })->where('any', '.*');
 });
 
-//profile
-Route::get('/profile/cancelled', function () {
-    return view('profile.cancelled');
-})->name('profile.cancelled');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'])->name('profile.upload');
-Route::post('/profile/cancel-subscription', [ProfileController::class, 'cancelSubscription'])->name('profile.cancelSubscription');
 
