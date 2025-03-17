@@ -153,10 +153,10 @@
         <div class="absolute top-1/3 left-1/4 w-24 h-24 bg-blue-300 opacity-20 rounded-full blur-xl"></div>
         <div class="absolute bottom-1/3 right-1/3 w-32 h-32 bg-indigo-300 opacity-20 rounded-full blur-xl"></div>
         
-        <div class="z-10 flex flex-col items-center justify-center">
-            <div class="animate-text-reveal">
-                <h2 class="text-gradient text-5xl font-bold mb-2">Welcome to Meeco</h2>
-                <p class="text-blue-100 text-lg mb-10 text-center">Your Digital Knowledge Companion</p>
+        <div class="z-10 flex flex-col items-center justify-center w-full">
+            <div class="animate-text-reveal text-center w-full px-4">
+                <h2 class="text-gradient text-4xl sm:text-5xl font-bold mb-2">Welcome to Meeco</h2>
+                <p class="text-blue-100 text-lg mb-10">Your Digital Knowledge Companion</p>
             </div>
             <img src="{{asset('logo_icons/pictures/present.png')}}" alt="Info Digest Mascot" 
                  class="max-w-full h-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500 border-4 border-white/20">
