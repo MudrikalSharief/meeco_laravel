@@ -36,7 +36,11 @@ class TOPICcontroller extends Controller
 
     public function getTopicsBySubject($subjectId)
     {
-        $topics = Topic::where('subject_id', $subjectId)->get(['topic_id', 'name']);
+        $checksubject = Subject::where('subject_id', $subjectId)
+                    ->where('user_id', auth()->user()->user_id)          
+                    ->firstOrFail()->subject_id;
+        $topics = Topic::where('subject_id', $checksubject)
+                    ->get(['topic_id', 'name']);
         if($topics->isEmpty()){
             return response()->json(['message'=>'No topics found for subject id: ' . $subjectId]);
         }

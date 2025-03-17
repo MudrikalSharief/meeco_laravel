@@ -93,30 +93,30 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-0 w-full min-h-16 h-24 flex justify-between items-center border-t rounded-lg">
+    <nav id="bottom_nav" class="z-50 bg-white fixed bottom-0 w-full min-h-16 h-16 sm:h-20 flex justify-between items-center border-t rounded-lg">
         <ul id="menu" class="flex justify-between items-center px-4 mx-auto max-w-lg w-full">
-            <a href="{{ route('capture') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extracted') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('capture') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('capture') ? 'bg-blue-100' : '' }}{{ Request::routeIs('extracted') ? 'bg-blue-100' : '' }}">
                 <li class="flex flex-col justify-start items-center gap-3 p-2">
-                    <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal text-xs hidden md:block">Convert New</p>
+                    <div class="w-10  rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="Icon"></div>
+                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Convert New</p>
                 </li>
             </a>
-            <a href="{{ route('subject') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('subjects') ? 'bg-blue-100' : '' }}{{ Request::routeIs('subject') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('subject') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('subjects') ? 'bg-blue-100' : '' }}{{ Request::routeIs('subject') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start flex-col items-center gap-3 p-2">
-                    <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/books.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal hidden md:block">Subjects</p>
+                    <div class="w-10= rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/books.svg') }}" alt="Icon"></div>
+                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Subjects</p>
                 </li>
             </a>
-            <a href="{{ route('deleted') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('deleted') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start flex-col items-center gap-3 p-2">
-                    <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal hidden md:block">Deleted</p>
+                    <div class="w-10 rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
+                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Deleted</p>
                 </li>
             </a>
-            <a href="{{ route('upgrade') }}" class="bottom_nav block menu-item rounded-lg {{ Request::routeIs('upgrade') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('upgrade') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('upgrade') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start items-center flex-col gap-3 p-2">
-                    <div class="w-7"><img class="filter-blue w-7" src="{{ asset('logo_icons/up.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal hidden md:block">Upgrade</p>
+                    <div class="w-10 rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/up.svg') }}" alt="Icon"></div>
+                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Upgrade</p>
                 </li>
             </a>
         </ul>
