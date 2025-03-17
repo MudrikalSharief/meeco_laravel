@@ -5,7 +5,7 @@
         <div class="w-full max-w-2xl ">
             <!-- Content Header -->
             <div class="flex items-center justify-between mb-4 mx-5">
-              <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : <span id="topic_name"></span></h1>
+              <h1 class="TITLE text-2xl font-bold text-gray-800"><span id="back_to_subject" class=" cursor-pointer">&larr;</span> Topic : <span id="topic_name"></span></h1>
             </div>
             
              <!-- Buttons -->
@@ -224,8 +224,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const topicId = urlParams.get('topicId');
 
+        
+        
+        
+
         const topic_name_container = document.getElementById('topic_name');
 
+        const back_to_subject = document.getElementById('back_to_subject');
     fetch(`/getTopicByTopicId/${topicId}`)
     .then(response => response.json())
     .then( data => {
@@ -263,6 +268,12 @@
                         `;
                         quizContainer.appendChild(button);
                     });
+
+                    if(back_to_subject){
+                        back_to_subject.addEventListener('click', function(){
+                            window.location.href="/subjects/"+data.subject_id;
+                        });
+                    }
                 } else {
                     const NoQuestions = document.createElement('p');
                     NoQuestions.classList.add('text-center', 'text-red-500', 'text-lg', 'py-4');

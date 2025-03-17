@@ -1,7 +1,7 @@
 <x-layout>
     <div class="px-4 py-6">
         <!-- Header Section -->
-        <div class="flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md rounded-lg px-6 py-4 mb-6">
+        <div class="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-md rounded-lg px-6 py-4 mb-6">
             <div class="flex items-center gap-2">
                 <button class="text-xl hover:text-gray-200 transition-colors duration-300">&larr;</button>
                 <span class="flex items-center text-xl font-semibold">

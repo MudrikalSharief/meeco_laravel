@@ -1,8 +1,21 @@
 <x-layout>
+    <div class="px-4 py-6 h-screen flex flex-col">
+        <!-- Header Section -->
+        <div class="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-md rounded-lg px-6 py-4 mb-6">
+            <div class="flex items-center gap-2">
+                <span class="flex items-center font-semibold">
+                    <div class="flex items-center">
+                        <a href="{{ route('subject') }}"><h1 class=" text-xl  ">Subjects </h1></a>
+                        <h2 class="pl-2 text-l"> → {{ $subject->name }}  </span></h2>
+                    </div>
+                </span>
+            </div>
+        </div>
 
-    <div class="subject_id_in_topics p-6 w-full h-full flex flex-col items-center" data-subject-id="{{ $subject->subject_id }}">
+
+    <div class="subject_id_in_topics w-full h-full flex flex-col items-center" data-subject-id="{{ $subject->subject_id }}">
         <div class="w-full max-w-2xl">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center hidden">
                 <div class="flex items-center">
                     <a href="{{ route('subject') }}"><h1 class="py-3 text-xl font-bold text-blue-800">Subjects </h1></a>
                     <h2 class="pl-2 text-l font-bold text-blue-500"> → {{ $subject->name }}  </span></h2>
@@ -69,7 +82,7 @@
             </div>
         </div>
     </div>
-
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const subject = @json($subject);
@@ -100,7 +113,7 @@
                     data.topics.forEach((topic, index) => {
                         const topicButton = document.createElement('a');
                         topicButton.href = `/reviewer/${topic.topic_id}`;
-                        topicButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
+                        topicButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md bg-white rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                         <span>${topic.name}</span>
                                                         <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
                                                     </button>`;

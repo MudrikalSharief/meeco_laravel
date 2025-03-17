@@ -1,11 +1,11 @@
 <x-layout>
     
-    <div class="reviewer_whole_content max-w-2xl mx-auto pt-2 bg-white  rounded-lg">
+    <div class="reviewer_whole_content max-w-2xl mx-auto pt-2 rounded-lg">
    
         
         <!-- Content Header -->
         <div class="flex items-center justify-between mb-4 mx-5">
-            <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : {{ $topic->name }}</h1>
+            <h1 class="TITLE text-2xl font-bold text-gray-800"><a href="/subjects/{{ $topic->subject_id }}">&larr;</a> Topic : {{ $topic->name }}</h1>
         </div>
     
         <!-- Buttons -->
