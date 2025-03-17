@@ -172,8 +172,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Calculate appropriate y-axis max value
         const maxValue = Math.max(...values, 1); // Ensure at least 1 to avoid division by zero
-        config.yMax = Math.max(3000, Math.ceil(maxValue * 1.2 / 500) * 500); // At least 3000, rounded up to nearest 500
         
+        // Dynamic calculation to get a nice rounded value
+        let roundedMax;
+        if (maxValue <= 100) {
+            roundedMax = Math.ceil(maxValue / 20) * 20; // Round up to nearest 20 for small values
+        } else if (maxValue <= 1000) {
+            roundedMax = Math.ceil(maxValue / 200) * 200; // Round up to nearest 200
+        } else if (maxValue <= 10000) {
+            roundedMax = Math.ceil(maxValue / 2000) * 2000; // Round up to nearest 2000
+        } else {
+            roundedMax = Math.ceil(maxValue / 10000) * 10000; // Round up to nearest 10000
+        }
+        
+        config.yMax = Math.max(roundedMax, 10); // Ensure at least 10 to avoid empty charts
+
         // Draw function
         function drawChart(progress = 1) {
             // Clear canvas
@@ -184,22 +197,26 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.strokeStyle = config.gridColor;
             ctx.lineWidth = 1;
             
-            // Horizontal grid lines with specific price points
-            const pricePoints = [0, 500, 1000, 1500, 2000, 2500, 3000];
+            // Calculate evenly spaced price points (6 divisions)
+            const priceStep = config.yMax / 6;
+            const pricePoints = [];
+            for (let i = 0; i <= 6; i++) {
+                pricePoints.push(Math.round(i * priceStep));
+            }
+            
+            // Horizontal grid lines with dynamic price points
             for (let i = 0; i < pricePoints.length; i++) {
                 const value = pricePoints[i];
                 const y = config.padding.top + chartHeight - (value / config.yMax) * chartHeight;
                 
-                if (value <= config.yMax) {
-                    ctx.moveTo(config.padding.left, y);
-                    ctx.lineTo(config.padding.left + chartWidth, y);
-                    
-                    // Y-axis labels
-                    ctx.fillStyle = '#666';
-                    ctx.font = '12px Arial';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(`PHP ${value.toLocaleString()}`, config.padding.left - 15, y + 4);
-                }
+                ctx.moveTo(config.padding.left, y);
+                ctx.lineTo(config.padding.left + chartWidth, y);
+                
+                // Y-axis labels
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`PHP ${value.toLocaleString()}`, config.padding.left - 15, y + 4);
             }
             
             // Show message if no data is available
@@ -351,6 +368,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartWidth = rect.width - monthlyConfig.padding.left - monthlyConfig.padding.right;
         const chartHeight = rect.height - monthlyConfig.padding.top - monthlyConfig.padding.bottom;
         
+        // Calculate dynamic y-axis maximum
+        const maxValue = Math.max(...values, 1); // Ensure at least 1
+        
+        // Dynamic calculation to get a nice rounded value
+        let roundedMax;
+        if (maxValue <= 1000) {
+            roundedMax = Math.ceil(maxValue / 200) * 200; // Round up to nearest 200 for small values
+        } else if (maxValue <= 10000) {
+            roundedMax = Math.ceil(maxValue / 2000) * 2000; // Round up to nearest 2000
+        } else if (maxValue <= 100000) {
+            roundedMax = Math.ceil(maxValue / 20000) * 20000; // Round up to nearest 20000
+        } else {
+            roundedMax = Math.ceil(maxValue / 50000) * 50000; // Round up to nearest 50000
+        }
+        
+        monthlyConfig.yMax = Math.max(roundedMax, 100); // Ensure at least 100
+        
         // Draw function
         function drawChart(progress = 1) {
             // Clear canvas
@@ -361,9 +395,14 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.strokeStyle = monthlyConfig.gridColor;
             ctx.lineWidth = 1;
             
-            // Horizontal grid lines with specific price points (0-60000 in 10000 increments)
-            const pricePoints = [0, 10000, 20000, 30000, 40000, 50000, 60000];
+            // Calculate evenly spaced price points (6 divisions)
+            const priceStep = monthlyConfig.yMax / 6;
+            const pricePoints = [];
+            for (let i = 0; i <= 6; i++) {
+                pricePoints.push(Math.round(i * priceStep));
+            }
             
+            // Horizontal grid lines with dynamic price points
             for (let i = 0; i < pricePoints.length; i++) {
                 const value = pricePoints[i];
                 const y = monthlyConfig.padding.top + chartHeight - (value / monthlyConfig.yMax) * chartHeight;
