@@ -38,19 +38,21 @@
             @error('password')
                 <p class="error">{{ $message }}</p>
             @enderror
-        </div>
+          </div>
 
          {{-- CheckBox --}}
 
-         <div class="mb-4 flex items-center gap-2">
+         <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
             <input type="checkbox" name="remember" id="remember">
-            <label for="remember" class=" text-xs">Remember me</label>
+            <label for="remember" class="text-xs">Remember me</label>
+          </div>
+          <a href="{{ route('password.request') }}" class="text-xs text-blue-500">Forgot Password?</a>
         </div>
-
           <!-- Submit Button -->
           <button type="submit" class=" bg-blue-500  w-full text-white py-2 rounded-md text-sm ">Login</button>
         </form>
-        <p class=" text-xs mt-2">Don’t have an Account yet? <a class=" text-blue-500" href="{{ route('register')}}">sign up</a>. </p> 
+        <p class=" text-xs mt-2">Don't have an Account yet? <a class=" text-blue-500" href="{{ route('register')}}">sign up</a>. </p> 
         @error('failed')
             <p class="error">{{ $message }}</p>
         @enderror
