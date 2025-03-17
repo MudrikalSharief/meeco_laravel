@@ -1,30 +1,38 @@
 <x-layout>
     <div class=" p-3 w-full h-fullx ">
 
-        <h1 class="py-3 px-2 text-xl font-bold text-blue-500">Convert Image</h1>
+        <h1 class="py-3 px-2 text-xl font-bold text-blue-800">Convert Image</h1>
 
-        <div class="flex">
+        <div class="flex justify-between items-center gap-4 pb-4">
 
-            <button id="openModal" type="button" class=" bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                <img class=" z-10 w-8 filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
-                <p  class=" text-sm mt-2">Add Image</p>
+            <button id="openModal" type="button" class=" border shadow-md border-blue-200 hover:border-blue-600 border-dashed bg-white p-2 rounded-md btn btn-primary w-1/2 h-40 flex justify-center items-center" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="bg-blue-100 text-white p-3 rounded-full flex justify-center items-center w-12">
+                        <img class=" z-10 max-w-8  filter-blue"  src="{{ asset('logo_icons/add-image.svg')}}" alt="">
+                    </div>
+                        <p  class=" text-xs mt-2 text-gray-600">Add Image</p>
+                </div>
             </button>
     
-            <button id="openCamera" type="button" class="bg-blue-50 p-2 rounded-md btn btn-primary w-24 ml-8 mt-3 flex flex-col items-center">
-                <img class="z-10 w-8 filter-blue" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="">
-                <p class=" text-sm mt-2">Camera</p>
+            <button id="openCamera" type="button" class="border  shadow-md border-blue-200 hover:border-blue-600 bg-white rounded-md btn btn-primary w-1/2  h-40  flex flex-col items-center justify-center">
+
+                <div class="flex flex-col items-center justify-center">
+                    <div  class="bg-blue-100 text-white p-3 w-12 rounded-full">
+                        <img class="z-10 max-w-8 filter-blue" src="{{ asset('logo_icons/camera-viewfinder.svg') }}" alt="">
+                    </div>
+                        <p class=" text-xs mt-2 text-gray-600">Camera</p>
+                </div>
+
             </button>
         </div>
 
-        <hr class=" my-3">
-
         <!-- Container for Uploaded Images -->
-        <h2 class=" py2 px-2 text-base font-medium ">Image uploaded</h2>
+        <h2 class=" py2 text-gray-700 text-base font-medium">Image uploaded</h2>
    
-        <div id="imageContainer" class="mt-2 px-3 flex flex-wrap"></div>
+        <div id="imageContainer" class="mt-2 px-3 flex flex-wrap bg-white min-h-32 rounded-md border-gray-200 border"></div>
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
-        <button id="extractTextButton" type="button" class="hidden ml-5 bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
+        <button id="extractTextButton" type="button" class="hidden  bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
         
         <!-- Modal -->
         <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
@@ -205,7 +213,7 @@
         const modalTitle = document.getElementById('dynamicModal-title');
         const modalMessage = document.getElementById('dynamicModal-message');
         const modalButton = document.getElementById('dynamicModalButton');
-
+        let subjectDropdownListenerAdded = false;
         // Function to show the dynamic modal
         function showModal(title = '', message = '', titleColor = '', buttonText = '') {
             modalTitle.textContent = title;
@@ -263,7 +271,7 @@
                                     img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
 
                                     const deleteIcon = document.createElement('span');
-                                    deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
+                                    deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer ';
                                     deleteIcon.textContent = '×';
 
                                     const name = document.createElement('p');
@@ -326,7 +334,7 @@
                         img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
 
                         const deleteIcon = document.createElement('span');
-                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 text-white cursor-pointer';
+                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer';
                         deleteIcon.textContent = '×';
 
                         const name = document.createElement('p');
@@ -341,8 +349,8 @@
                     toggleExtractButton();
                 } else {
                     const message = document.createElement('p');
+                    message.classList.add('text-gray-500', 'text-sm','mt-2');
                     message.textContent = 'No images uploaded yet.';
-                    message.className = 'text-gray-500 mt-2';
                     imageContainer.appendChild(message);
                 }
             })
@@ -367,58 +375,57 @@
         const confirmDelete = document.getElementById('confirmDelete');
         let imgWrapperToDelete = null;
 
-        if (imageContainer) {
-            imageContainer.addEventListener('click', function (event) {
-                if (event.target.classList.contains('delete-icon')) {
-                    imgWrapperToDelete = event.target.closest('.img-wrapper');
-                    deleteConfirmModal.classList.remove('hidden');
-                }
-            });
-        }
-
-        if (cancelDelete) {
-            cancelDelete.addEventListener('click', function () {
-                deleteConfirmModal.classList.add('hidden');
-                imgWrapperToDelete = null;
-            });
-        }
-
-        if (confirmDelete) {
-            confirmDelete.addEventListener('click', function () {
-                if (imgWrapperToDelete) {
-                    const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
-                    fetch('/capture/delete', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({ filePath: 'uploads/' + filePath })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
+ // Handle image deletion
+if (imageContainer) {
+    imageContainer.addEventListener('click', function (event) {
+        if (event.target.classList.contains('delete-icon')) {
+            imgWrapperToDelete = event.target.closest('.img-wrapper');
+            if (imgWrapperToDelete) {
+                const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
+                fetch('/capture/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        
+                            
+                        if (imgWrapperToDelete && imgWrapperToDelete.parentNode === imageContainer) {
                             imageContainer.removeChild(imgWrapperToDelete);
-                            toggleExtractButton();
-
-                            if (imageContainer.children.length === 0) {
-                                const message = document.createElement('p');
-                                message.textContent = 'No images uploaded yet.';
-                                message.className = 'text-gray-500 mt-2';
-                                imageContainer.appendChild(message);
-                            }
-                        } else {
-                            alert('Failed to delete image.');
                         }
-                    })
-                    .catch(error => console.error('Error:', error))
-                    .finally(() => {
-                        deleteConfirmModal.classList.add('hidden');
-                        imgWrapperToDelete = null;
-                    });
-                }
-            });
+                        
+                        toggleExtractButton();
+
+                        // Check if the container is now empty
+                        if (imageContainer.querySelectorAll('.img-wrapper').length === 0) {
+                            // Clear the container first to avoid any issues
+                            imageContainer.innerHTML = '';
+                            
+                            const message = document.createElement('p');
+                            message.textContent = 'No images uploaded yet.';
+                            message.className = 'text-gray-500 mt-2 text-sm text-center w-full p-4';
+                            imageContainer.appendChild(message);
+                        }
+                    } else {
+                        alert('Failed to delete image.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    deleteConfirmModal.classList.add('hidden');
+                    imgWrapperToDelete = null;
+                });
+            }
         }
+    });
+}
 
         // Handle zooming of images
         const zoomModal = document.getElementById('zoomModal');

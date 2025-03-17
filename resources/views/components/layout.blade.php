@@ -60,7 +60,7 @@
 
     {{-- Upper Navigation --}}
     <div id="upper_nav" class="fixed  h-12 w-full bg-white px-4 z-50 flex justify-center items-center border-b shadow-sm">
-        <div class="flex items-center justify-between max-w-2xl w-full">
+        <div class="flex items-center justify-between max-w-lg w-full">
 
             <div class="logo_holder flex justify-start items-center gap-3 pl-4 w-full">
                 <img class="max-w-10" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">
@@ -123,7 +123,7 @@
     </nav>
     
     <div class=" pt-1 w-full  mb-20 mt-12 flex justify-center items-center">
-        <div class="max-w-2xl w-full">
+        <div class="max-w-lg w-full">
             {{ $slot ?? '' }}
         </div>
     </div>
