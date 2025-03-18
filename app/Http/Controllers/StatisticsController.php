@@ -177,13 +177,29 @@ class StatisticsController extends Controller
         }
 
         Log::info($filter_rev);
-
         $date_labels = [];
         $currentDate = $fromDate->copy();
+        $totalDays = $fromDate->diffInDays($toDate) + 1;
         
+        // Determine interval based on date range duration
+        $interval = match(true) {
+            $totalDays > 365 => 40,
+            $totalDays > 180 => 25,
+            $totalDays > 90 => 15,
+            $totalDays > 30 => 5,
+            $totalDays > 7 => 2,
+            default => 1
+        };
+        
+        $counter = 0;
         while ($currentDate <= $toDate) {
-            $date_labels[] = $currentDate->format('F j, Y (l)'); // Example: "March 18, 2025 (Tuesday)"
+            // Add label or empty string maintaining position
+            $date_labels[] = ($counter % $interval === 0) 
+                ? $currentDate->format('F j, Y (l)')
+                : '';
+            
             $currentDate->addDay();
+            $counter++;
         }
         
         if($filter_rev->isNotEmpty()){

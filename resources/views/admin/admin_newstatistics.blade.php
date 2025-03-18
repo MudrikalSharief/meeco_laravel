@@ -4,12 +4,12 @@
     <div class="flex justify-center container bg-gray-100">
         <!-- Daily Income Chart -->
         <div class="w-full bg-white p-5 rounded-lg shadow-md">
-            <h1 class="text-center text-2xl font-bold text-gray-800 mb-6">Subscription Revenue</h1>
+            <h1 class="text-center text-2xl font-bold text-gray-800 mb-3">Subscription Revenue</h1>
            
             <!-- Date range selector - Make "To" date automatically adjust -->
-            <div class="flex flex-col justify-center items-center mb-6 space-y-4">
+            <div class="flex flex-col justify-center items-center mb-3 space-y-4">
 
-                <div id = "filterWeeks" class="flex  space-x-4 items-center">
+                <div id = "filterWeeks" class="flex flex-col items-center mt-4">
                     <div>
                         <label for="dateFrom" class="block text-sm font-medium text-gray-700 mb-1">From</label>
                         <input type="date" id="dateFrom" class="border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -19,7 +19,7 @@
                         <input type="date" id="dateTo" class="border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
-                <div id = "filterMonths" class="flex space-x-4 items-center" style="display:none">
+                <div id = "filterMonths" class="flex flex-col items-center" style="display:none">
                     <div>
                         <label for="monthFrom" class="block text-sm font-medium text-gray-700 mb-1">From</label>
                         <input type="month" id="monthFrom" class="border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -73,17 +73,17 @@
                 </div>
             
             <div id="weeklyChart">
-            <div id="weekButtons" class="flex flex-wrap gap-2 justify-center mt-4"></div>
+            <div id="weekButtons" class="flex flex-wrap gap-2 justify-center"></div>
                 <div class="flex">
-                 <canvas id="weeklyRevenue" class="w-full h-full"></canvas> 
+                 <canvas id="weeklyRevenue" class="w-full h-full mt-4"></canvas> 
 
                 </div>
             </div>
 
             <div id="yearlyChart" style = "display:none;">
-                <div id="yearButtons" class="flex flex-wrap gap-2 justify-center mt-4"></div>
+                <div id="yearButtons" class="flex flex-wrap gap-2 justify-center"></div>
                 <div class="relative h-96 mt-5">
-                    <canvas id="yearlyRevenue" class="w-full h-full"></canvas>
+                    <canvas id="yearlyRevenue" class="w-full h-full mt-4"></canvas>
                 </div>
             </div>
             </div>

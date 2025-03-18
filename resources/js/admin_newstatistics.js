@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
       filterWeeks.style.display = 'block';
       filterMonths.style.display = 'none';
       // filterYears.style.display = 'none';
+      document.getElementById("monthFrom").value = "";
+      document.getElementById("monthTo").value = "";
       createWeeklyChart(weeksOfMonth);
     });
 
@@ -38,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
       filterMonths.style.display = 'block';
       // filterYears.style.display = 'block';
       yearButtons.innerHTML = '';
+      document.getElementById("dateFrom").value = "";
+      document.getElementById("dateTo").value = "";
       createYearlyChart();
       fetchYearlyData(2025);
     });
@@ -107,9 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.id = `week-button-${i+1}`;
         button.className = `
-        px-3 py-2 bg-blue-500 text-white font-semibold text-sm rounded-lg 
-        hover:bg-blue-600 transition duration-300 transform hover:scale-105
-        `; 
+        px-3 py-2 text-sm font-semibold border border-gray-300
+        bg-white text-gray-800 rounded-none first:rounded-l-lg last:rounded-r-lg
+        hover:bg-gray-200 transition duration-50
+    `;
         button.dataset.week = JSON.stringify(weeks[i][0].toLocaleDateString("en-CA")); 
         button.innerText = `${firstDate} - ${lastDate}`;
         weekButtons.appendChild(button);
@@ -120,6 +125,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById("dateFrom").value = "";
             document.getElementById("dateTo").value = "";
+
+            document.querySelectorAll("#weekButtons button").forEach(btn => {
+                btn.classList.remove("bg-blue-500", "text-white");
+                btn.classList.add("bg-white", "text-gray-800");
+            });
+    
+            // Apply active styles to the clicked button
+            this.classList.remove("bg-white", "text-gray-800");
+            this.classList.add("bg-blue-500", "text-white");
         });
     }
   }
@@ -181,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Calculate chart dimensions
             const chartWidth = rect.width - 200;
-            const chartHeight = rect.height - 200;
+            const chartHeight = rect.height - 225;
             const chartXOffset = 100; // Centering horizontally
             
             // Calculate dynamic y-axis maximum
@@ -201,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let y = chartHeight - (i * (chartHeight / 5));
                     ctx.moveTo(chartXOffset, y);
                     ctx.lineTo(chartWidth + chartXOffset, y);
-                    
+                
                     ctx.fillStyle = '#666';
                     ctx.font = '12px Arial';
                     ctx.fillText(`PHP ${(roundedMax / 5) * i}`, chartXOffset - 40, y + 4);
@@ -211,13 +225,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // X-axis labels (Diagonal Rotation)
                 ctx.fillStyle = '#666';
                 ctx.font = '12px Arial';
-                ctx.textAlign = "right";
-                ctx.textBaseline = "middle";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
                 daily_chart_labels.forEach((label, i) => {
                     let x = chartXOffset + (i * (chartWidth / (daily_chart_labels.length - 1)));
-                    let y = chartHeight + 30;
+                    // Position labels 30px below chart base (leaves space for "Date" at 40px)
+                    let yPosition = chartHeight;
                     ctx.save();
-                    ctx.translate(x, y);
+                    ctx.translate(x, yPosition);
                     ctx.rotate(-Math.PI / 4); // Rotate labels diagonally
                     ctx.fillText(label, 0, 0);
                     ctx.restore();
@@ -235,13 +250,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.fillStyle = '#000';
                 ctx.font = '14px Arial';
                 ctx.textAlign = "center";
-                ctx.fillText("Date", chartWidth / 2 + chartXOffset, chartHeight + 50);
                 
                 // Y-axis label "Amount"
                 ctx.save();
                 ctx.translate(chartXOffset - 50, chartHeight / 2);
                 ctx.rotate(-Math.PI / 2);
-                ctx.fillText("Amount", 0, 0);
                 ctx.restore();
                 
                 // Draw line chart
@@ -294,10 +307,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.id = `year-button-${year}`;
         button.className = `
-          px-4 py-2 bg-blue-500 text-white font-semibold text-sm 
-          first:rounded-l-lg last:rounded-r-lg border border-gray-300 
-          hover:bg-blue-600 transition duration-300 transform hover:scale-105
-        `; 
+        px-4 py-2 text-sm font-semibold border border-gray-300 
+        bg-white text-gray-800 rounded-none first:rounded-l-lg last:rounded-r-lg
+        hover:bg-gray-200 transition duration-50
+      `;
         button.dataset.year = year; 
         button.innerText = year; // Display year
 
@@ -309,6 +322,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById("monthFrom").value = "";
             document.getElementById("monthTo").value = "";
+
+            document.querySelectorAll("#yearButtons button").forEach(btn => {
+                btn.classList.remove("bg-blue-500", "text-white");
+                btn.classList.add("bg-white", "text-gray-800");
+            });
+
+            // Apply active styles to the clicked button
+            this.classList.remove("bg-white", "text-gray-800");
+            this.classList.add("bg-blue-500", "text-white");
         });
       }
     }
@@ -347,38 +369,117 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     async function YearlyRevenueChart(months, yearly_revenue) {
-      if (yearlyChartInstance) {
-        yearlyChartInstance.destroy();
-        yearlyChartInstance = null;
-      }
-
-      // Always create new chart
-      var ctx = yearlyRevenue.getContext('2d');
-      yearlyChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: months,
-          datasets: [{
-            data: yearly_revenue,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(0, 0, 139, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
+        const canvas = document.getElementById('yearlyRevenue'); // Changed canvas ID
+        const ctx = canvas.getContext('2d');
+        
+        // Same resolution setup
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        // Same chart dimensions calculations
+        const chartWidth = rect.width - 200;
+        const chartHeight = rect.height - 150;
+        const chartXOffset = 100;
+        
+        // Same max value calculation
+        const maxValue = Math.max(...yearly_revenue, 1); // Changed parameter
+        let roundedMax = Math.ceil(maxValue / 100) * 100;
+        
+        // Identical draw function structure
+        function drawChart(progress = 1) {
+            ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+            
+            // Same grid line implementation
+            ctx.beginPath();
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            // Unchanged Y-axis grid
+            for (let i = 0; i <= 5; i++) {
+                let y = chartHeight - (i * (chartHeight / 5));
+                ctx.moveTo(chartXOffset, y);
+                ctx.lineTo(chartWidth + chartXOffset, y);
+                
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`PHP ${(roundedMax / 5) * i}`, chartXOffset - 40, y + 4);
             }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
+            ctx.stroke();
+            
+            // Same X-axis label positioning
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            months.forEach((label, i) => { // Changed parameter
+                let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
+                let yPosition = chartHeight;
+                ctx.save();
+                ctx.translate(x, yPosition);
+                ctx.rotate(-Math.PI / 4);
+                ctx.fillText(label, 0, 0);
+                ctx.restore();
+            });
+            
+            // Identical axis drawing
+            ctx.beginPath();
+            ctx.strokeStyle = '#000';
+            ctx.moveTo(chartXOffset, 0);
+            ctx.lineTo(chartXOffset, chartHeight);
+            ctx.lineTo(chartWidth + chartXOffset, chartHeight);
+            ctx.stroke();
+            
+            // Same "Date" label positioning
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = "center";
+            
+            // Same Y-axis label rotation
+            ctx.save();
+            ctx.translate(chartXOffset - 50, chartHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.restore();
+            
+            // Identical line chart animation
+            ctx.beginPath();
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+            yearly_revenue.forEach((value, i) => { // Changed parameter
+                let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
+                let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Same point drawing logic
+            yearly_revenue.forEach((value, i) => { // Changed parameter
+                let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
+                let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+            });
         }
-      });
+        
+        // Same animation system
+        let startTime = null;
+        function animate(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / 1000, 1);
+            drawChart(progress);
+            if (progress < 1) requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
     }
     
 
