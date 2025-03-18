@@ -194,13 +194,8 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.scale(dpr, dpr);
             
             // Calculate chart dimensions
-<<<<<<< Updated upstream
             const chartWidth = rect.width - 200;
             const chartHeight = rect.height - 225;
-=======
-            const chartWidth = rect.width - 170;
-            const chartHeight = rect.height - 200;
->>>>>>> Stashed changes
             const chartXOffset = 100; // Centering horizontally
             
             // Calculate dynamic y-axis maximum
@@ -263,6 +258,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 ctx.restore();
                 
                 // Draw line chart
+               // Draw filled area under the line chart
+                ctx.beginPath();
+                ctx.moveTo(chartXOffset, chartHeight); // Start from x-axis baseline
+
+                daily_revenue.forEach((value, i) => {
+                    let x = chartXOffset + (i * (chartWidth / (daily_chart_labels.length - 1)));
+                    let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+                    ctx.lineTo(x, y);
+                });
+
+                ctx.lineTo(chartXOffset + chartWidth, chartHeight); // Extend to x-axis
+                ctx.closePath();
+
+                ctx.fillStyle = 'rgba(173, 216, 230, 0.5)'; // Light blue with transparency
+                ctx.fill();
+
+                // Draw the line chart on top
                 ctx.beginPath();
                 ctx.strokeStyle = 'blue';
                 ctx.lineWidth = 2;
@@ -276,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 ctx.stroke();
+
                 
                 // Draw points
                 daily_revenue.forEach((value, i) => {
@@ -449,19 +462,37 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.restore();
             
             // Identical line chart animation
-            ctx.beginPath();
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 2;
-            yearly_revenue.forEach((value, i) => { // Changed parameter
-                let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
-                let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            ctx.stroke();
+            // Draw filled area under the line chart
+ctx.beginPath();
+ctx.moveTo(chartXOffset, chartHeight); // Start from x-axis baseline
+
+yearly_revenue.forEach((value, i) => {
+    let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
+    let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+    ctx.lineTo(x, y);
+});
+
+ctx.lineTo(chartXOffset + chartWidth, chartHeight); // Extend to x-axis
+ctx.closePath();
+
+ctx.fillStyle = 'rgba(173, 216, 230, 0.5)'; // Light blue with transparency
+ctx.fill();
+
+// Draw the line chart on top
+ctx.beginPath();
+ctx.strokeStyle = 'blue';
+ctx.lineWidth = 2;
+yearly_revenue.forEach((value, i) => { 
+    let x = chartXOffset + (i * (chartWidth / (months.length - 1)));
+    let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+    if (i === 0) {
+        ctx.moveTo(x, y);
+    } else {
+        ctx.lineTo(x, y);
+    }
+});
+ctx.stroke();
+
             
             // Same point drawing logic
             yearly_revenue.forEach((value, i) => { // Changed parameter
