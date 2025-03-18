@@ -1,14 +1,12 @@
-
 <x-admin_layout>
     <main class="ml-5 p-4">
     <div class="flex justify-center container bg-gray-100">
         <!-- Daily Income Chart -->
         <div class="w-full mx-auto bg-white p-5 rounded-lg shadow-md mb-6">
             <h1 class="text-center text-2xl font-bold text-gray-800 mb-6">Subscription Revenue</h1>
-           
+            
             <!-- Date range selector - Make "To" date automatically adjust -->
             <div class="flex justify-center mb-6">
-
                 <div class="flex space-x-4 items-center">
                     <div>
                         <label for="dateFrom" class="block text-sm font-medium text-gray-700 mb-1">From</label>
@@ -18,7 +16,9 @@
                         <label for="dateTo" class="block text-sm font-medium text-gray-700 mb-1">To (7 days from start)</label>
                         <input type="date" id="dateTo" class="border border-gray-300 bg-gray-100 rounded-md px-3 py-1.5 cursor-not-allowed" readonly disabled>
                     </div>
-
+                    <div class="pt-6">
+                        <button id="applyDateFilter" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1.5 px-4 rounded">Apply</button>
+                    </div>
                 </div>
             </div>
             
@@ -37,24 +37,13 @@
                     <p id="avgRevenue" class="text-2xl font-bold text-gray-800">PHP 0</p>
                 </div>
             </div>
-
+            <select id="select-rev">
+                <option value="opt-daily">Daily Revenue</option>
+                <option value="opt-monthly">Monthly Revenue</option>
+                <option value="opt-yearly">Yearly Revenue</option>
+            </select>
             <div class="relative h-96 mt-5">
-
-                <div class="flex space-x-4 items-center">
-                    <select id="select-rev" class="px-4 py-2 border border-gray-300 rounded-md 
-                        bg-white text-gray-700 text-sm font-medium 
-                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                        transition duration-200">
-                        <option value="opt-daily">Daily Revenue</option>
-                        <option value="opt-monthly">Monthly Revenue</option>
-                        <option value="opt-yearly">Yearly Revenue</option>
-                    </select>
-                </div>
-                
-                <div id="weekButtons" class="flex flex-wrap gap-2 justify-center mt-4"></div>
-                <div class="flex">
-                    <canvas id="weeklyRevenue" class="w-full h-full"></canvas>
-                </div>
+                <canvas id="dailyIncome" class="w-full h-full"></canvas>
             </div>
             <div class="relative h-96 mt-5">
                 <canvas id="monthlyIncome" class="w-full h-full" style = "display:none;"></canvas>
@@ -67,7 +56,15 @@
                 <div id="yearly-rev-count" style = "display:none;"></div>
             </div>
         </div>
-
+            
+        
+            
+            <div class="flex justify-center items-center mt-5">
+                <div class="flex items-center mx-2">
+                    <div class="w-5 h-2.5 bg-[#39a9ff] mr-1.5"></div>
+                    <div>Daily Income (PHP)</div>
+                </div>
+            </div>
         </div>
         
         <!-- Monthly Income Chart -->

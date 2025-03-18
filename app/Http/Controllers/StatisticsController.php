@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\User;
@@ -10,58 +11,56 @@ use Illuminate\Support\Facades\Log;
 
 class StatisticsController extends Controller
 {
-    public function get_statistics(){
-        $recent_monday = Carbon::now()->startOfWeek();
-        $recent_january = Carbon::now()->startOfMonth();
+    public function get_statistics(Request $request){
+
+        try{
+        $weekData = $request->json()->all();
+        $startDate = Carbon::parse($weekData[0]);
+        $startDate->copy()->addDays(6);
+        $startDate_day_start = $startDate->day;
+        $startDate_day_end = $startDate->copy()->addDays(6)->day;
+
+        Log::info($startDate);
+
+        $daily_rev = Subscription::selectRaw('DATE(subscriptions.start_date) as date, SUM(price) as total_amount')
+            ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+            ->whereBetween('subscriptions.start_date', [$startDate, $startDate->copy()->addDays(6)])
+            ->groupBy('subscriptions.start_date')
+            ->get();
+
+        $daily_rev_arr = [];
         
-        $recent_5_years = [];
-        for ($i = 0; $i < 5; $i++) {
-            $recent_5_years[] = Carbon::now()->subYears($i)->startOfYear()->year;
+        if($daily_rev->isNotEmpty()){
+            $daily_rev_date = Carbon::parse($daily_rev[0]->date)->day;
+
+            for($i = $startDate_day_start; $i <= $startDate_day_end; $i++){
+                if($i === $daily_rev_date){
+                    array_push($daily_rev_arr, $daily_rev[0]->total_amount);
+                }else{
+                    array_push($daily_rev_arr, 0);
+                }
+            }
         }
-        $recent_5_years_str = array_map('strval', $recent_5_years);
 
-        $daily_rev = Subscription::selectRaw('SUM(price) as total_amount')
-        ->Join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('subscriptions.start_date', '>=', $recent_monday)
-        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
-        ->get();
+        $week_labels = [];
+        for ($i = 0; $i < 7; $i++) {
+            $week_labels[] = $startDate->copy()->addDays($i)->format('l');
+        }
 
-        $monthly_rev =  Subscription::selectRaw('SUM(price) as total_amount')
-        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('subscriptions.start_date', '>=', $recent_january)
-        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
-        ->get();
+        }catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
 
-        $yearly_rev = Subscription::selectRaw('SUM(price) as total_amount')
-        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->where('subscriptions.start_date', '>=', $recent_5_years)
-        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
-        ->get();
-
-        $daily_ol = User::selectRaw('COUNT(user_id) as total_users')
-        ->where('last_login', '>=', $recent_monday)
-        ->groupBy(DB::raw('DATE(last_login)'))
-        ->get();
-
-        $monthly_ol = User::selectRaw('COUNT(user_id) as total_users')
-        ->where('last_login', '>=', $recent_january)
-        ->groupBy(DB::raw('DATE(last_login)'))
-        ->get();
-
-        $yearly_ol = User::selectRaw('COUNT(user_id) as total_users')
-        ->where('last_login', '>=', $recent_5_years)
-        ->groupBy(DB::raw('DATE(last_login)'))
-        ->get();
-
-        return response()->json([
-            'recent_5_years_str' => $recent_5_years_str,
-            'daily_rev' => $daily_rev,
-            'monthly_rev' => $monthly_rev,
-            'yearly_rev' => $yearly_rev,
-            'daily_ol' => $daily_ol,
-            'monthly_ol' => $monthly_ol,
-            'yearly_ol' => $yearly_ol
-        ]);
-        
+        if($daily_rev->isNotEmpty()){
+            return response()->json([
+                'week_labels'=> $week_labels,
+                'daily_rev_arr'=> $daily_rev_arr
+            ]);  
+        }else{
+            return response()->json([
+                'week_labels'=>['Saturday', 'Monday', 'Tuesday','Wednesday', 'Thursday', 'Friday', 'Sunday'],
+                'daily_rev_arr'=> [0,0,0,0,0,0,0]
+            ]);  
+        }
     }
 }

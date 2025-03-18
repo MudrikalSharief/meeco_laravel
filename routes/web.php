@@ -256,7 +256,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
     //New Statistic Route
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
