@@ -15,6 +15,10 @@
 
     <div class="subject_id_in_topics w-full h-full flex flex-col items-center" data-subject-id="{{ $subject->subject_id }}">
         <div class="w-full max-w-2xl">
+            <div class="flex text-xs px-3 justify-between items-center w-full max-w-2xl">
+                <p>Topic Name</p>
+                <p>Acion</p>
+            </div>
             <div class="flex justify-between items-center hidden">
                 <div class="flex items-center">
                     <a href="{{ route('subject') }}"><h1 class="py-3 text-xl font-bold text-blue-800">Subjects </h1></a>
@@ -28,7 +32,7 @@
            {{-- topics to be added herre --}}
         </div>
         <p id="noTopicsMessage" class="text-gray-500 mt-2 hidden text-center">
-            No Existiong Topics.
+            No Existing Topics.
         </p>
     </div>
 
@@ -82,6 +86,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Topic Modal -->
+    <div id="editTopicModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4">Edit Topic</h2>
+            <div class="mb-4">
+                <label for="editTopicName" class="block text-sm font-medium text-gray-700 mb-1">Topic Name</label>
+                <input id="editTopicName" type="text" class="p-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="cancelEditTopicButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+                <button id="saveEditTopicButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+            </div>
+        </div>
+    </div>
+
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -92,6 +112,12 @@
             const topics_container = document.getElementById('topics-container');
             let topicIdToDelete = null;
             let topicElementToDelete = null;
+            const editTopicModal = document.getElementById('editTopicModal');
+            const editTopicName = document.getElementById('editTopicName');
+            const saveEditTopicButton = document.getElementById('saveEditTopicButton');
+            const cancelEditTopicButton = document.getElementById('cancelEditTopicButton');
+            let topicIdToEdit = null;
+            let topicElementToEdit = null;
         // if (topicsContainer) {
         //     topicsContainer.addEventListener('click', function (event) {
         //         console.log("the Container is clicked");
@@ -115,7 +141,10 @@
                         topicButton.href = `/reviewer/${topic.topic_id}`;
                         topicButton.innerHTML = `<button class="w-full text-start py-2 px-3 my-2 shadow-md bg-white rounded-md flex justify-between items-center hover:bg-blue-50 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300">
                                                         <span>${topic.name}</span>
+                                                        <div class="flex gap-2">
                                                         <span class="delete-topic text-red-500 h-full" data-topic-id="${topic.topic_id}"><img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete"></span>
+                                                        <span class="edit-topic text-blue-500 h-full" data-topic-id="${topic.topic_id}"> <img class="w-full h-full max-h-6 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="Edit"></span>
+                                                        </div>
                                                     </button>`;
                         if(topicsContainer){
                             topicsContainer.appendChild(topicButton);
@@ -128,6 +157,16 @@
                             topicIdToDelete = this.getAttribute('data-topic-id');
                             topicElementToDelete = this.closest('a');
                             deleteTopicConfirmModal.classList.remove('hidden');
+                        });
+                    });
+
+                    document.querySelectorAll('.edit-topic').forEach(button => {
+                        button.addEventListener('click', function (event) {
+                            event.preventDefault(); // Prevent navigation
+                            topicIdToEdit = this.getAttribute('data-topic-id');
+                            topicElementToEdit = this.closest('a');
+                            editTopicName.value = topicElementToEdit.querySelector('span').innerText;
+                            editTopicModal.classList.remove('hidden');
                         });
                     });
                 } else {
@@ -188,6 +227,44 @@
                     deleteTopicConfirmModal.classList.add('hidden');
                     topicIdToDelete = null;
                     topicElementToDelete = null;
+                });
+            }
+
+            // Handle edit topic save
+            if (saveEditTopicButton) {
+                saveEditTopicButton.addEventListener('click', function () {
+                    if (topicIdToEdit && topicElementToEdit) {
+                        fetch('/topics/edit', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ id: topicIdToEdit, name: editTopicName.value })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                topicElementToEdit.querySelector('span').innerText = editTopicName.value;
+                            } else {
+                                alert('Failed to edit topic.');
+                            }
+                        })
+                        .catch(error => console.error('Error editing topic:', error))
+                        .finally(() => {
+                            editTopicModal.classList.add('hidden');
+                            topicIdToEdit = null;
+                            topicElementToEdit = null;
+                        });
+                    }
+                });
+            }
+
+            if (cancelEditTopicButton) {
+                cancelEditTopicButton.addEventListener('click', function () {
+                    editTopicModal.classList.add('hidden');
+                    topicIdToEdit = null;
+                    topicElementToEdit = null;
                 });
             }
     });

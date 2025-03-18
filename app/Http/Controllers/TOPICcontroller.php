@@ -96,4 +96,23 @@ class TOPICcontroller extends Controller
             return response()->json(['success' => false, 'message' => 'Error deleting topic'], 500);
         }
     }
+
+    public function editTopic(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:topics,topic_id',
+                'name' => 'required|string|max:255|unique:topics,name,NULL,id,subject_id,' . $request->subject_id,
+            ]);
+
+            $topic = Topic::findOrFail($request->id);
+            $topic->name = $request->name;
+            $topic->save();
+
+            return response()->json(['success' => true, 'topic' => $topic]);
+        } catch (\Exception $e) {
+            Log::error('Error editing topic: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error editing topic'], 500);
+        }
+    }
 }
