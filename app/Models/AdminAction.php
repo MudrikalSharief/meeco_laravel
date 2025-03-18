@@ -13,7 +13,6 @@ class AdminAction extends Model
     protected $primaryKey = 'action_id';
 
     protected $fillable = [
-        'admin_id',
         'action_type',
         'timestamp',
         'details',

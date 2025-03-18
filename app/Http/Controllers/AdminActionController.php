@@ -9,7 +9,7 @@ class AdminActionController extends Controller
 {
     public function index()
     {
-        $adminActions = AdminAction::paginate(10);
+        $adminActions = AdminAction::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.admin_logs', compact('adminActions'));
     }
 
