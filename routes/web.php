@@ -17,7 +17,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
-
+use App\Http\Controllers\AdminActionController;
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
@@ -272,6 +272,9 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
+
+    Route::resource('admin-actions', AdminActionController::class);
+    Route::get('/admin/logs', [AdminActionController::class, 'index'])->name('admin.logs');
 });
 
 

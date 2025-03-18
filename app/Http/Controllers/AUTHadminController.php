@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminAction;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
@@ -118,15 +119,26 @@ class AUTHadminController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:3|confirmed'
         ]);
-
-        $user = User::create([
+        try {
+            $user = User::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
             'middlename' => $request->middlename,
             'email' => $request->email,
             'password' => bcrypt($request->password)
-        ]);
+            ]);
 
+            $logs = AdminAction::create([
+            'admin_id' => Auth::guard('admin')->id(),
+            'action_type' => 'Create',
+            'details' => 'Created a new user.',
+            'timestamp' => now()
+            ]);
+
+            return redirect()->route('admin.users')->with('success', 'User created successfully.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'An error occurred while creating the user: ' . $e->getMessage()]);
+        }
         /* $admin_id = DB::table('sessions')->pluck('user_id');    
 
         DB::table('admin_actions')->insert([
