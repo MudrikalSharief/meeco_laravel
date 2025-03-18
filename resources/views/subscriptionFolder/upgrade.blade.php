@@ -10,14 +10,14 @@
         </div>
 
         <!-- Cards Section -->
-        <div class="flex-grow overflow-hidden pb-16">
+        <div class="flex-grow w-full flex pb-20">
             @if($promos->isEmpty())
                 <p class="text-center text-gray-600 font-semibold">No Available Offers</p>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 py-2 px-3">
+                <div class="flex flex-col gap-4 py-2 justify-center items-center w-full h-fit">    
                     @foreach($promos as $promo)
                         @if($promo->status == 'active')
-                        <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-transform duration-300 transform {{ $promo->subscribed ? 'hover:scale-105' : '' }} flex flex-col">
+                        <div class="bg-white shadow-lg h-full w-full rounded-lg overflow-hidden transition-transform duration-300 transform {{ $promo->subscribed ? 'hover:scale-105' : '' }} flex flex-col">
                             <div class="bg-blue-600 text-white text-center py-2 rounded-t-lg">
                                 <span class="font-semibold text-xl px-1">{{ $promo->name }}</span>
                             </div>

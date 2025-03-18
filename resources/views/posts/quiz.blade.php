@@ -5,7 +5,7 @@
         <div class="w-full max-w-2xl ">
             <!-- Content Header -->
             <div class="flex items-center justify-between mb-4 mx-5">
-              <h1 class="TITLE text-2xl font-bold text-gray-800">Topic : <span id="topic_name"></span></h1>
+              <h1 class="TITLE text-2xl font-bold text-gray-800"><span id="back_to_subject" class=" cursor-pointer">&larr;</span> Topic : <span id="topic_name"></span></h1>
             </div>
             
              <!-- Buttons -->
@@ -196,6 +196,20 @@
         }
     </style>
 
+<div id="editQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px; max-width: 400px;">
+        <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Edit Quiz Name</h2>
+        <div class="mb-4">
+            <label for="editQuizName" class="block text-xs text-gray-600 mb-1">Quiz Name</label>
+            <input id="editQuizName" type="text" placeholder="Enter the new name of the Quiz" class="py-1 px-2 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex justify-end mt-4">
+            <button id="cancelEditQuizButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
+            <button id="saveEditQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -224,8 +238,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const topicId = urlParams.get('topicId');
 
+        
+        
+        
+
         const topic_name_container = document.getElementById('topic_name');
 
+        const back_to_subject = document.getElementById('back_to_subject');
     fetch(`/getTopicByTopicId/${topicId}`)
     .then(response => response.json())
     .then( data => {
@@ -246,7 +265,7 @@
                 if (data.success) {
                     data.questions.forEach(quiz => {
                         const button = document.createElement('button');
-                        button.classList.add('question_button', 'gap-1', 'w-full', 'bg-blue-50','text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-200', 'delay-75', 'hover:shadow-lg', 'transition', 'duration-300');
+                        button.classList.add('question_button', 'gap-1', 'w-full', 'bg-white','text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-200', 'delay-75', 'hover:shadow-lg', 'transition', 'duration-300');
                         button.id = quiz.question_id;
                         button.innerHTML = `
                             <p class="w-2/5 ">${quiz.question_title}</p>
@@ -255,7 +274,7 @@
                                 <div class="flex justify-between w-1/2 gap-1">
                                     <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
                                     <div class="flex gap-1 justify-end items-center w-2/5">
-                                        <img class="hidden w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="edit">
+                                        <img class="edit-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="edit" data-question-id="${quiz.question_id}">
                                         <img class="delete-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete" data-question-id="${quiz.question_id}">
                                     </div>
                                 </div>
@@ -263,6 +282,12 @@
                         `;
                         quizContainer.appendChild(button);
                     });
+
+                    if(back_to_subject){
+                        back_to_subject.addEventListener('click', function(){
+                            window.location.href="/subjects/"+data.subject_id;
+                        });
+                    }
                 } else {
                     const NoQuestions = document.createElement('p');
                     NoQuestions.classList.add('text-center', 'text-red-500', 'text-lg', 'py-4');
@@ -619,7 +644,7 @@
                                         quizContainer.innerHTML="";
                                         data.questions.forEach(quiz => {
                                             const button = document.createElement('button');
-                                            button.classList.add('question_button','gap-1','w-full', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
+                                            button.classList.add('question_button','gap-1','w-full','bg-white', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
                                             button.id = quiz.question_id;
                                             button.innerHTML = `
                                                 <p class="w-2/5 ">${quiz.question_title}</p>
@@ -628,7 +653,7 @@
                                                     <div class="flex justify-between w-1/2  gap-1">
                                                         <p class="w-2/5 flex item-center text-green-500 items-center"> ${quiz.score}/${quiz.number_of_question}</p>
                                                         <div class="flex gap-1 items-center w- 3/5">
-                                                            <img class="hidden w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="delete">
+                                                            <img class="edit-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/edit.png" alt="edit" data-question-id="${quiz.question_id}">
                                                             <img class="delete-button w-full h-full max-h-5 object-contain transition-transform duration-300 hover:scale-125" src="/logo_icons/delete.png" alt="delete" data-question-id="${quiz.question_id}">
                                                         </div>
                                                     </div>    
@@ -676,9 +701,9 @@
         const confirmTopicDelete = document.getElementById('confirmTopicDelete');
 
             // Event delegation for delete buttons
-            quizContainer.addEventListener('click', function(event) {
+        quizContainer.addEventListener('click', function(event) {
             const deleteButton = event.target.closest('.delete-button');
-                                
+            const edit = event.target.closest('.edit-button');                          
             const button = event.target.closest('.question_button');
             
             if (deleteButton) {
@@ -719,20 +744,71 @@
                     
                 })
                 
+            }else if(edit){
+
+                const editQuizModal = document.getElementById('editQuizModal');
+                const editQuizName = document.getElementById('editQuizName');
+                const saveEditQuizButton = document.getElementById('saveEditQuizButton');
+                const cancelEditQuizButton = document.getElementById('cancelEditQuizButton');
+                let currentQuizId = null;
+                
+                event.stopPropagation(); // Prevent the event from propagating to the parent elements
+                event.preventDefault(); // Prevent the default action
+                currentQuizId = edit.dataset.questionId;
+                const currentQuizName = edit.closest('.question_button').querySelector('p').textContent;
+                editQuizName.value = currentQuizName;
+                editQuizModal.classList.remove('hidden');
+               
+
+                
+                const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+                closeSuccessModalButton.addEventListener('click', function() {
+                    successModal.classList.add('hidden');
+                });
+
+                saveEditQuizButton.addEventListener('click', function() {
+                    const newQuizName = editQuizName.value.trim();
+                    if (!newQuizName) {
+                        alert('Please enter a new name for the quiz.');
+                        return;
+                    }
+
+                    fetch(`/editquiz/${currentQuizId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ name: newQuizName })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const quizButton = document.getElementById(currentQuizId);
+                            quizButton.querySelector('p').textContent = newQuizName;
+                            editQuizModal.classList.add('hidden');
+                        } else {
+                            alert('Failed to edit quiz: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+
+                cancelEditQuizButton.addEventListener('click', function() {
+                    editQuizModal.classList.add('hidden');
+                });
+
             }else if(button) {
                 // Event delegation for question buttons
                 console.log("question is clicked");
                 const questionId = button.id;
                 window.location.href = `/quizresult?questionId=${questionId}`;
             }
-        });
 
 
-        const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
-        closeSuccessModalButton.addEventListener('click', function() {
-            successModal.classList.add('hidden');
-        });
+
         
+        });
 });
 
 </script>

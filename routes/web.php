@@ -53,12 +53,14 @@ Route::middleware('auth')->group(function (){
     Route::get('/subjects/{subjectName}', [TopicController::class, 'getTopicsBySubjectName'])->name('subjects');
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     Route::post('/subjects/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
+    Route::post('/subjects/edit', [SubjectController::class, 'editSubject'])->name('subjects.edit');
     
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
     Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
+    Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
@@ -111,6 +113,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
     Route::delete('/deletequiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete.quiz');
+    Route::post('/editquiz/{id}', [QuizController::class, 'editQuizName'])->name('edit.quiz');
 
     //route for paymonggo
     Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');
@@ -155,6 +158,14 @@ Route::middleware('guest')->group(function (){
     
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AUTHcontroller::class, 'login_user']);
+    
+    // UI only routes for password reset (no backend)
+    Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
+    Route::view('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
+
+    // Password reset routes
+    Route::post('/forgot-password', [AUTHcontroller::class, 'forgotPassword'])->name('password.email');
+    Route::post('/reset-password', [AUTHcontroller::class, 'resetPassword'])->name('password.update');
 
     Route::view('/website', 'website.landing')->name('landing');
     Route::view('/faq', 'website.faq')->name('faq');
@@ -256,15 +267,16 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::post('admin/get-weekly-statistics', [StatisticsController::class, 'get_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/get-yearly-statistics', [StatisticsController::class, 'get_yearly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-weekly-stats', [StatisticsController::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-yearly-stats', [StatisticsController::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
+    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
     //New Statistic Route
-    Route::view('admin/newnewstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
+    //Settings Route:
+    Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 });
+
+
 
 
 // Admin public routes for login/register

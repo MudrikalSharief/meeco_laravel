@@ -36,11 +36,15 @@ class TOPICcontroller extends Controller
 
     public function getTopicsBySubject($subjectId)
     {
-        $topics = Topic::where('subject_id', $subjectId)->get(['topic_id', 'name']);
+        $checksubject = Subject::where('subject_id', $subjectId)
+                    ->where('user_id', auth()->user()->user_id)          
+                    ->get(['subject_id', 'name']);
+        $topics = Topic::where('subject_id', $checksubject[0]->subject_id)
+                    ->get(['topic_id', 'name']);
         if($topics->isEmpty()){
             return response()->json(['message'=>'No topics found for subject id: ' . $subjectId]);
         }
-        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId]);
+        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId , 'name' => $checksubject[0]->name]);
     }
 
     public function getTopicsBySubjectName($subjectID)
@@ -90,6 +94,25 @@ class TOPICcontroller extends Controller
             Log::error('Error deleting topic: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Error deleting topic'], 500);
+        }
+    }
+
+    public function editTopic(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|integer|exists:topics,topic_id',
+                'name' => 'required|string|max:255|unique:topics,name,NULL,id,subject_id,' . $request->subject_id,
+            ]);
+
+            $topic = Topic::findOrFail($request->id);
+            $topic->name = $request->name;
+            $topic->save();
+
+            return response()->json(['success' => true, 'topic' => $topic]);
+        } catch (\Exception $e) {
+            Log::error('Error editing topic: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error editing topic'], 500);
         }
     }
 }

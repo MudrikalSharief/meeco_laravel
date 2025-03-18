@@ -1,85 +1,158 @@
 <x-admin_layout>
   <main class="p-5">
     <div class="min-w-full mx-auto bg-white rounded-lg p-5 shadow-sm border border-gray-150">
-      <form method="GET" action="{{ route('filter.inquiries') }}">
-        <div class="flex flex-wrap gap-4 mb-5 items-center">
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-800">Status</span>
-            <select class="p-2 border border-gray-200 rounded-md bg-white text-sm appearance-none bg-no-repeat bg-right-2 bg-center bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e')] min-w-[100px]" name="status" onchange="this.form.submit()">
-              <option value="" {{ request('status') == '' ? 'selected' : '' }}>All</option>
-              <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-              <option value="Responded" {{ request('status') == 'Responded' ? 'selected' : '' }}>Responded</option>
-              <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
-            </select>
+      <!-- Settings Header -->
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+
+      <!-- Security Section -->
+      <section class="space-y-6 mb-8">
+        <!-- ... (previous security section content remains the same) ... -->
+      </section>
+
+      <!-- Application Section -->
+      <section class="space-y-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Application</h2>
+        
+        <div class="border border-gray-100 rounded-md overflow-hidden">
+          <!-- Logo Section -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-100">
+            <div>
+              <h3 class="text-sm font-medium text-gray-700">Logo</h3>
+              <p class="text-sm text-gray-500 mt-1">Update the logo image</p>
+            </div>
+            <button onclick="openModal('logoModal')" class="text-sm text-blue-600 hover:text-blue-700">Change</button>
           </div>
-          <div class="ml-auto flex gap-2 flex-1 max-w-md">
-            <input type="text" name="search" value="{{ request('search') }}" class="flex-1 p-2 border border-gray-200 rounded-md text-sm" placeholder="Search by email or reference ID">
-            <button type="submit" class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">Search</button>
+          
+          <!-- Themes Section -->
+          <div class="flex items-center justify-between p-4 bg-white border-b border-gray-100">
+            <div>
+              <h3 class="text-sm font-medium text-gray-700">Themes</h3>
+              <p class="text-sm text-gray-500 mt-1">Available themes for the application</p>
+            </div>
+            <button onclick="openModal('themeModal')" class="text-sm text-blue-600 hover:text-blue-700">Manage</button>
+          </div>
+          
+          <!-- Lightspeed Section -->
+          <div class="flex items-center justify-between p-4 bg-white">
+            <div>
+              <h3 class="text-sm font-medium text-gray-700">Lightspeed</h3>
+              <p class="text-sm text-gray-500 mt-1">Drafts to the Lightspeed</p>
+            </div>
+            <button onclick="openModal('lightspeedModal')" class="text-sm text-blue-600 hover:text-blue-700">Configure</button>
           </div>
         </div>
-      </form>
+      </section>
+    </div>
 
-      <table class="w-full border-collapse mb-5">
-        <thead>
-          <tr>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Ticket No.</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Reference Id.</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Email</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Create Date</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Last Post</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Status</th>
-            <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if($InquiriesAdmin->isEmpty())
-            <tr>
-              <td colspan="7" class="text-center text-gray-600 py-5">No data available</td>
-            </tr>
-          @else
-            @foreach($InquiriesAdmin as $inquiry)
-              <tr>
-                <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_id}}</td>
-                <td class="p-3 border-b border-gray-200 text-sm text-gray-600">{{ $inquiry->ticket_reference}}</td>
-                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->email }}</td>
-                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->created_at }}</td>
-                <td class="p-3 border-b border-gray-200 text-sm">{{ $inquiry->updated_at }}</td>
-                <td class="p-3 border-b border-gray-200 text-sm font-medium 
-                @if($inquiry->status == 'Pending') status-pending 
-                @elseif($inquiry->status == 'Responded') status-responded 
-                @elseif($inquiry->status == 'Closed') status-closed 
-                @endif">
-                  {{ $inquiry->status }}
-                </td>
-                <td class="p-3 border-b border-gray-200 text-sm">
-                  <a href="{{ route('admin.reply', ['ticket_reference' => $inquiry->ticket_reference]) }}" class="bg-blue-100 border-none p-2 rounded-md cursor-pointer text-blue-600 hover:bg-blue-200 inline-block w-2/2 text-center">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                </td>
-              </tr>
-            @endforeach
-          @endif
-        </tbody>
-      </table>
+    <!-- Modal Backdrop -->
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50"></div>
 
-      <div class="flex justify-end items-center gap-3">
-        @if($InquiriesAdmin->currentPage() > 1)
-          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->previousPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">←</a>
-        @else
-          <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">←</button>
-        @endif
-        
-        <span class="text-sm text-gray-600 font-medium">{{ $InquiriesAdmin->currentPage() }} / {{ max(1, $InquiriesAdmin->lastPage()) }}</span>
-        
-        @if($InquiriesAdmin->hasMorePages())
-          <a href="{{ $InquiriesAdmin->appends(['status' => request('status'), 'search' => request('search')])->nextPageUrl() }}" class="p-2 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-100 w-10 text-center no-underline">→</a>
-        @else
-          <button class="p-2 border border-gray-200 bg-white rounded-lg cursor-not-allowed opacity-50 w-10">→</button>
-        @endif
+    <!-- Logo Upload Modal -->
+    <div id="logoModal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 z-50 w-96">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Update Logo</h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <input type="file" class="w-full p-2 border rounded">
+        <div class="flex justify-end gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">Cancel</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Upload</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Management Modal -->
+    <div id="themeModal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 z-50 w-96">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Manage Themes</h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <div class="p-3 border rounded hover:bg-gray-50 cursor-pointer">Light Theme</div>
+        <div class="p-3 border rounded hover:bg-gray-50 cursor-pointer">Dark Theme</div>
+        <div class="p-3 border rounded hover:bg-gray-50 cursor-pointer">Custom Theme</div>
+        <div class="flex justify-end">
+          <button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightspeed Configuration Modal -->
+    <div id="lightspeedModal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 z-50 w-96">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Lightspeed Configuration</h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label class="text-sm font-medium">Draft Frequency</label>
+          <select class="w-full p-2 border rounded">
+            <option>Daily</option>
+            <option>Weekly</option>
+            <option>Monthly</option>
+          </select>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button onclick="closeModal()" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">Cancel</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+        </div>
       </div>
     </div>
   </main>
+
+  <script>
+    // Modal handling functions
+    function openModal(modalId) {
+      document.getElementById('modalBackdrop').classList.remove('hidden');
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modalBackdrop').classList.add('hidden');
+      document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+        modal.classList.add('hidden');
+      });
+    }
+
+    // Close modal when clicking on backdrop
+    document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Toggle switch functionality for 2FA
+    const toggleSwitch = document.querySelector('button[aria-label="Enable two-factor authentication"]');
+    if (toggleSwitch) {
+      toggleSwitch.addEventListener('click', () => {
+        const enabled = toggleSwitch.classList.toggle('bg-blue-600');
+        toggleSwitch.querySelector('span').style.transform = enabled 
+          ? 'translateX(calc(1.5rem - 0.25rem))' 
+          : 'translateX(0.25rem)';
+        
+        // Optional: Add confirmation dialog
+        if (enabled) {
+          const confirmed = confirm('Enabling two-factor authentication will require all admins to set up 2FA. Continue?');
+          if (!confirmed) {
+            toggleSwitch.classList.remove('bg-blue-600');
+            toggleSwitch.querySelector('span').style.transform = 'translateX(0.25rem)';
+          }
+        }
+      });
+    }
+  </script>
+
+  <style>
+    /* Custom transition for modals */
+    [id$="Modal"] {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    /* Toggle switch transitions */
+    button[aria-label="Enable two-factor authentication"] span {
+      transition: transform 0.3s ease;
+    }
+  </style>
 </x-admin_layout>

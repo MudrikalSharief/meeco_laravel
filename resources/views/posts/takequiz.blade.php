@@ -1,13 +1,13 @@
 <x-layout>
 
-    <div class=" z-50 sticky top-12 bg_base_lightmode px-6 py-3 w-full shadow-lg flex items-center justify-center">
-        <p id="title" class=" text-blue-500 w-full max-w-2xl items-center lg:px-16 md:px-16 sm:px-10  px-5 py-1"></p>
+    <div class=" z-50 sticky top-12 bg-white px-6 py-3 w-full shadow-lg flex items-center justify-center">
+        <p id="title" class=" text-blue-500 w-full max-w-2xl items-center rounded-e-lg rounded-b-lg  py-1"></p>
     </div>
     <div class="max-w-2xl h-full mx-auto bg-white rounded-lg">
         
         <div class="w-full max-w-2xl">
 
-                <div class="quiz-container lg:px-16 md:px-16 sm:px-10  px-5 pt-5 pb-3 bg_base_lightmode">
+                <div class="quiz-container bg-white text-sm px-5 pt-5 pb-3 ">
                     <form id="quizForm" method="POST">
                         <!-- Questions will be dynamically inserted here -->
                     </form>
@@ -55,7 +55,7 @@
                             const questionDiv = document.createElement('div');
                             questionDiv.classList.add('question','py-2');
                             questionDiv.innerHTML = `
-                                <p class ="-4 text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                 <ul>
                                     <li><label class = "multiple_choice w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="A"> A) ${question.A}</label></li>
                                     <li><label class = "multiple_choice w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="B"> B) ${question.B}</label></li>
@@ -97,7 +97,7 @@
                             const questionDiv = document.createElement('div');
                             questionDiv.classList.add('question');
                             questionDiv.innerHTML = `
-                                <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                 <ul>
                                     <li><label class = "true_or_false w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="True">  True</label></li>
                                     <li><label class = "true_or_false w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input type="radio" name="question_${index}" value="False">  False</label></li>
@@ -137,7 +137,7 @@
                             const questionDiv = document.createElement('div');
                             questionDiv.classList.add('question');
                             questionDiv.innerHTML = `
-                                <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                 <ul>
                                     <li><label class = "identification w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" ><input class = "w-full  px-1" type="text" placeholder="Input Answer" name="question_${index}" > </label></li>
                                 </ul>
@@ -169,7 +169,7 @@
                                 
                                 if (type === 'multiple_choice') {
                                     questionDiv.innerHTML = `
-                                        <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                        <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                         <ul>
                                             <li><label class="multiple_choice w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" for="question_${questionCounter}_A"><input type="radio" name="question_${questionCounter}" id="question_${questionCounter}_A" value="A"> A) ${question.A}</label></li>
                                             <li><label class="multiple_choice w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" for="question_${questionCounter}_B"><input type="radio" name="question_${questionCounter}" id="question_${questionCounter}_B" value="B"> B) ${question.B}</label></li>
@@ -179,7 +179,7 @@
                                     `;
                                 } else if (type === 'true_or_false') {
                                     questionDiv.innerHTML = `
-                                        <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                        <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                         <ul>
                                             <li><label class="true_or_false w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" for="question_${questionCounter}_True"><input type="radio" name="question_${questionCounter}" id="question_${questionCounter}_True" value="True">  True</label></li>
                                             <li><label class="true_or_false w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" for="question_${questionCounter}_False"><input type="radio" name="question_${questionCounter}" id="question_${questionCounter}_False" value="False">  False</label></li>
@@ -187,7 +187,7 @@
                                     `;
                                 } else if (type === 'identification') {
                                     questionDiv.innerHTML = `
-                                        <p class ="text-blue-500">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
+                                        <p class ="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}<span id="q${questionCounter}" class = "text-red-500 pl-2"></span></p>
                                         <ul>
                                             <li><label class="identification w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center hover:bg-blue-100 delay-75 hover:transform hover:-translate-y-1 hover:shadow-lg transition duration-300" for="question_${questionCounter}"><input class="w-full px-1" type="text" placeholder="Input Answer" name="question_${questionCounter}" id="question_${questionCounter}"></label></li>
                                         </ul>

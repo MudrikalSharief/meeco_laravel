@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Identification;
 use App\Models\multiple_choice;
 use App\Models\Question;
+use App\Models\Topic;
 use App\Models\true_or_false;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,8 @@ class QuizController extends Controller
         if($questions->isEmpty()){
             return response()->json(['success'=>false,'message' => 'No Question Yet']);
         }
-        return response()->json(['success'=>true,'questions' => $questions]);
+        $subjectId = Topic::where('topic_id', $topicId)->pluck('subject_id')->first();
+        return response()->json(['success'=>true,'questions' => $questions, 'subject_id' => $subjectId]);
     }
 
     public function getQuiz($quizId)
@@ -298,5 +300,22 @@ class QuizController extends Controller
             $quiz->delete();
     
             return response()->json(['success' => true, 'message' => 'Quiz deleted successfully']);
+        }
+
+        public function editQuizName(Request $request, $id)
+        {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+        
+            $quiz = Question::find($id);
+            if (!$quiz) {
+                return response()->json(['success' => false, 'message' => 'Quiz not found']);
+            }
+        
+            $quiz->question_title = $validatedData['name'];
+            $quiz->save();
+        
+            return response()->json(['success' => true, 'message' => 'Quiz name updated successfully']);
         }
 }

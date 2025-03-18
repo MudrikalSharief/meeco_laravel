@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .bg_base_lightmode{
-    background-color: #fcfcfc;
+    background-color: #f6f6ff;
 }
 
 .filter-blue{

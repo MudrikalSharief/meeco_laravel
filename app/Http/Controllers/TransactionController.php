@@ -30,24 +30,11 @@ class TransactionController extends Controller
         }
         
         // session()->flush();
-        $transactions = $query;
+        $transactions = $query->paginate(7);
 
-        return view('admin.admin_transactions', compact('transactions'));
-    }
-
-    public function search_transactions(Request $request){
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 10);
-        $search = $request->input('search', '')['value'];
-        $orderColumnIndex = $request->input('order.0.column', 0); 
-        $orderDir = $request->input('order.0.dir', 'asc');
-
-        $query = Subscription::selectRaw('*')
-        ->Join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
-        ->Join('users', 'subscriptions.user_id', '=', 'users.user_id')
-        ->get();
-
-
+        return response()->json([
+            'transactions' => $transactions
+        ]);
     }
 
     public function filter_transactions(Request $request){
