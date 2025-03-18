@@ -267,14 +267,15 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-weekly-statistics', [StatisticsController::class, 'get_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-yearly-statistics', [StatisticsController::class, 'get_yearly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-weekly-stats', [StatisticsController::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-yearly-stats', [StatisticsController::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
     //New Statistic Route
-    Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    Route::view('admin/newnewstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
 });
-
-
 
 
 // Admin public routes for login/register

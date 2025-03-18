@@ -1,3 +1,36 @@
+var subsTable = $('#subsTable');
+
+subsTable.DataTable({
+    paging: true,
+    info: false,
+    ajax:{
+        url:'/admin/search-transactions',
+        type:'GET', 
+        data: function(d){
+            return {
+            draw: d.draw,
+            start: d.start,
+            length: d.length,
+            search: d.search.value,  // Send search term to the backend
+            order: d.order[0] ? {
+                column: d.order[0].column,
+                dir: d.order[0].dir
+            } : {}
+            }
+        }
+    },
+    columns: [
+        { data: 'name' },
+        { data: 'promo_name'},
+        { data: 'reference_no' },
+        { data: 'start_date' },
+        { data: 'end_date' },
+        { data: 'amount' },
+    ]
+}
+);
+
+
 document.addEventListener("DOMContentLoaded", ()=>{
     const statusFilter = document.getElementById('subscription-filter');
     const sortBy = document.getElementById('sort-by');
@@ -16,27 +49,22 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 
     
-    // searchTransactions.addEventListener('input', (e) => {
-    //     const searchValue = e.target.value.trim(); // Get the current search value
+   searchTransactions.addEventListener('input', (e)=>{
 
-    //     // Perform the search operation
-    //     fetch('/admin/search-transactions', {
-    //         method: 'POST',
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-    //         },
-    //         body: JSON.stringify({ searchValue: searchValue })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         // Handle the search results (e.g., update the DOM with the results)
-    //         console.log("Search Results:", data);
-    //     })
-    //     .catch(error => {
-    //         console.error("Error:", error);
-    //     });
-    // });
+    fetch('/admin/search-transactions',{
+        method: 'GET',
+        headers:
+        {
+        'Content-Type':'application/json',
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+    })
+    .catch(error => console.error(error))
+   });
 
     sortBy.addEventListener('change', (e)=>{
         if(sortBy.value === 'Users' || sortBy.value === 'Promo Type' || sortBy.value === 'Date' || sortBy.value === 'Amount' ||  sortBy.value === 'Sort By'){
