@@ -68,7 +68,7 @@ class StatisticsController extends Controller
             ]);  
         }else{
             return response()->json([
-                'week_labels'=>['Saturday', 'Monday', 'Tuesday','Wednesday', 'Thursday', 'Friday', 'Sunday'],
+                'week_labels'=>$week_labels,
                 'daily_rev_arr'=> [0,0,0,0,0,0,0],
                 'total_amount'=>'0',
                 'average_rev'=>'0',
@@ -180,12 +180,12 @@ class StatisticsController extends Controller
 
         $date_labels = [];
         $currentDate = $fromDate->copy();
-    
+        
         while ($currentDate <= $toDate) {
-            $date_labels[] = $currentDate->format('l'); 
+            $date_labels[] = $currentDate->format('F j, Y (l)'); // Example: "March 18, 2025 (Tuesday)"
             $currentDate->addDay();
         }
-
+        
         if($filter_rev->isNotEmpty()){
             return response()->json([
                 'date_labels'=> $date_labels,
@@ -196,7 +196,7 @@ class StatisticsController extends Controller
             ]);  
         }else{
             return response()->json([
-                'date_labels'=>['Saturday', 'Monday', 'Tuesday','Wednesday', 'Thursday', 'Friday', 'Sunday'],
+                'date_labels'=>$date_labels,
                 'filter_rev_arr'=> [0,0,0,0,0,0,0],
                 'total_amount'=>'PHP 0',
                 'average_rev'=>'PHP 0',

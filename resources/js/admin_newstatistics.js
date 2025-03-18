@@ -117,6 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener("click", function() {
             let weekData = this.dataset.week;
             fetchWeeklyData(weekData);
+
+            document.getElementById("dateFrom").value = "";
+            document.getElementById("dateTo").value = "";
         });
     }
   }
@@ -165,44 +168,122 @@ document.addEventListener('DOMContentLoaded', function() {
             yMax: 3000 // Default value, will be adjusted based on data
         };
 
-    async function WeeklyRevenueChart(daily_chart_labels, daily_revenue) {
-      // Destroy existing chart if it exists
-      if (weeklyChartInstance) {
-        weeklyChartInstance.destroy();
-        weeklyChartInstance = null;
-      }
-
-      // Always create new chart
-      var ctx = weeklyRevenue.getContext('2d');
-      weeklyChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: daily_chart_labels,
-            datasets: [{
-                label: 'Daily Revenue',
-                data: daily_revenue,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(0, 0, 139, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
+        async function WeeklyRevenueChart(daily_chart_labels, daily_revenue) {
+            const canvas = document.getElementById('weeklyRevenue');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions for better resolution
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            
+            // Calculate chart dimensions
+            const chartWidth = rect.width - 200;
+            const chartHeight = rect.height - 200;
+            const chartXOffset = 100; // Centering horizontally
+            
+            // Calculate dynamic y-axis maximum
+            const maxValue = Math.max(...daily_revenue, 1);
+            let roundedMax = Math.ceil(maxValue / 100) * 100;
+            
+            // Draw function
+            function drawChart(progress = 1) {
+                ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+                
+                ctx.beginPath();
+                ctx.strokeStyle = '#ddd';
+                ctx.lineWidth = 1;
+                
+                // Y-axis grid lines
+                for (let i = 0; i <= 5; i++) {
+                    let y = chartHeight - (i * (chartHeight / 5));
+                    ctx.moveTo(chartXOffset, y);
+                    ctx.lineTo(chartWidth + chartXOffset, y);
+                    
+                    ctx.fillStyle = '#666';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(`PHP ${(roundedMax / 5) * i}`, chartXOffset - 40, y + 4);
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMin: 0,
-                    suggestedMax: 100
-                }
+                ctx.stroke();
+                
+                // X-axis labels (Diagonal Rotation)
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                daily_chart_labels.forEach((label, i) => {
+                    let x = chartXOffset + (i * (chartWidth / (daily_chart_labels.length - 1)));
+                    let y = chartHeight + 30;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(-Math.PI / 4); // Rotate labels diagonally
+                    ctx.fillText(label, 0, 0);
+                    ctx.restore();
+                });
+                
+                // Draw axes
+                ctx.beginPath();
+                ctx.strokeStyle = '#000';
+                ctx.moveTo(chartXOffset, 0);
+                ctx.lineTo(chartXOffset, chartHeight);
+                ctx.lineTo(chartWidth + chartXOffset, chartHeight);
+                ctx.stroke();
+                
+                // X-axis label "Date"
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.textAlign = "center";
+                ctx.fillText("Date", chartWidth / 2 + chartXOffset, chartHeight + 50);
+                
+                // Y-axis label "Amount"
+                ctx.save();
+                ctx.translate(chartXOffset - 50, chartHeight / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText("Amount", 0, 0);
+                ctx.restore();
+                
+                // Draw line chart
+                ctx.beginPath();
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 2;
+                daily_revenue.forEach((value, i) => {
+                    let x = chartXOffset + (i * (chartWidth / (daily_chart_labels.length - 1)));
+                    let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw points
+                daily_revenue.forEach((value, i) => {
+                    let x = chartXOffset + (i * (chartWidth / (daily_chart_labels.length - 1)));
+                    let y = chartHeight - ((value / roundedMax) * chartHeight * progress);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = 'blue';
+                    ctx.fill();
+                });
             }
+            
+            // Animation
+            let startTime = null;
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / 1000, 1);
+                drawChart(progress);
+                if (progress < 1) requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
         }
-    });
-    }
+        
+        
 
     const years = ['2025', '2024', '2023', '2022', '2021'];
     
@@ -225,6 +306,9 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener("click", function() {
             let selectedYear = this.dataset.year;
             fetchYearlyData(selectedYear);
+
+            document.getElementById("monthFrom").value = "";
+            document.getElementById("monthTo").value = "";
         });
       }
     }

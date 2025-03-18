@@ -3,7 +3,7 @@
     <main class="ml-5 p-4">
     <div class="flex justify-center container bg-gray-100">
         <!-- Daily Income Chart -->
-        <div class="w-full mx-auto bg-white p-5 rounded-lg shadow-md mb-6">
+        <div class="w-full bg-white p-5 rounded-lg shadow-md">
             <h1 class="text-center text-2xl font-bold text-gray-800 mb-6">Subscription Revenue</h1>
            
             <!-- Date range selector - Make "To" date automatically adjust -->
@@ -59,6 +59,7 @@
                 </div>
             </div>
 
+            
             <div class="relative h-96 mt-5">
                 <div class="inline-flex border border-gray-300 rounded-md overflow-hidden">
                     <button id="btn-weekly" class="px-4 py-2 text-sm font-medium bg-blue-500 text-white 
@@ -72,9 +73,10 @@
                 </div>
             
             <div id="weeklyChart">
-                <div id="weekButtons" class="flex flex-wrap gap-2 justify-center mt-4"></div>
+            <div id="weekButtons" class="flex flex-wrap gap-2 justify-center mt-4"></div>
                 <div class="flex">
-                    <canvas id="weeklyRevenue" class="w-full h-full"></canvas>
+                 <canvas id="weeklyRevenue" class="w-full h-full"></canvas> 
+
                 </div>
             </div>
 
