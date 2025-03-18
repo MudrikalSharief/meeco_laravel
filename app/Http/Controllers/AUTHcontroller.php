@@ -26,7 +26,7 @@ class AUTHcontroller extends Controller
             'middlename' => ['nullable', 'max:255'],
             'lastname' => ['required', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:3', 'confirmed']
+            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$/', 'confirmed']
         ]);
 
         //Register
@@ -179,7 +179,7 @@ class AUTHcontroller extends Controller
             'middlename' => ['nullable', 'max:255'],
             'lastname' => ['required', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', 'min:3', 'confirmed']
+            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$/', 'confirmed']
         ]);
 
         // Store registration data in session
@@ -410,7 +410,7 @@ class AUTHcontroller extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:3|confirmed',
+            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).+$/', 'confirmed'],
         ]);
 
         // Check if the token is valid

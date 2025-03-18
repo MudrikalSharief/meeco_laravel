@@ -35,6 +35,17 @@
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        .password-requirements {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        .requirement-met {
+            color: #10b981;
+        }
+        .requirement-not-met {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex min-h-screen">
@@ -110,7 +121,14 @@
               <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                 <input type="password" name="password" id="password" placeholder="Enter your password" 
-                class="input-focus-effect mt-1 w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200">
+                class="input-focus-effect mt-1 w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200"
+                oninput="checkPasswordStrength(this.value)">
+                <div class="password-requirements mt-2">
+                    <div id="length-requirement" class="requirement-not-met">• Minimum 8 characters</div>
+                    <div id="lowercase-requirement" class="requirement-not-met">• At least one lowercase letter</div>
+                    <div id="uppercase-requirement" class="requirement-not-met">• At least one uppercase letter</div>
+                    <div id="number-requirement" class="requirement-not-met">• At least one number</div>
+                </div>
                 @error('password')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
@@ -120,11 +138,13 @@
               <div>
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirm your password" 
-                class="input-focus-effect mt-1 w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200">
+                class="input-focus-effect mt-1 w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm transition-all duration-200"
+                oninput="checkPasswordMatch()">
+                <div id="password-match" class="text-xs mt-1 hidden text-red-500">Passwords don't match</div>
               </div>
 
               <!-- Submit Button -->
-              <button type="submit" class="btn-hover-effect bg-blue-600 w-full text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 mt-2">CREATE ACCOUNT</button>
+              <button type="submit" id="submit-button" class="btn-hover-effect bg-blue-600 w-full text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all duration-200 mt-2">CREATE ACCOUNT</button>
             </form>
             
             <div class="mt-6 pt-4 border-t border-gray-100">
@@ -162,5 +182,66 @@
                  class="max-w-full h-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500 border-4 border-white/20">
         </div>
     </div>
+
+    <script>
+        function checkPasswordStrength(password) {
+            // Check length
+            const lengthRequirement = document.getElementById('length-requirement');
+            if (password.length >= 8) {
+                lengthRequirement.className = 'requirement-met';
+            } else {
+                lengthRequirement.className = 'requirement-not-met';
+            }
+            
+            // Check lowercase
+            const lowercaseRequirement = document.getElementById('lowercase-requirement');
+            if (/[a-z]/.test(password)) {
+                lowercaseRequirement.className = 'requirement-met';
+            } else {
+                lowercaseRequirement.className = 'requirement-not-met';
+            }
+            
+            // Check uppercase
+            const uppercaseRequirement = document.getElementById('uppercase-requirement');
+            if (/[A-Z]/.test(password)) {
+                uppercaseRequirement.className = 'requirement-met';
+            } else {
+                uppercaseRequirement.className = 'requirement-not-met';
+            }
+            
+            // Check number
+            const numberRequirement = document.getElementById('number-requirement');
+            if (/[0-9]/.test(password)) {
+                numberRequirement.className = 'requirement-met';
+            } else {
+                numberRequirement.className = 'requirement-not-met';
+            }
+            
+            // Also check match if confirmation field has value
+            if (document.getElementById('password_confirmation').value) {
+                checkPasswordMatch();
+            }
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const matchMessage = document.getElementById('password-match');
+            
+            if (confirmPassword) {
+                if (password === confirmPassword) {
+                    matchMessage.className = 'text-xs mt-1 text-green-500';
+                    matchMessage.textContent = 'Passwords match';
+                    matchMessage.classList.remove('hidden');
+                } else {
+                    matchMessage.className = 'text-xs mt-1 text-red-500';
+                    matchMessage.textContent = "Passwords don't match";
+                    matchMessage.classList.remove('hidden');
+                }
+            } else {
+                matchMessage.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
