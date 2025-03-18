@@ -53,12 +53,14 @@ Route::middleware('auth')->group(function (){
     Route::get('/subjects/{subjectName}', [TopicController::class, 'getTopicsBySubjectName'])->name('subjects');
     Route::post('/subjects/add', [SubjectController::class, 'createSubject'])->name('subjects.add');
     Route::post('/subjects/delete', [SubjectController::class, 'deleteSubject'])->name('subjects.delete');
+    Route::post('/subjects/edit', [SubjectController::class, 'editSubject'])->name('subjects.edit');
     
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
     Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
+    Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
     Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
@@ -111,6 +113,7 @@ Route::middleware('auth')->group(function (){
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
     Route::delete('/deletequiz/{id}', [QuizController::class, 'deleteQuiz'])->name('delete.quiz');
+    Route::post('/editquiz/{id}', [QuizController::class, 'editQuizName'])->name('edit.quiz');
 
     //route for paymonggo
     Route::post('/Paymongo', [PayMongoController::class, 'paymongoPayment'])->name('paymongo');

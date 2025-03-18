@@ -301,4 +301,21 @@ class QuizController extends Controller
     
             return response()->json(['success' => true, 'message' => 'Quiz deleted successfully']);
         }
+
+        public function editQuizName(Request $request, $id)
+        {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+        
+            $quiz = Question::find($id);
+            if (!$quiz) {
+                return response()->json(['success' => false, 'message' => 'Quiz not found']);
+            }
+        
+            $quiz->question_title = $validatedData['name'];
+            $quiz->save();
+        
+            return response()->json(['success' => true, 'message' => 'Quiz name updated successfully']);
+        }
 }

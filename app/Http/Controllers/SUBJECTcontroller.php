@@ -52,4 +52,24 @@ class SubjectController extends Controller
             return response()->json(['success' => false, 'message' => 'Error deleting subject'], 500);
         }
     }
+
+    public function editSubject(Request $request)
+    {  
+        try {
+            $request->validate([
+                'subject_id' => 'required|exists:subjects,subject_id',
+                'name' => 'required|string|max:255|unique:subjects,name,' . $request->subject_id . ',subject_id',
+            ]);
+            // return response()->json(['success' => false, 'message' => $request->name], 500);
+            
+            $subject = Subject::findOrFail($request->subject_id);
+            
+            $subject->name = $request->name;
+            $subject->save();
+            return response()->json(['success' => true, 'subject' => $subject]);
+        } catch (\Exception $e) {
+            Log::error('Error editing subject: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error editing subject'], 500);
+        }
+    }
 }
