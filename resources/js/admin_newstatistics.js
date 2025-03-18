@@ -194,8 +194,13 @@ document.addEventListener('DOMContentLoaded', function() {
             ctx.scale(dpr, dpr);
             
             // Calculate chart dimensions
+<<<<<<< Updated upstream
             const chartWidth = rect.width - 200;
             const chartHeight = rect.height - 225;
+=======
+            const chartWidth = rect.width - 170;
+            const chartHeight = rect.height - 200;
+>>>>>>> Stashed changes
             const chartXOffset = 100; // Centering horizontally
             
             // Calculate dynamic y-axis maximum
