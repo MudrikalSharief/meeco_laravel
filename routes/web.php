@@ -275,6 +275,8 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::resource('admin-actions', AdminActionController::class);
     Route::get('/admin/logs', [AdminActionController::class, 'index'])->name('admin.logs');
+    //Settings Route:
+    Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 });
 
 

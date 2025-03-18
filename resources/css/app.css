@@ -6,6 +6,13 @@
     background-color: #f6f6ff;
 }
 
+.dark * {
+    background-color: #111 !important; /* Dark background */
+    color: #fff !important; /* White text */
+    border-color: #333 !important; /* Darker borders */
+}
+  
+
 .filter-blue{
     filter: brightness(0) saturate(100%) invert(12%) sepia(88%) saturate(6253%) hue-rotate(220deg) brightness(72%) contrast(116%);
 }

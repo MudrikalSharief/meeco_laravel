@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class = "dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,14 +15,14 @@
       onload="this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_settings.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])
     @vite(['resources/css/contact.css'])
     
 </head>
-<body class="h-screen w-full">
+<body class="h-screen w-full dark:bg-gray-900 dark:text-white min-h-screen">
 
     {{-- Upper Navigation --}}
     <div id="upper_nav" class="fixed pl-3 z-10 pr-3 bg-gray-100 h-12 w-full flex items-center justify-end md:pl-64">
@@ -37,7 +37,7 @@
     </div>
 
     
-    <nav class="sidebar fixed h-full z-20">
+    <nav class="sidebar fixed h-full z-20 dark:bg-gray-900 dark:text-white min-h-screen">
         <div class="logo_burger_holder flex justify-between items-center w-full mb-4">
             <div class="logo_holder flex justify-start items-center gap-6 w-full md:w-auto">
                 <img class="max-w-12" src="{{ asset('logo_icons/logo_head.png') }}" alt="Logo">

@@ -659,4 +659,181 @@ class SubscriptionController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get total reviewer and quiz creation counts
+     * 
+     * @return array
+     */
+    public function getTotalCounts()
+    {
+        try {
+            // Get total reviewer created across all subscriptions
+            $totalReviewerCreated = Subscription::sum('reviewer_created');
+            
+            // Get total quiz created across all subscriptions
+            $totalQuizCreated = Subscription::sum('quiz_created');
+            
+            Log::info('Total counts retrieved', [
+                'totalReviewerCreated' => $totalReviewerCreated,
+                'totalQuizCreated' => $totalQuizCreated
+            ]);
+            
+            return [
+                'totalReviewerCreated' => $totalReviewerCreated,
+                'totalQuizCreated' => $totalQuizCreated
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error retrieving total counts: ' . $e->getMessage());
+            return [
+                'totalReviewerCreated' => 0,
+                'totalQuizCreated' => 0
+            ];
+        }
+    }
+
+    /**
+     * Get recent monthly revenue statistics for the dashboard
+     * 
+     * @param int $months Number of months to include (default: 6)
+     * @return array
+     */
+    public function getDashboardMonthlyStats($months = 6)
+    {
+        try {
+            // Get current year
+            $currentYear = Carbon::now()->year;
+            $currentMonth = Carbon::now()->month;
+            
+            // Determine which half of the year to display
+            $isFirstHalf = $currentMonth <= 6;
+            
+            // Set start and end dates for current period
+            if ($isFirstHalf) {
+                $startMonth = Carbon::createFromDate($currentYear, 1, 1)->startOfMonth();
+                $endMonth = Carbon::createFromDate($currentYear, 6, 30)->endOfMonth();
+                $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                
+                // Previous period is Jul-Dec of previous year
+                $prevStartMonth = Carbon::createFromDate($currentYear - 1, 7, 1)->startOfMonth();
+                $prevEndMonth = Carbon::createFromDate($currentYear - 1, 12, 31)->endOfMonth();
+                $prevPeriodName = 'Jul - Dec ' . ($currentYear - 1);
+            } else {
+                $startMonth = Carbon::createFromDate($currentYear, 7, 1)->startOfMonth();
+                $endMonth = Carbon::createFromDate($currentYear, 12, 31)->endOfMonth();
+                $monthNames = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                // Previous period is Jan-Jun of current year
+                $prevStartMonth = Carbon::createFromDate($currentYear, 1, 1)->startOfMonth();
+                $prevEndMonth = Carbon::createFromDate($currentYear, 6, 30)->endOfMonth();
+                $prevPeriodName = 'Jan - Jun ' . $currentYear;
+            }
+            
+            $currentPeriodName = ($isFirstHalf ? 'Jan - Jun ' : 'Jul - Dec ') . $currentYear;
+            
+            Log::info('Fetching dashboard monthly stats', [
+                'current_period' => [
+                    'start_month' => $startMonth->format('Y-m-d'),
+                    'end_month' => $endMonth->format('Y-m-d'),
+                    'period' => $currentPeriodName
+                ],
+                'previous_period' => [
+                    'start_month' => $prevStartMonth->format('Y-m-d'),
+                    'end_month' => $prevEndMonth->format('Y-m-d'),
+                    'period' => $prevPeriodName
+                ]
+            ]);
+            
+            // Get subscription data for current period
+            $monthlyData = DB::select('
+                SELECT 
+                    MONTH(s.start_date) as month,
+                    SUM(p.price) as total
+                FROM subscriptions s
+                JOIN promos p ON s.promo_id = p.promo_id
+                WHERE s.start_date BETWEEN ? AND ?
+                AND p.name != "Free Trial"
+                GROUP BY MONTH(s.start_date)
+                ORDER BY month ASC
+            ', [$startMonth->toDateTimeString(), $endMonth->toDateTimeString()]);
+            
+            // Get total revenue for previous period
+            $previousPeriodData = DB::select('
+                SELECT 
+                    SUM(p.price) as total
+                FROM subscriptions s
+                JOIN promos p ON s.promo_id = p.promo_id
+                WHERE s.start_date BETWEEN ? AND ?
+                AND p.name != "Free Trial"
+            ', [$prevStartMonth->toDateTimeString(), $prevEndMonth->toDateTimeString()]);
+            
+            $previousPeriodTotal = $previousPeriodData[0]->total ?? 0;
+            
+            // Initialize monthly values with zeros
+            $monthValues = array_fill(0, 6, 0);
+            
+            // Fill in actual data
+            $totalRevenue = 0;
+            foreach ($monthlyData as $row) {
+                $month = (int)$row->month;
+                $index = $isFirstHalf ? ($month - 1) : ($month - 7);
+                
+                if ($index >= 0 && $index < 6) {
+                    $monthValues[$index] = (float)$row->total;
+                    $totalRevenue += (float)$row->total;
+                }
+            }
+            
+            // Calculate growth percentage compared to previous 6-month period
+            // Fixed growth calculation to handle when previous period is zero but current has revenue
+            $growthPercentage = 0;
+            if ($previousPeriodTotal > 0) {
+                $growthPercentage = (($totalRevenue - $previousPeriodTotal) / $previousPeriodTotal) * 100;
+            } else if ($totalRevenue > 0) {
+                // If previous period had zero revenue but current period has revenue, growth is 100%
+                $growthPercentage = 100;
+            }
+            
+            // Format the data for the dashboard
+            $result = [
+                'labels' => $monthNames,
+                'values' => $monthValues,
+                'total_revenue' => $totalRevenue,
+                'growth_percentage' => round($growthPercentage, 1),
+                'period' => $currentPeriodName,
+                'previous_period' => $prevPeriodName,
+                'is_first_half' => $isFirstHalf,
+                'previous_period_total' => $previousPeriodTotal // Adding for debugging
+            ];
+            
+            Log::info('Dashboard monthly stats calculated', [
+                'current_period_total' => $totalRevenue,
+                'previous_period_total' => $previousPeriodTotal,
+                'growth_percentage' => $result['growth_percentage']
+            ]);
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            Log::error('Error retrieving dashboard monthly stats: ' . $e->getMessage());
+            $currentYear = Carbon::now()->year;
+            $currentMonth = Carbon::now()->month;
+            $isFirstHalf = $currentMonth <= 6;
+            
+            return [
+                'labels' => $isFirstHalf ? 
+                    ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'] : 
+                    ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                'values' => [0, 0, 0, 0, 0, 0],
+                'total_revenue' => 0,
+                'growth_percentage' => 0,
+                'period' => $isFirstHalf ? 'Jan - Jun ' . $currentYear : 'Jul - Dec ' . $currentYear,
+                'previous_period' => $isFirstHalf ? 
+                    'Jul - Dec ' . ($currentYear - 1) : 
+                    'Jan - Jun ' . $currentYear,
+                'is_first_half' => $isFirstHalf,
+                'previous_period_total' => 0
+            ];
+        }
+    }
 }
