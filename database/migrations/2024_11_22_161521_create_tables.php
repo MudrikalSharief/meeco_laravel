@@ -33,8 +33,9 @@ return new class extends Migration
         Schema::create('admin_actions', function (Blueprint $table) {
             $table->id('action_id');
             $table->unsignedBigInteger('admin_id');
-            $table->foreign('admin_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('admin_id')->references('admin_id')->on('admins')->onDelete('cascade');
             $table->string('action_type');
+            $table->string('details');
             $table->timestamp('timestamp')->useCurrent();
             $table->timestamps();
         });
