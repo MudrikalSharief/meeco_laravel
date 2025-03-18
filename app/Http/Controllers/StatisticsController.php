@@ -22,6 +22,8 @@ class StatisticsController extends Controller
 
         $daily_rev = Subscription::selectRaw('DATE(subscriptions.start_date) as date, SUM(price) as total_amount, COUNT(subscriptions.subscription_id) as total_subs')
             ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+            ->where('promos.name', '!=', 'Free Trial')
+            ->where('subscriptions.subscription_type', '!=', 'Admin granted')
             ->whereBetween('subscriptions.start_date', [$startDate, $startDate->copy()->addDays(6)])
             ->groupBy('subscriptions.start_date')
             ->get();
@@ -81,6 +83,8 @@ class StatisticsController extends Controller
 
         $yearly_rev = Subscription::selectRaw('MONTH(subscriptions.start_date) as month, SUM(price) as total_amount, COUNT(subscriptions.subscription_id) as total_subs')
         ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+        ->where('promos.name', '!=', 'Free Trial')
+        ->where('subscriptions.subscription_type', '!=', 'Admin granted')
         ->whereYear('subscriptions.start_date', $selectedYear)
         ->groupBy('month')
         ->orderBy('month')
@@ -135,6 +139,8 @@ class StatisticsController extends Controller
 
         $filter_rev = Subscription::selectRaw('DATE(subscriptions.start_date) as date, SUM(price) as total_amount, COUNT(subscriptions.subscription_id) as total_subs')
             ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+            ->where('promos.name', '!=', 'Free Trial')
+            ->where('subscriptions.subscription_type', '!=', 'Admin granted')
             ->whereBetween('subscriptions.start_date', [$fromDate, $toDate])
             ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
             ->get();
@@ -210,6 +216,8 @@ class StatisticsController extends Controller
     
         $filter_rev = Subscription::selectRaw('MONTH(subscriptions.start_date) as date, SUM(price) as total_amount, COUNT(subscriptions.subscription_id) as total_subs')
             ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+            ->where('promos.name', '!=', 'Free Trial')
+            ->where('subscriptions.subscription_type', '!=', 'Admin granted')
             ->whereBetween('subscriptions.start_date', [$fromMonth, $toMonth])
             ->groupBy('date')
             ->get();
