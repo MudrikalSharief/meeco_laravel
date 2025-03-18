@@ -148,6 +148,7 @@
                     <form>
                         <div class="mt-2 px-7 py-3">
                             <select name="theme" id="themeSelect" class="mt-2 w-full p-2 border rounded-md">
+                                <option value="light">Light Theme</option>
                                 <option value="dark">Dark Theme</option>
                                 <option value="system">System Default</option>
                             </select>

@@ -52,30 +52,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        initTheme() {
-            // Load saved theme from localStorage
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            this.applyTheme(savedTheme);
-            
-            // Initialize theme selector
-            if (this.modalMap.themesModal.select) {
-                this.modalMap.themesModal.select.value = savedTheme;
-            }
-        }
+        // In the initTheme method - Line 45
+initTheme() {
+    // Change the default from 'light' to undefined (true default)
+    const savedTheme = localStorage.getItem('theme'); // Remove || 'light'
+    this.applyTheme(savedTheme || 'light'); // Pass light as default but don't store it
+    
+    // Initialize theme selector
+    if (this.modalMap.themesModal.select) {
+        this.modalMap.themesModal.select.value = savedTheme || 'light';
+    }
+}
 
-        applyTheme(theme) {
-            const html = document.documentElement;
-            html.classList.remove('dark', 'light');
-            
-            if (theme === 'system') {
-                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                html.classList.add(isDark ? 'dark' : 'light');
-            } else {
-                html.classList.add(theme);
-            }
-            
-            localStorage.setItem('theme', theme);
-        }
+// In the applyTheme method - Line 57
+// In your applyTheme method
+applyTheme(theme) {
+    const html = document.documentElement;
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Remove existing classes
+    html.classList.remove('dark', 'light');
+
+    // Apply conditional classes
+    if (theme === 'system') {
+        html.classList.toggle('dark', systemDark);
+    } else if (theme === 'dark') {
+        html.classList.add('dark');
+    }
+    // Light mode: no class needed (default)
+
+    // Store preference
+    if (theme === 'light') {
+        localStorage.removeItem('theme');
+    } else {
+        localStorage.setItem('theme', theme);
+    }
+}
+
 
         openModal(modalId) {
             const modal = document.getElementById(modalId);
