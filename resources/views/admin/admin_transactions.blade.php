@@ -1,4 +1,3 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 <x-admin_layout>
     <main>
         <select name="" id="subscription-filter">
@@ -14,7 +13,9 @@
             <option value="Amount">Amount</option>
         </select>
 
-        <table id = "subsTable">
+        <input type="text" placeholder="Search" id="search-transactions">
+
+        <table>
             <thead>
                 <tr>
                     <th class="text-center">User</th>
@@ -38,7 +39,31 @@
                 @endforeach
             </tbody>
         </table>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+        <!-- Pagination with Arrow Navigation -->
+        <div class="pagination">
+            <!-- Left Arrow -->
+            @if ($transactions->onFirstPage())
+                <span class="arrow disabled">&laquo; Previous</span>
+            @else
+                <a href="{{ $transactions->previousPageUrl() }}" class="arrow">&laquo; Previous</a>
+            @endif
+
+            <!-- Pagination Links -->
+            @foreach(range(1, $transactions->lastPage()) as $page)
+                @if ($page == $transactions->currentPage())
+                    <span class="current-page">{{ $page }}</span>
+                @else
+                    <a href="{{ $transactions->url($page) }}">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            <!-- Right Arrow -->
+            @if ($transactions->hasMorePages())
+                <a href="{{ $transactions->nextPageUrl() }}" class="arrow">Next &raquo;</a>
+            @else
+                <span class="arrow disabled">Next &raquo;</span>
+            @endif
+        </div>
     </main>
 </x-admin_layout>
