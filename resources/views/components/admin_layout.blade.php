@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class = "dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
       onload="this.rel='stylesheet'"
       href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin_settings.js', 'resources/js/admin_transactions.js', 'resources/js/admin_statistics.js', 'resources/js/admin_newstatistics.js'])
     @vite(['resources/css/admin-layout.css'])
     @vite(['resources/css/data-admin.css'])
     @vite(['resources/js/admin.js'])

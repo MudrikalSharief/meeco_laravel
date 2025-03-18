@@ -273,9 +273,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
 });
-
-
-
+   //Settings Route:
+   Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 
 // Admin public routes for login/register
     Route::view('/admin', 'auth.login-admin')->name('admin.login');
