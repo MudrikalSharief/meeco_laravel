@@ -177,28 +177,31 @@ document.addEventListener('DOMContentLoaded', function() {
       weeklyChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: daily_chart_labels,
-          datasets: [{
-            data: daily_revenue,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(0, 0, 139, 1)',
-            borderWidth: 1
-          }]
+            labels: daily_chart_labels,
+            datasets: [{
+                label: 'Daily Revenue',
+                data: daily_revenue,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(0, 0, 139, 1)',
+                borderWidth: 1
+            }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
             }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
         }
-      });
+    });
     }
 
     const years = ['2025', '2024', '2023', '2022', '2021'];

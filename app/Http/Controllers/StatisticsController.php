@@ -47,7 +47,9 @@ class StatisticsController extends Controller
 
         $week_labels = [];
         for ($i = 0; $i < 7; $i++) {
-            $week_labels[] = $startDate->copy()->addDays($i)->format('l');
+            $currentDate = $startDate->copy()->addDays($i);
+            $formattedDate = $currentDate->format('F j, Y (l)');
+            $week_labels[] = $formattedDate;
         }
 
         }catch (Exception $e) {
@@ -134,26 +136,41 @@ class StatisticsController extends Controller
         $filter_rev = Subscription::selectRaw('DATE(subscriptions.start_date) as date, SUM(price) as total_amount, COUNT(subscriptions.subscription_id) as total_subs')
             ->join('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
             ->whereBetween('subscriptions.start_date', [$fromDate, $toDate])
-            ->groupBy('subscriptions.start_date')
+            ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
             ->get();
 
         $totalRevenue = $filter_rev->sum('total_amount');
         $totalSubs = $filter_rev->sum('total_subs');
         $averageRevenue = ($totalSubs > 0) ? ($totalRevenue / $totalSubs) : 0;
-        
         $filter_rev_arr = [];
 
-        if($filter_rev->isNotEmpty()){
-            $filter_rev_date = Carbon::parse($filter_rev[0]->date)->day;
+        // Generate the date range from $fromDate to $toDate
+        $startDate = Carbon::parse($fromDate);
+        $endDate = Carbon::parse($toDate);
 
-            for($i = $fromDateDay; $i <= $toDateDay; $i++){
-                if($i === $filter_rev_date){
-                    array_push($filter_rev_arr, $filter_rev[0]->total_amount);
-                }else{
-                    array_push($filter_rev_arr, 0);
+        $datesInRange = [];
+        $currentDate = $startDate->copy();
+
+        while ($currentDate->lte($endDate)) {
+            $datesInRange[] = $currentDate->format('Y-m-d');
+            $currentDate->addDay();
+        }
+
+        // Initialize the revenue array with zeros
+        $filter_rev_arr = array_fill(0, count($datesInRange), 0);
+
+        // Fill the revenue array with actual data
+        if ($filter_rev->isNotEmpty()) {
+            foreach ($filter_rev as $revenue) {
+                $revenueDate = Carbon::parse($revenue->date)->format('Y-m-d');
+                $index = array_search($revenueDate, $datesInRange);
+                if ($index !== false) {
+                    $filter_rev_arr[$index] = $revenue->total_amount;
                 }
             }
         }
+
+        Log::info($filter_rev);
 
         $date_labels = [];
         $currentDate = $fromDate->copy();
