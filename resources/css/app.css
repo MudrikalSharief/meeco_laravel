@@ -6,10 +6,9 @@
     background-color: #f6f6ff;
 }
 
-.dark * {
-    background-color: #111 !important; /* Dark background */
-    color: #fff !important; /* White text */
-    border-color: #333 !important; /* Darker borders */
+.dark *{
+    background-color: black !important;
+    color: white !important;
 }
 
 .filter-blue{
