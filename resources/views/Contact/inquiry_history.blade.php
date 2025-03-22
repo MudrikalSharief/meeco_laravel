@@ -1,12 +1,11 @@
 <x-contact_layout>
-    <main class="p-10">
-        <div class="flex items-center gap-3 mb-10">
-            <a href="{{ route('contact') }}" class="text-blue-600 text-3xl no-underline">←</a>
-            <h1 class="text-blue-600 text-2xl font-bold">My Inquiry History</h1>
+    <main class=" w-full max-w-lg">
+        <div class="breadcrumb mb-2 flex  font-bold text-md px-4">
+            <a href="{{ route('contact') }}" class="text-gray-500 no-underline">← My Inquiry History</a>
         </div>
 
         @if(count($inquiries) > 0)
-            <div class="overflow-x-auto w-full">
+            <div class="overflow-x-auto w-full border text-xs">
                 <table class="w-full border-collapse min-w-[800px]">
                 <thead>
                     <tr>

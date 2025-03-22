@@ -1,141 +1,130 @@
-<x-admin_layout>
-    <main>
-        {{-- //================================================================= --}}
-
-    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
-      <div class="layout-container flex h-full grow flex-col">
-        <div class="px-3 flex flex-1 justify-center py-5">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight">Activity logs</p>
-                <p class="text-[#4e7397] text-sm font-normal leading-normal">See all the latest activity across your account</p>
-              </div>
-            </div>
-            <div class="px-4 py-3">
-              <label class="flex flex-col min-w-40 h-12 w-full">
-                <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
-                  <div
-                    class="text-[#4e7397] flex border-none bg-[#e7edf3] items-center justify-center pl-4 rounded-l-xl border-r-0"
-                    data-icon="MagnifyingGlass"
-                    data-size="24px"
-                    data-weight="regular"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <input
-                    placeholder="Search activity feed"
-                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e141b] focus:outline-0 focus:ring-0 border-none bg-[#e7edf3] focus:border-none h-full placeholder:text-[#4e7397] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                    value=""
-                  />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Actions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <x-admin_layout>
+        <main class="py-6">
+            {{-- //================================================================= --}}
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Admin Actions</h1>
+                
+                <!-- Table Container with Shadow and Rounded Corners -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6 border border-gray-200">
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                @foreach ($adminActions as $action)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                @if($action->action_type == 'Create') bg-green-100 text-green-800
+                                                @elseif($action->action_type == 'Update') bg-blue-100 text-blue-800
+                                                @elseif($action->action_type == 'Delete') bg-red-100 text-red-800
+                                                @elseif($action->action_type == 'Reply') bg-purple-100 text-purple-800
+                                                @elseif($action->action_type == 'Logout') bg-yellow-100 text-yellow-800
+                                                @else bg-gray-100 text-gray-800
+                                                @endif">
+                                                {{ $action->action_type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $action->details }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($action->timestamp)->format('F d, Y, h:i A') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-              </label>
+                
+                <!-- Pagination Controls -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex space-x-2">
+                        @if ($adminActions->onFirstPage())
+                            <span class="btn btn-secondary disabled inline-flex items-center px-4 py-2 bg-gray-200 text-gray-500 rounded-md text-sm font-medium cursor-not-allowed">Previous</span>
+                        @else
+                            <a href="{{ $adminActions->previousPageUrl() }}" class="btn btn-primary inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">Previous</a>
+                        @endif
+
+                        @if ($adminActions->hasMorePages())
+                            <a href="{{ $adminActions->nextPageUrl() }}" class="btn btn-primary inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">Next</a>
+                        @else
+                            <span class="btn btn-secondary disabled inline-flex items-center px-4 py-2 bg-gray-200 text-gray-500 rounded-md text-sm font-medium cursor-not-allowed">Next</span>
+                        @endif
+                    </div>
+                    
+                    <!-- Laravel Pagination Links -->
+                    <div class="pagination-links">
+                        {{ $adminActions->links() }}
+                    </div>
+                </div>
             </div>
-            <div class="px-4 py-3 @container">
-              <div class="flex overflow-hidden rounded-xl border border-[#d0dbe7] bg-slate-50">
-                <table class="flex-1">
-                  <thead>
-                    <tr class="bg-slate-50">
-                      <th class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">Name</th>
-                      <th class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">Action</th>
-                      <th class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 px-4 py-3 text-left text-[#0e141b] w-[400px] text-sm font-medium leading-normal">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">Admin</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Updated billing details
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        3 days ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">Admin</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Changed account owner
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        5 days ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">Admin</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Turned off weekly summary emails
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        1 week ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Sent feedback
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        2 weeks ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Submitted a roadmap idea
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        3 weeks ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Voted on a roadmap idea
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        1 month ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Commented on a roadmap idea
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        6 months ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Signed up for an account
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        1 year ago
-                      </td>
-                    </tr>
-                    <tr class="border-t border-t-[#d0dbe7]">
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-120 h-[72px] px-4 py-2 w-[400px] text-[#0e141b] text-sm font-normal leading-normal">User</td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-240 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        Activated their account
-                      </td>
-                      <td class="table-31cdc95a-c6eb-468f-938c-0492a53bb70b-column-360 h-[72px] px-4 py-2 w-[400px] text-[#4e7397] text-sm font-normal leading-normal">
-                        2 years ago
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            {{-- //========================================================================== --}}
+        </main>
+    </x-admin_layout>
 
-
-        {{-- //========================================================================== --}}
-    </main>
-</x-admin_layout>
+    <script>
+        // Add custom styling to Laravel's pagination links
+        document.addEventListener('DOMContentLoaded', function() {
+            // Style the pagination links that Laravel generates
+            const paginationContainer = document.querySelector('.pagination-links nav');
+            if (paginationContainer) {
+                // Add Tailwind classes to the pagination container
+                paginationContainer.classList.add('inline-flex', 'rounded-md', 'shadow-sm', '-space-x-px');
+                
+                // Style the pagination links
+                const paginationLinks = paginationContainer.querySelectorAll('a, span');
+                paginationLinks.forEach(link => {
+                    // Base styles for all pagination elements
+                    link.classList.add('relative', 'inline-flex', 'items-center', 'px-4', 'py-2', 'border', 'text-sm', 'font-medium');
+                    
+                    if (link.classList.contains('text-gray-500')) {
+                        // Non-active links
+                        link.classList.add('bg-white', 'border-gray-300', 'text-gray-500', 'hover:bg-gray-50');
+                    }
+                    
+                    if (link.getAttribute('aria-current') === 'page') {
+                        // Active page
+                        link.classList.add('z-10', 'bg-primary-50', 'border-primary-500', 'text-primary-600');
+                    }
+                    
+                    // Disabled links
+                    if (link.classList.contains('disabled')) {
+                        link.classList.add('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

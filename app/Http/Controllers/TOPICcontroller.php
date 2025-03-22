@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
+use Auth;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
 use App\Models\Topic;
@@ -33,24 +34,58 @@ class TOPICcontroller extends Controller
         
         return response()->json(['message'=>true, 'name' => $topic[0]]);
     }
+    
 
     public function getTopicsBySubject($subjectId)
     {
         $checksubject = Subject::where('subject_id', $subjectId)
                     ->where('user_id', auth()->user()->user_id)          
-                    ->get(['subject_id', 'name']);
-        $topics = Topic::where('subject_id', $checksubject[0]->subject_id)
-                    ->get(['topic_id', 'name']);
-        if($topics->isEmpty()){
-            return response()->json(['message'=>'No topics found for subject id: ' . $subjectId]);
+                    ->first(['subject_id', 'name']);
+
+        if (!$checksubject) {
+            return response()->json(['success'=>false,'message' => 'Subject not found or does not belong to the user.']);
         }
-        return response()->json(['message'=>'','topics' => $topics, 'subject_id' => $subjectId , 'name' => $checksubject[0]->name]);
+
+        $topics = Topic::where('subject_id', $checksubject->subject_id)
+                    // ->leftJoin('reviewer', 'topics.topic_id', '=', 'reviewer.topic_id')
+                    // ->whereNull('reviewer.topic_id')
+                    ->get(['topics.topic_id', 'topics.name']);
+
+        if ($topics->isEmpty()) {
+            return response()->json(['success'=>false,'message' => 'No topics found for subject id: ' . $subjectId]);
+        }
+
+        return response()->json(['success'=>true ,'message' => '', 'topics' => $topics, 'subject_id' => $subjectId, 'name' => $checksubject->name]);
+    }
+
+    public function getTopicsBySubjectincapture($subjectId)
+    {
+        $checksubject = Subject::where('subject_id', $subjectId)
+                    ->where('user_id', auth()->user()->user_id)          
+                    ->first(['subject_id', 'name']);
+
+        if (!$checksubject) {
+            return response()->json(['success'=>false,'message' => 'Subject not found or does not belong to the user.']);
+        }
+
+        $topics = Topic::where('subject_id', $checksubject->subject_id)
+                    ->leftJoin('reviewer', 'topics.topic_id', '=', 'reviewer.topic_id')
+                    ->whereNull('reviewer.topic_id')
+                    ->get(['topics.topic_id', 'topics.name']);
+
+        if ($topics->isEmpty()) {
+            return response()->json(['success'=>false,'message' => 'No topics found for subject id: ' . $subjectId]);
+        }
+
+        return response()->json(['success'=>true ,'message' => '', 'topics' => $topics, 'subject_id' => $subjectId, 'name' => $checksubject->name]);
     }
 
     public function getTopicsBySubjectName($subjectID)
     {   
         if(ctype_digit($subjectID)){
-            $subject = Subject::where('subject_id', $subjectID)->firstOrFail();
+            $subject = Subject::where('subject_id', $subjectID)
+                                ->where('user_id', Auth::user()->user_id)
+                                ->firstOrFail();
             if($subject === null){
                 return view('posts.subject');
             }

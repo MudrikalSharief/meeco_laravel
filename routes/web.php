@@ -17,7 +17,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
-
+use App\Http\Controllers\AdminActionController;
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function (){
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
+    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubjectincapture'])->name(']Subject.bytopic');
+    
+    
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
     Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
     Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');
@@ -264,6 +267,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
+
+    Route::resource('admin-actions', AdminActionController::class);
+    Route::get('/admin/logs', [AdminActionController::class, 'index'])->name('admin.logs');
+    //Settings Route:
+    Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 });
 
 

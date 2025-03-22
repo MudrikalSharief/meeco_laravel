@@ -1,5 +1,5 @@
 <x-contact_layout>
-    <main class="p-10">
+    <main class="">
         <div class="max-w-2xl mx-auto">
             <div class="flex items-center gap-3 mb-10">
                 <a href="{{ route('inquiry-history') }}" class="text-blue-600 text-3xl no-underline">←</a>
