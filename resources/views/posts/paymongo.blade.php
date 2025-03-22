@@ -1,6 +1,6 @@
 <x-layout>
-    <div id="paymongo-page" class=" absolute top-0  flex justify-center items-center h-screen w-full">
-        <div id="success_loader" class="hidden alert-popup-container">
+    <div id="paymongo-page" class=" absolute top-0 left-0  flex justify-center items-center h-screen w-full">
+        <div id="success_loader" class=" alert-popup-container w-full">
             <div class="success-checkmark">
                 <div class="check-icon">
                         <span class="icon-line line-tip"></span>

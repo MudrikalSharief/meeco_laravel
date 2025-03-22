@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function (){
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
+    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubjectincapture'])->name(']Subject.bytopic');
+    
+    
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
     Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
     Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');

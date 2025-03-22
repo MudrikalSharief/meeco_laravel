@@ -1,32 +1,31 @@
 <x-contact_layout>
-    <main class="px-4 md:px-10">
-        <div class="breadcrumb mb-10 px-4 md:px-10 lg:px-20 xl:pl-72 font-bold text-xl">
-            <a href="{{ route('landing')}}" class="text-blue-700 no-underline">Home</a>
-            <span class="text-blue-700 mx-1">></span>
-            <span class="text-blue-700">Help</span>
+    <main class="px-4 w-full max-w-lg">
+        <div class="breadcrumb mb-2  font-bold text-md">
+            <a href="{{ route('profile') }}" class="text-gray-500 text-xl no-underline">←</a>
+            <a href="{{ route('profile')}}" class="text-gray-500 no-underline">Back</a> 
         </div>
     
-        <h2 class="Contact_Us w-full text-center text-blue-700 text-4xl font-bold mb-5">Contact Us</h2>
-        <p class="description text-center text-gray-800 mb-15">Thank you for choosing Meeco. Please feel free to contact us with the channel below, we are happy to help.</p>
+        <h2 class="Contact_Us w-full text-center text-blue-700 text-xl font-bold mb-5">Contact Us</h2>
+        <p class="description text-center text-xs text-gray-800 mb-15 mx-10">Thank you for choosing Meeco. Please feel free to contact us with the channel below, we are happy to help.</p>
     
-        <div class="services flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-12 md:gap-24 mt-10 px-2">
-            <a href="{{ route('inquiry') }}" class=" sm:w-auto mx-auto sm:mx-0">
-                <div class="service flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-10 max-w-lg hover:bg-gray-200 rounded-lg p-4 sm:p-9">
-                    <img class="icon w-10 h-10 object-contain mt-0 sm:mt-3" src="{{ asset('logo_icons/pictures/note.png') }}" alt="Note">
-                    <div class="service-content text-center sm:text-left">
-                        <h3 class="text-blue-700 mb-2 text-lg font-bold">Inquiry</h3>
-                        <p class="text-gray-800 m-0 leading-6">Got questions? This is your pathway to unravel the unknown.</p>
+        <div class="services flex flex-col sm:flex-row justify-center items-center gap-4 mt-10 px-2">
+            <a href="{{ route('inquiry') }}" class="w-full  bg-blue-50 hover:bg-blue-100 rounded-lg p-3 shadow-md">
+                <div class="service flex flex-col  items-start  max-w-lgrounded-lg">
+                    <div class="flex justify-start gap-2 items-center service-content text-center sm:text-left">
+                        <img class="icon w-6 h-10 object-contain " src="{{ asset('logo_icons/pictures/note.png') }}" alt="Note">
+                        <h3 class="text-blue-700 text-md font-bold">Inquiry</h3>
                     </div>
+                        <p class="text-gray-800 m-0 text-sm leading-6">Got questions? This is your pathway to unravel the unknown.</p>
                 </div>
             </a>
             
-            <a href="{{ route('inquiry-history') }}" class=" sm:w-auto mx-auto sm:mx-0">
-                <div class="service flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-10 max-w-lg hover:bg-gray-200 rounded-lg p-4 sm:p-9">
-                    <img class="icon w-10 h-10 object-contain mt-0 sm:mt-3" src="{{ asset('logo_icons/pictures/history.png') }}" alt="Note">
-                    <div class="service-content text-center sm:text-left">
-                        <h3 class="text-blue-700 mb-2 text-lg font-bold">Inquiry History</h3>
-                        <p class="text-gray-800 m-0 leading-6">See how your questions have shaped your quest for knowledge.</p>
+            <a href="{{ route('inquiry-history') }}" class="w-full  bg-blue-50 hover:bg-blue-100 rounded-lg p-3 shadow-md">
+                <div class="service flex flex-col  items-start  max-w-lgrounded-lg">
+                    <div class="flex justify-start gap-2 items-center service-content text-center sm:text-left">
+                        <img class="icon w-6 h-10 object-contain " src="{{ asset('logo_icons/pictures/history.png') }}" alt="Note">
+                        <h3 class="text-blue-700 text-md font-bold">Inquiry History</h3>
                     </div>
+                    <p class="text-gray-800 m-0 text-sm leading-6">See how your questions have shaped your quest for knowledge.</p>
                 </div>
             </a>
         </div>

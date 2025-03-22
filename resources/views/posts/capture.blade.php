@@ -213,6 +213,7 @@
         const modalTitle = document.getElementById('dynamicModal-title');
         const modalMessage = document.getElementById('dynamicModal-message');
         const modalButton = document.getElementById('dynamicModalButton');
+        const topicsContainer = document.getElementById('topicsDropdownContainer');
         let subjectDropdownListenerAdded = false;
         // Function to show the dynamic modal
         function showModal(title = '', message = '', titleColor = '', buttonText = '') {
@@ -227,6 +228,74 @@
         document.getElementById('dynamicModal-close').addEventListener('click', function() {
             document.getElementById('dynamicModal').classList.add('hidden');
         });
+
+        const extractTextButton = document.getElementById('extractTextButton');
+            // Toggle the visibility of the extract button
+        function toggleExtractButton() {
+            if (imageContainer.children.length > 0) {
+                extractTextButton.classList.remove('hidden');
+            } else {
+                extractTextButton.classList.add('hidden');
+        }
+        }
+
+        if (extractTextButton) {
+        extractTextButton.addEventListener('click', () => {
+            console.log('hi');
+            extractTextModal.classList.remove('hidden');
+            fetch('/subjects')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.subjects && data.subjects.length > 0) {
+                        subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
+                        data.subjects.forEach(subject => {
+                            const option = document.createElement('option');
+                            option.value = subject.subject_id;
+                            option.textContent = subject.name;
+                            subjectDropdown.appendChild(option);
+                        });
+
+                        if (!subjectDropdownListenerAdded) {
+                            subjectDropdown.addEventListener('change', () =>{
+                                const selectedSubjectId = subjectDropdown.value;
+                                if (!selectedSubjectId) {
+                                    
+                                    subjectReminder.classList.remove('hidden');
+                                    topicsContainer.classList.add('hidden');
+                                    noTopicsMessage.classList.add('hidden');
+                                    addTopicButton.classList.add('hidden');
+                                } else {
+                                    subjectReminder.classList.add('hidden');
+                                    addTopicButton.classList.remove('hidden');
+                                    fetch(`/topics/subject/${selectedSubjectId}`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.topics && data.topics.length > 0) {
+                                                topicDropdown.innerHTML = '';
+                                                data.topics.forEach(topic => {
+                                                    const option = document.createElement('option');
+                                                    option.value = topic.topic_id;
+                                                    option.textContent = topic.name;
+                                                    topicDropdown.appendChild(option);
+                                                });
+                                                topicsDropdownContainer.classList.remove('hidden');
+
+                                                noTopicsMessage.classList.add('hidden');
+                                            } else {
+                                                topicsDropdownContainer.classList.add('hidden');
+                                                noTopicsMessage.classList.remove('hidden');
+                                            }
+                                        })
+                                        .catch(error => console.error('Error fetching topics:', error));
+                                }
+                            });
+                            subjectDropdownListenerAdded = true;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching subjects:', error));
+        });
+    }
 
         // Handle image upload
         const uploaded = document.getElementById('uploadButton');
@@ -357,17 +426,8 @@
             .catch(error => console.error('Error fetching uploaded images:', error));
         }
 
-        fetchImages();
+           fetchImages();
 
-        // Toggle the visibility of the extract button
-        function toggleExtractButton() {
-            const extractTextButton = document.getElementById('extractTextButton');
-            if (imageContainer.children.length > 0) {
-                extractTextButton.classList.remove('hidden');
-            } else {
-                extractTextButton.classList.add('hidden');
-            }
-        }
 
         // Handle image deletion
         const deleteConfirmModal = document.getElementById('deleteConfirmModal');
@@ -431,22 +491,31 @@ if (imageContainer) {
         const zoomModal = document.getElementById('zoomModal');
         const zoomedImage = document.getElementById('zoomedImage');
 
+        // if (imageContainer) {
+        //     imageContainer.addEventListener('click', (event) => {
+        //         if (event.target.tagName === 'IMG') {
+        //             zoomedImage.src = event.target.src;
+        //             zoomModal.classList.remove('hidden');
+        //         }
+        //     });
+        // }
+
+        // Use this:
         if (imageContainer) {
             imageContainer.addEventListener('click', (event) => {
                 if (event.target.tagName === 'IMG') {
-                    zoomedImage.src = event.target.src;
-                    zoomModal.classList.remove('hidden');
+                    window.open(event.target.src, '_blank');
                 }
             });
         }
 
-        if (zoomModal) {
-            zoomModal.addEventListener('click', (event) => {
-                if (event.target === zoomModal) {
-                    zoomModal.classList.add('hidden');
-                }
-            });
-        }
+        // if (zoomModal) {
+        //     zoomModal.addEventListener('click', (event) => {
+        //         if (event.target === zoomModal) {
+        //             zoomModal.classList.add('hidden');
+        //         }
+        //     });
+        // }
 
         // Handle image capture from camera
         const captureImage = document.getElementById('captureImage');
@@ -509,17 +578,17 @@ if (imageContainer) {
         }
 
         if (confirmExtractText) {
-        confirmExtractText.addEventListener('click', () => {
-            if (!subjectDropdown.value) {
-                subjectReminder.classList.remove('hidden');
-                noTopicsMessage.classList.add('hidden');
-            } else if (!topicDropdown.value) {
-                subjectReminder.classList.add('hidden');
-                noTopicsMessage.classList.remove('hidden');
-            } else {
-                subjectReminder.classList.add('hidden');
-                noTopicsMessage.classList.add('hidden');
-                extractTextModal.classList.add('hidden');
+            confirmExtractText.addEventListener('click', () => {
+                if (!subjectDropdown.value) {
+                    subjectReminder.classList.remove('hidden');
+                    noTopicsMessage.classList.add('hidden');
+                } else if (!topicDropdown.value) {
+                    subjectReminder.classList.add('hidden');
+                    noTopicsMessage.classList.remove('hidden');
+                } else {
+                    subjectReminder.classList.add('hidden');
+                    noTopicsMessage.classList.add('hidden');
+                    extractTextModal.classList.add('hidden');
 
                 
                 //check if the user exceeded the reviewer generation yet
@@ -535,10 +604,15 @@ if (imageContainer) {
                 .then(data => {
                     if (data.success) {
                         console.log(data);
-                        if(data.reviewerLimitReached){
+                        if(data.notSubscribed){
+                            showModal('Error', 'You are not Subscibe to any promo yet.', 'text-red-500', 'OK');
+                            modalButton.classList.add('hidden');
+                        }
+                        else if(data.reviewerLimitReached){
                             showModal('Error', 'Please upgrade your subscription to add more reviewers.', 'text-red-500', 'OK');
                             modalButton.classList.add('hidden');
                         }
+                        
                         else{
                             const topicId = topicDropdown.value;
                             const topicName = topicDropdown.options[topicDropdown.selectedIndex].text;
@@ -564,36 +638,7 @@ if (imageContainer) {
         });
     }
 
-    if (extractTextButton) {
-        extractTextButton.addEventListener('click', () => {
-            extractTextModal.classList.remove('hidden');
-            fetch('/subjects')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.subjects && data.subjects.length > 0) {
-                        subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
-                        data.subjects.forEach(subject => {
-                            const option = document.createElement('option');
-                            option.value = subject.subject_id;
-                            option.textContent = subject.name;
-                            subjectDropdown.appendChild(option);
-                        });
-
-                        if (!subjectDropdownListenerAdded) {
-                            subjectDropdown.addEventListener('change', handleSubjectDropdownChange);
-                            subjectDropdownListenerAdded = true;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error fetching subjects:', error));
-        });
-    }
-    const closeExtractTextModal = document.getElementById('closeExtractTextModal');
-    if (closeExtractTextModal) {
-        closeExtractTextModal.addEventListener('click', () => {
-            extractTextModal.classList.add('hidden');
-        });
-    }
+    
 
     });
     </script>

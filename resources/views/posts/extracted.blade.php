@@ -69,7 +69,10 @@
 
     {{-- Loader --}}
     <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-        <div class="loader"></div>
+        <div class="relative">
+            <div class="loader"></div>
+            <p class="absolute text-white text-center w-full -bottom-12 font-medium">This may take a few minutes</p>
+        </div>
     </div>
     <style>
         .loader {
