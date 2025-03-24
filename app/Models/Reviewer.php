@@ -22,11 +22,23 @@ class Reviewer extends Model
     protected $keyType = 'int';
 
     // Define the fillable attributes
-    protected $fillable = ['topic_id', 'reviewer_about', 'reviewer_text'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'topic_id',
+        'reviewer_about',
+        'reviewer_text',
+    ];
 
     // Define the relationship with the Topic model
     public function topic()
     {
         return $this->belongsTo(Topic::class, 'topic_id', 'topic_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
