@@ -1062,25 +1062,65 @@ class SubscriptionController extends Controller
                 ORDER BY date
             ', [$fromDate->startOfDay()->toDateTimeString(), $toDate->endOfDay()->toDateTimeString()]);
             
-            // Process the data
+            // Create a map from the raw data for easier lookup
+            $dateDataMap = [];
+            foreach ($rawData as $row) {
+                $dateKey = Carbon::parse($row->date)->format('Y-m-d');
+                $dateDataMap[$dateKey] = [
+                    'total' => (float)$row->total,
+                    'count' => (int)$row->count
+                ];
+            }
+            
+            // Create a consistent date range with all days, including those with zero income
             $dailyData = [];
+            $currentDate = $fromDate->copy();
             $totalRevenue = 0;
             $totalSubscriptions = 0;
             
-            foreach ($rawData as $row) {
-                $date = Carbon::parse($row->date)->format('Y-m-d');
-                $revenue = (float) $row->total;
-                $count = (int) $row->count;
+            // Loop through all days in the date range
+            while ($currentDate <= $toDate) {
+                $dateKey = $currentDate->format('Y-m-d');
+                $dateDisplay = $currentDate->format('D, M j, Y');
                 
-                $dailyData[$date] = [
-                    'date' => Carbon::parse($row->date)->format('D, M j, Y'),
-                    'total' => $revenue,
-                    'count' => $count
+                // Check if we have data for this date
+                if (isset($dateDataMap[$dateKey])) {
+                    $revenue = $dateDataMap[$dateKey]['total'];
+                    $count = $dateDataMap[$dateKey]['count'];
+                } else {
+                    // If no data, explicitly set to zero
+                    $revenue = 0;
+                    $count = 0;
+                }
+                
+                // Ensure this day's data has all required fields
+                $dailyData[$dateKey] = [
+                    'date' => $dateDisplay,     // String: formatted date
+                    'total' => $revenue,        // Float: revenue amount
+                    'count' => $count           // Integer: subscription count
                 ];
                 
+                // Log each day's data to verify it's properly formatted
+                Log::info("Day data for {$dateDisplay}", [
+                    'key' => $dateKey,
+                    'revenue' => $revenue,
+                    'count' => $count
+                ]);
+                
+                // Add to totals
                 $totalRevenue += $revenue;
                 $totalSubscriptions += $count;
+                
+                // Move to next day
+                $currentDate->addDay();
             }
+            
+            // Log the full dataset structure before passing to Excel export
+            Log::info('Full daily data structure:', [
+                'days_count' => count($dailyData),
+                'date_range' => $fromDate->format('Y-m-d') . ' to ' . $toDate->format('Y-m-d'),
+                'first_day_data' => json_encode(reset($dailyData))
+            ]);
             
             // Calculate average revenue per subscription
             $avgRevenue = $totalSubscriptions > 0 ? $totalRevenue / $totalSubscriptions : 0;
@@ -1103,6 +1143,7 @@ class SubscriptionController extends Controller
             
         } catch (\Exception $e) {
             Log::error('Error generating daily stats Excel: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return back()->with('error', 'Failed to generate Excel: ' . $e->getMessage());
         }
     }

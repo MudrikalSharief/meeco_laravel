@@ -206,6 +206,62 @@
                     window.open(url, '_blank');
                 });
             }
+
+            // Function to update the daily statistics UI
+            function updateDailyStats(data) {
+                // Update summary statistics
+                document.getElementById('totalRevenue').innerText = 'PHP ' + data.summary.totalRevenue.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                document.getElementById('totalSubscriptions').innerText = data.summary.totalSubscriptions;
+                document.getElementById('avgRevenue').innerText = 'PHP ' + data.summary.avgRevenue.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                // ... rest of your chart update code ...
+            }
+            
+            // Get the date filter button
+            const applyDateFilterBtn = document.getElementById('applyDateFilter');
+            
+            // Add event listener for the date filter button
+            if (applyDateFilterBtn) {
+                applyDateFilterBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Update the toDate field for display
+                    document.getElementById('dateTo').value = toDate;
+                    
+                    // Fetch the subscription statistics
+                    fetch(`{{ route('admin.subscription-stats') }}?from_date=${fromDate}&to_date=${toDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                console.error('Error:', data.error);
+                                alert('Error fetching statistics: ' + data.error);
+                                return;
+                            }
+                            
+                            // Update the daily statistics
+                            updateDailyStats(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error fetching statistics: ' + error);
+                        });
+                });
+            }
         });
     </script>
 </x-admin_layout>
