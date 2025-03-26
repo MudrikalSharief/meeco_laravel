@@ -280,6 +280,15 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/logs', [AdminActionController::class, 'index'])->name('admin.logs');
     //Settings Route:
     Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
+
+    // Add these PDF generation routes
+    Route::get('/admin/statistics/daily-pdf', [App\Http\Controllers\SubscriptionController::class, 'generateDailyStatsPdf'])
+        ->name('admin.statistics.daily-pdf')
+        ->middleware(['auth:admin']);
+
+    Route::get('/admin/statistics/monthly-pdf', [App\Http\Controllers\SubscriptionController::class, 'generateMonthlyStatsPdf'])
+        ->name('admin.statistics.monthly-pdf')
+        ->middleware(['auth:admin']);
 });
 
 

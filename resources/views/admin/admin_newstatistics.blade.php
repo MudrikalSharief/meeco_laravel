@@ -18,6 +18,14 @@
                     <div class="pt-6">
                         <button id="applyDateFilter" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1.5 px-4 rounded">Apply</button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printDailyPdf" class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                            </svg>
+                            Print PDF
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -65,6 +73,14 @@
                     <div class="pt-6">
                         <button id="applyYearFilter" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1.5 px-4 rounded">Apply</button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printMonthlyPdf" class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                            </svg>
+                            Print PDF
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -97,4 +113,45 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the PDF buttons
+            const printDailyPdfBtn = document.getElementById('printDailyPdf');
+            const printMonthlyPdfBtn = document.getElementById('printMonthlyPdf');
+            
+            // Add click handlers for the PDF buttons
+            if (printDailyPdfBtn) {
+                printDailyPdfBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Generate the PDF URL with query parameters
+                    const url = `{{ route('admin.statistics.daily-pdf') }}?from_date=${fromDate}&to_date=${toDate}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            if (printMonthlyPdfBtn) {
+                printMonthlyPdfBtn.addEventListener('click', function() {
+                    const year = document.getElementById('yearSelect').value;
+                    if (!year) {
+                        alert('Please select a year first.');
+                        return;
+                    }
+                    
+                    // Generate the PDF URL with query parameters
+                    const url = `{{ route('admin.statistics.monthly-pdf') }}?year=${year}`;
+                    window.open(url, '_blank');
+                });
+            }
+        });
+    </script>
 </x-admin_layout>
