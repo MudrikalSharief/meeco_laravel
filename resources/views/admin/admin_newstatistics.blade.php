@@ -26,6 +26,14 @@
                             Print PDF
                         </button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printDailyExcel" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Print Excel
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -81,6 +89,14 @@
                             Print PDF
                         </button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printMonthlyExcel" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Print Excel
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -119,6 +135,10 @@
             const printDailyPdfBtn = document.getElementById('printDailyPdf');
             const printMonthlyPdfBtn = document.getElementById('printMonthlyPdf');
             
+            // Get the Excel buttons
+            const printDailyExcelBtn = document.getElementById('printDailyExcel');
+            const printMonthlyExcelBtn = document.getElementById('printMonthlyExcel');
+            
             // Add click handlers for the PDF buttons
             if (printDailyPdfBtn) {
                 printDailyPdfBtn.addEventListener('click', function() {
@@ -149,6 +169,40 @@
                     
                     // Generate the PDF URL with query parameters
                     const url = `{{ route('admin.statistics.monthly-pdf') }}?year=${year}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            // Add click handlers for the Excel buttons
+            if (printDailyExcelBtn) {
+                printDailyExcelBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Generate the Excel URL with query parameters
+                    const url = `{{ route('admin.statistics.daily-excel') }}?from_date=${fromDate}&to_date=${toDate}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            if (printMonthlyExcelBtn) {
+                printMonthlyExcelBtn.addEventListener('click', function() {
+                    const year = document.getElementById('yearSelect').value;
+                    if (!year) {
+                        alert('Please select a year first.');
+                        return;
+                    }
+                    
+                    // Generate the Excel URL with query parameters
+                    const url = `{{ route('admin.statistics.monthly-excel') }}?year=${year}`;
                     window.open(url, '_blank');
                 });
             }

@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Laravel\Pail\ValueObjects\Origin\Console;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DailyStatisticsExport;
+use App\Exports\MonthlyStatisticsExport;
 
 class SubscriptionController extends Controller
 {   
@@ -1025,6 +1028,155 @@ class SubscriptionController extends Controller
         } catch (\Exception $e) {
             Log::error('Error generating monthly stats PDF: ' . $e->getMessage());
             return back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate Excel for daily subscription statistics
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function generateDailyStatsExcel(Request $request)
+    {
+        try {
+            $fromDate = $request->input('from_date') 
+                ? Carbon::parse($request->input('from_date')) 
+                : Carbon::now()->subDays(6);
+            
+            $toDate = $request->input('to_date') 
+                ? Carbon::parse($request->input('to_date')) 
+                : Carbon::now();
+            
+            // Get daily subscription data
+            $rawData = DB::select('
+                SELECT 
+                    DATE(s.start_date) as date,
+                    SUM(p.price) as total,
+                    COUNT(*) as count
+                FROM subscriptions s
+                JOIN promos p ON s.promo_id = p.promo_id
+                WHERE s.start_date BETWEEN ? AND ?
+                AND p.name != "Free Trial"
+                GROUP BY DATE(s.start_date)
+                ORDER BY date
+            ', [$fromDate->startOfDay()->toDateTimeString(), $toDate->endOfDay()->toDateTimeString()]);
+            
+            // Process the data
+            $dailyData = [];
+            $totalRevenue = 0;
+            $totalSubscriptions = 0;
+            
+            foreach ($rawData as $row) {
+                $date = Carbon::parse($row->date)->format('Y-m-d');
+                $revenue = (float) $row->total;
+                $count = (int) $row->count;
+                
+                $dailyData[$date] = [
+                    'date' => Carbon::parse($row->date)->format('D, M j, Y'),
+                    'total' => $revenue,
+                    'count' => $count
+                ];
+                
+                $totalRevenue += $revenue;
+                $totalSubscriptions += $count;
+            }
+            
+            // Calculate average revenue per subscription
+            $avgRevenue = $totalSubscriptions > 0 ? $totalRevenue / $totalSubscriptions : 0;
+            
+            // Summary data
+            $summary = [
+                'totalRevenue' => $totalRevenue,
+                'totalSubscriptions' => $totalSubscriptions,
+                'avgRevenue' => $avgRevenue
+            ];
+            
+            // Date range for the report title
+            $dateRange = $fromDate->format('M j, Y') . ' to ' . $toDate->format('M j, Y');
+            
+            // Generate the Excel file
+            return Excel::download(
+                new DailyStatisticsExport($dailyData, $summary, $dateRange),
+                'daily-subscription-report-' . $fromDate->format('Y-m-d') . '-to-' . $toDate->format('Y-m-d') . '.xlsx'
+            );
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating daily stats Excel: ' . $e->getMessage());
+            return back()->with('error', 'Failed to generate Excel: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Generate Excel for monthly subscription statistics
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function generateMonthlyStatsExcel(Request $request)
+    {
+        try {
+            $year = $request->input('year', Carbon::now()->year);
+            
+            // Fetch monthly data
+            $monthlyData = DB::select('
+                SELECT 
+                    MONTH(s.start_date) as month,
+                    SUM(p.price) as total,
+                    COUNT(*) as count
+                FROM subscriptions s
+                JOIN promos p ON s.promo_id = p.promo_id
+                WHERE YEAR(s.start_date) = ?
+                AND p.name != "Free Trial"
+                GROUP BY MONTH(s.start_date)
+                ORDER BY month ASC
+            ', [$year]);
+            
+            // Process the data
+            $processedData = [];
+            $annualRevenue = 0;
+            $annualSubscriptions = 0;
+            
+            // Month abbreviations
+            $monthAbbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            foreach ($monthlyData as $row) {
+                $month = (int) $row->month;
+                $revenue = (float) $row->total;
+                $count = (int) $row->count;
+                
+                $processedData[] = [
+                    'label' => $monthAbbr[$month - 1],
+                    'total' => $revenue,
+                    'count' => $count
+                ];
+                
+                $annualRevenue += $revenue;
+                $annualSubscriptions += $count;
+            }
+            
+            // Calculate average monthly revenue
+            $monthsWithRevenue = count($processedData);
+            $avgMonthlyRevenue = $monthsWithRevenue > 0 
+                ? $annualRevenue / $monthsWithRevenue 
+                : 0;
+            
+            // Summary data
+            $summary = [
+                'annualRevenue' => $annualRevenue,
+                'annualSubscriptions' => $annualSubscriptions,
+                'avgMonthlyRevenue' => $avgMonthlyRevenue
+            ];
+            
+            // Generate the Excel file
+            return Excel::download(
+                new MonthlyStatisticsExport($processedData, $summary, $year),
+                'monthly-subscription-report-' . $year . '.xlsx'
+            );
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating monthly stats Excel: ' . $e->getMessage());
+            return back()->with('error', 'Failed to generate Excel: ' . $e->getMessage());
         }
     }
 }

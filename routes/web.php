@@ -289,6 +289,15 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/statistics/monthly-pdf', [App\Http\Controllers\SubscriptionController::class, 'generateMonthlyStatsPdf'])
         ->name('admin.statistics.monthly-pdf')
         ->middleware(['auth:admin']);
+
+    // Add these Excel generation routes
+    Route::get('/admin/statistics/daily-excel', [App\Http\Controllers\SubscriptionController::class, 'generateDailyStatsExcel'])
+        ->name('admin.statistics.daily-excel')
+        ->middleware(['auth:admin']);
+
+    Route::get('/admin/statistics/monthly-excel', [App\Http\Controllers\SubscriptionController::class, 'generateMonthlyStatsExcel'])
+        ->name('admin.statistics.monthly-excel')
+        ->middleware(['auth:admin']);
 });
 
 
