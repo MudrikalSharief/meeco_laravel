@@ -77,6 +77,14 @@ Route::middleware('auth')->group(function (){
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
 
+    //for the reviewer list
+    Route::get('/reviewers', [ReviewerController::class, 'getReviewerList'])->name('reviewers');
+    Route::view('/reviewer_list', 'posts.reviewer_list')->name('reviewer.list');
+
+    //for quizzes list
+    Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
+    Route::view('/quiz_list', 'posts.quiz_list')->name('quiz.list');
+
     //contact us
     Route::view('/contact', 'Contact.contact')->name('contact');
     Route::view('/contact/inquiry', 'Contact.inquiry')->name('inquiry');
