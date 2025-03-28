@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
 use App\Models\User;
@@ -35,17 +34,11 @@ class StatisticsController extends Controller
 
         $daily_rev_arr = [];
         
-        if($daily_rev->isNotEmpty()){
-            $daily_rev_date = Carbon::parse($daily_rev[0]->date)->day;
-
-            for($i = $startDate_day_start; $i <= $startDate_day_end; $i++){
-                if($i === $daily_rev_date){
-                    array_push($daily_rev_arr, $daily_rev[0]->total_amount);
-                }else{
-                    array_push($daily_rev_arr, 0);
-                }
-            }
+        $recent_5_years = [];
+        for ($i = 0; $i < 5; $i++) {
+            $recent_5_years[] = Carbon::now()->subYears($i)->startOfYear()->year;
         }
+        $recent_5_years_str = array_map('strval', $recent_5_years);
 
         $week_labels = [];
         for ($i = 0; $i < 7; $i++) {
@@ -90,46 +83,42 @@ class StatisticsController extends Controller
         ->orderBy('month')
         ->get();
 
-        $yearly_rev_arr = [];
+        $monthly_rev =  Subscription::selectRaw('SUM(price) as total_amount')
+        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+        ->where('subscriptions.start_date', '>=', $recent_january)
+        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
+        ->get();
 
-        if ($yearly_rev->isNotEmpty()) {
-            // Convert query result into a key-value pair (month => total_amount)
-            $monthly_totals = $yearly_rev->pluck('total_amount', 'month')->toArray();
+        $yearly_rev = Subscription::selectRaw('SUM(price) as total_amount')
+        ->leftJoin('promos', 'subscriptions.promo_id', '=', 'promos.promo_id')
+        ->where('subscriptions.start_date', '>=', $recent_5_years)
+        ->groupBy(DB::raw('DATE(subscriptions.start_date)'))
+        ->get();
 
-            for ($i = 1; $i <= 12; $i++) { // Loop through all months (1-12)
-                if (isset($monthly_totals[$i])) {
-                    $yearly_rev_arr[] = $monthly_totals[$i]; // Add total amount if month exists
-                } else {
-                    $yearly_rev_arr[] = 0; // Add 0 if month is missing
-                }
-            }
-        }
+        $daily_ol = User::selectRaw('COUNT(user_id) as total_users')
+        ->where('last_login', '>=', $recent_monday)
+        ->groupBy(DB::raw('DATE(last_login)'))
+        ->get();
 
+        $monthly_ol = User::selectRaw('COUNT(user_id) as total_users')
+        ->where('last_login', '>=', $recent_january)
+        ->groupBy(DB::raw('DATE(last_login)'))
+        ->get();
 
-        $totalRevenue = $yearly_rev->sum('total_amount');
-        $totalSubs = $yearly_rev->sum('total_subs');
-        $averageRevenue = ($totalSubs > 0) ? ($totalRevenue / $totalSubs) : 0;
+        $yearly_ol = User::selectRaw('COUNT(user_id) as total_users')
+        ->where('last_login', '>=', $recent_5_years)
+        ->groupBy(DB::raw('DATE(last_login)'))
+        ->get();
 
-
-        if($yearly_rev->isNotEmpty()){
-            return response()->json([
-                'yearly_rev'=>$yearly_rev_arr,
-                'total_amount'=>$totalRevenue,
-                'average_rev'=>$averageRevenue,
-                'total_subs'=>$totalSubs
-            ]);  
-        }else{
-            return response()->json([
-                'yearly_rev'=>[0,0,0,0,0,0,0,0,0,0,0,0],
-                'total_amount'=>'0',
-                'average_rev'=>'0',
-                'total_subs'=>'0'
-            ]);  
-        }
-    }
-
-    public function filter_weekly_statistics(Request $request){
-        $dateVals = $request->json()->all();
+        return response()->json([
+            'recent_5_years_str' => $recent_5_years_str,
+            'daily_rev' => $daily_rev,
+            'monthly_rev' => $monthly_rev,
+            'yearly_rev' => $yearly_rev,
+            'daily_ol' => $daily_ol,
+            'monthly_ol' => $monthly_ol,
+            'yearly_ol' => $yearly_ol
+        ]);
         
         $fromDate = Carbon::parse(trim($dateVals[0], '"')); 
         $toDate = Carbon::parse(trim($dateVals[1], '"'));

@@ -280,7 +280,8 @@ Route::middleware(['auth:admin'])->group(function () {
     //Settings Route:
     Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 });
-
+   //Settings Route:
+   Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 
 
 
