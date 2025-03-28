@@ -76,75 +76,43 @@
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Application</h2>
                 
                 <div class="space-y-4">
-                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openModal('logoModal')">
+                    <!-- Updated modal triggers -->
+                    <!-- <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" 
+                         data-settings-modal="logoModal">
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div>
                             <h3 class="font-medium text-gray-700">Logo</h3>
                             <p class="text-sm text-gray-500">Update the logo image</p>
                         </div>
-                    </div>
+                    </div> -->
                     
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                     <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
                          <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
-=======
-=======
->>>>>>> Stashed changes
-<<<<<<< HEAD
-                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openModal('themesModal')">
-                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-=======
-                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
-                         <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
->>>>>>> main2
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                         <div>
                             <h3 class="font-medium text-gray-700">Themes</h3>
                             <p class="text-sm text-gray-500">Available themes for the application</p>
                         </div>
                     </div>
                     
-                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openModal('lightspeedModal')">
+                    <!-- <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" 
+                         data-settings-modal="lightspeedModal">
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                         <div>
                             <h3 class="font-medium text-gray-700">Lightspeed</h3>
                             <p class="text-sm text-gray-500">Drafts to the Lightspeed</p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </section>
         </div>
-<!-- Modals -->
+
+        <!-- Modals
         <!-- Logo Modal -->
-        <!-- <div id="logoModal" class="hidden fixed inset-0 z-50">
-            <div class="fixed inset-0 bg-gray-600 bg-opacity-50" onclick="closeModal('logoModal')"></div>
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <!-- <div id="logoModal" class="hidden fixed inset-0 z-50 settings-modal-backdrop">
+            <div class="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
+            <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 w-96 max-w-[95%] bg-white rounded-lg shadow-lg">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Logo Settings</h3>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
-<<<<<<< HEAD
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500">Upload a new logo here.</p>
-                        <input type="file" class="mt-4" />
-                    </div>
-                    <div class="items-center px-4 py-3">
-                        <button class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300" onclick="closeModal('logoModal')">
-                            Save
-                        </button>
-                    </div>
-=======
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                     <form>
                         <div class="mt-2 px-7 py-3">
                             <p class="text-sm text-gray-500">Upload a new logo here.</p>
@@ -166,15 +134,7 @@
                     </form>
                 </div>
             </div>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        </div> --> -->
-=======
         </div> -->
->>>>>>> Stashed changes
-=======
-        </div> -->
->>>>>>> Stashed changes
 
         <!-- Themes Modal -->
         <div id="themesModal" class="hidden fixed inset-0 z-50 settings-modal-backdrop">
@@ -202,63 +162,42 @@
                             </button>
                         </div>
                     </form>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> main2
->>>>>>> Stashed changes
-=======
->>>>>>> main2
->>>>>>> Stashed changes
                 </div>
             </div>
         </div>
 
-        <!-- Themes Modal -->
-        <div id="themesModal" class="hidden fixed inset-0 z-50">
-            <div class="fixed inset-0 bg-gray-600 bg-opacity-50" onclick="closeModal('themesModal')"></div>
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <!-- Lightspeed Modal
+        <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50 settings-modal-backdrop">
+            <div class="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
+            <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 w-96 max-w-[95%] bg-white rounded-lg shadow-lg">
                 <div class="mt-3 text-center">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">Themes Settings</h3>
-                    <div class="mt-2 px-7 py-3">
-                        <p class="text-sm text-gray-500">Select a theme for the application.</p>
-                        <select class="mt-4 block w-full p-2 border border-gray-300 rounded-md">
-                            <option>Theme 1</option>
-                            <option>Theme 2</option>
-                            <option>Theme 3</option>
-                        </select>
-                    </div>
-                    <div class="items-center px-4 py-3">
-                        <button class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300" onclick="closeModal('themesModal')">
-                            Save
-                        </button>
-                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Lightspeed Settings</h3>
+                    <form>
+                        <div class="mt-2 px-7 py-3">
+                            <p class="text-sm text-gray-500">Configure Lightspeed integration:</p>
+                            <input type="text" 
+                                   class="mt-2 w-full p-2 border rounded-md" 
+                                   placeholder="API Key" />
+                        </div>
+                        <div class="items-center px-4 py-3 flex gap-2 justify-end">
+                            <button type="button" 
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                                    data-settings-modal-close>
+                                Cancel
+                            </button>
+                            <button type="submit" 
+                                    id="saveLightspeedSettings"
+                                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         </div> 
 ======
         <!-- Lightspeed Modal -->
         <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
-=======
-=======
->>>>>>> Stashed changes
-<<<<<<< HEAD
-        </div>
-
-        <!-- Lightspeed Modal -->
-        <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
-=======
-        </div> 
-======
-        <!-- Lightspeed Modal -->
-        <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
->>>>>>> main2
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
             <div class="fixed inset-0 bg-gray-600 bg-opacity-50" onclick="closeModal('lightspeedModal')"></div>
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3 text-center">
@@ -274,39 +213,6 @@
                     </div>
                 </div>
             </div>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         </div> -->
-=======
-=======
->>>>>>> Stashed changes
-<<<<<<< HEAD
-        </div>
-
-        <script>
-            function openModal(modalId) {
-                document.getElementById(modalId).classList.remove('hidden');
-            }
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.add('hidden');
-            }
-
-            // Close modal with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeModal('logoModal');
-                    closeModal('themesModal');
-                    closeModal('lightspeedModal');
-                }
-            });
-        </script>
-=======
-        </div> -->
->>>>>>> main2
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     </main>
 </x-admin_layout>
