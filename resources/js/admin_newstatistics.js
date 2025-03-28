@@ -1,3 +1,13 @@
+const darkModeVal = localStorage.getItem('darkModeVal'); // Get stored value
+
+console.log("Stored darkModeVal:", darkModeVal, typeof darkModeVal); // Debugging
+
+if (darkModeVal === 'true') {  // Check if it's explicitly "true" as a string
+    console.log("Dark mode is ON");
+    darkMode(); // Call your function
+} else {
+    console.log("Dark mode is OFF");
+}
 document.addEventListener('DOMContentLoaded', function() {
     // Set default date range for daily chart (last 7 days)
     const today = new Date();
