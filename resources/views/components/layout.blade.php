@@ -107,22 +107,10 @@
                     <p class="nav_text blue_text font-normal text-xs hidden sm:block">Subjects</p>
                 </li>
             </a>
-            <a href="{{ route('reviewer.list') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('reviewer.list') ? 'bg-blue-100' : '' }}">
-                <li class="flex justify-start flex-col items-center gap-3 p-2">
-                    <div class="w-10 rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/memo.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Reviewers</p>
-                </li>
-            </a>
-            {{-- <a href="{{ route('deleted') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
+            <a href="{{ route('deleted') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('deleted') ? 'bg-blue-100' : '' }}">
                 <li class="flex justify-start flex-col items-center gap-3 p-2">
                     <div class="w-10 rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/recycle-bin.svg') }}" alt="Icon"></div>
                     <p class="nav_text blue_text font-normal text-xs hidden sm:block">Deleted</p>
-                </li>
-            </a> --}}
-            <a href="{{ route('quiz.list') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('quiz.list') ? 'bg-blue-100' : '' }}">
-                <li class="flex justify-start flex-col items-center gap-3 p-2">
-                    <div class="w-10 rounded-full flex justify-center items-center"><img class="filter-blue w-5" src="{{ asset('logo_icons/quiz.svg') }}" alt="Icon"></div>
-                    <p class="nav_text blue_text font-normal text-xs hidden sm:block">Quizzes</p>
                 </li>
             </a>
             <a href="{{ route('upgrade') }}" class="bottom_nav block menu-item rounded-lg w-full {{ Request::routeIs('upgrade') ? 'bg-blue-100' : '' }}">

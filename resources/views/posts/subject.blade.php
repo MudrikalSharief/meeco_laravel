@@ -9,19 +9,19 @@
             </div>
         </div>
 
-        <div class=" w-full h-full flex flex-col items-center">
-            <div class="flex text-xs px-3 justify-between items-center w-full max-w-2xl">
-                <p>Subject Name</p>
-                <p>Acion</p>
+    <div class=" w-full h-full flex flex-col items-center">
+        <div class="flex text-xs px-3 justify-between items-center w-full max-w-2xl">
+            <p>Subject Name</p>
+            <p>Acion</p>
+        </div>
+        <div class="w-full max-w-2xl">
+            <div class="flex justify-between items-center hidden">
+                <h1 class="py-3 text-xl font-bold text-blue-800">Subjects</h1>
+                <button id="addSubjectButton" class="mb-3 bg-blue-500 text-white py-2 px-4 rounded hidden">Add Subject</button>
             </div>
-            <div class="w-full max-w-2xl">
-                <div class="flex justify-between items-center hidden">
-                    <h1 class="py-3 text-xl font-bold text-blue-800">Subjects</h1>
-                    <button id="addSubjectButton" class="mb-3 bg-blue-500 text-white py-2 px-4 rounded hidden">Add Subject</button>
-                </div>
-            <div id="subjectsContainer" class="w-full max-w-2xl"></div>
-            <p id="noSubjectsMessage" class="text-gray-500 mt-2 hidden text-center">No Subjects to Show</p>
-        </div>  
+        <div id="subjectsContainer" class="w-full max-w-2xl"></div>
+        <p id="noSubjectsMessage" class="text-gray-500 mt-2 hidden text-center">No Subjects to Show</p>
+    </div>  
 
     <!-- Add Subject Modal -->
     <div id="addSubjectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
