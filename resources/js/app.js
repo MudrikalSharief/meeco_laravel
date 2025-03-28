@@ -1,5 +1,4 @@
 import './bootstrap';
-
 document.addEventListener('DOMContentLoaded', () => {
 
     const burger = document.getElementById('burger');
@@ -66,8 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-
     // Modal logic for displaying images
     const imageModal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
