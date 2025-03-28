@@ -270,14 +270,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
     Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
->>>>>>> Stashed changes
-=======
-    Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
->>>>>>> Stashed changes
 
     Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
     Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
