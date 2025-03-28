@@ -85,9 +85,12 @@
                     </div>
                     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                     <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
                          <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
                     <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openModal('themesModal')">
                         <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
@@ -95,6 +98,9 @@
                     <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
                          <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
 >>>>>>> main2
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                         <div>
                             <h3 class="font-medium text-gray-700">Themes</h3>
@@ -120,7 +126,10 @@
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Logo Settings</h3>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
                     <div class="mt-2 px-7 py-3">
                         <p class="text-sm text-gray-500">Upload a new logo here.</p>
@@ -131,6 +140,9 @@
                             Save
                         </button>
                     </div>
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
                     <form>
@@ -155,7 +167,11 @@
                 </div>
             </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         </div> --> -->
+=======
+        </div> -->
+>>>>>>> Stashed changes
 =======
         </div> -->
 >>>>>>> Stashed changes
@@ -187,6 +203,10 @@
                         </div>
                     </form>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> main2
+>>>>>>> Stashed changes
 =======
 >>>>>>> main2
 >>>>>>> Stashed changes
@@ -216,11 +236,14 @@
                 </div>
             </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         </div> 
 ======
         <!-- Lightspeed Modal -->
         <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
         </div>
 
@@ -232,6 +255,9 @@
         <!-- Lightspeed Modal -->
         <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
 >>>>>>> main2
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             <div class="fixed inset-0 bg-gray-600 bg-opacity-50" onclick="closeModal('lightspeedModal')"></div>
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -249,8 +275,11 @@
                 </div>
             </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         </div> -->
 =======
+=======
+>>>>>>> Stashed changes
 <<<<<<< HEAD
         </div>
 
@@ -275,6 +304,9 @@
 =======
         </div> -->
 >>>>>>> main2
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     </main>
 </x-admin_layout>
