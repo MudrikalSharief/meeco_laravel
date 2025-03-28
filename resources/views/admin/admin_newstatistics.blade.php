@@ -18,6 +18,22 @@
                     <div class="pt-6">
                         <button id="applyDateFilter" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1.5 px-4 rounded">Apply</button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printDailyPdf" class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                            </svg>
+                            Print PDF
+                        </button>
+                    </div>
+                    <div class="pt-6">
+                        <button id="printDailyExcel" class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Print Excel
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -65,6 +81,22 @@
                     <div class="pt-6">
                         <button id="applyYearFilter" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-1.5 px-4 rounded">Apply</button>
                     </div>
+                    <div class="pt-6">
+                        <button id="printMonthlyPdf" class="bg-red-600 hover:bg-red-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                            </svg>
+                            Print PDF
+                        </button>
+                    </div>
+                    <div class="pt-6">
+                        <button id="printMonthlyExcel" class="bg-green-600 hover:bg-green-700 text-white font-medium py-1.5 px-4 rounded flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Print Excel
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -97,4 +129,139 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the PDF buttons
+            const printDailyPdfBtn = document.getElementById('printDailyPdf');
+            const printMonthlyPdfBtn = document.getElementById('printMonthlyPdf');
+            
+            // Get the Excel buttons
+            const printDailyExcelBtn = document.getElementById('printDailyExcel');
+            const printMonthlyExcelBtn = document.getElementById('printMonthlyExcel');
+            
+            // Add click handlers for the PDF buttons
+            if (printDailyPdfBtn) {
+                printDailyPdfBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Generate the PDF URL with query parameters
+                    const url = `{{ route('admin.statistics.daily-pdf') }}?from_date=${fromDate}&to_date=${toDate}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            if (printMonthlyPdfBtn) {
+                printMonthlyPdfBtn.addEventListener('click', function() {
+                    const year = document.getElementById('yearSelect').value;
+                    if (!year) {
+                        alert('Please select a year first.');
+                        return;
+                    }
+                    
+                    // Generate the PDF URL with query parameters
+                    const url = `{{ route('admin.statistics.monthly-pdf') }}?year=${year}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            // Add click handlers for the Excel buttons
+            if (printDailyExcelBtn) {
+                printDailyExcelBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Generate the Excel URL with query parameters
+                    const url = `{{ route('admin.statistics.daily-excel') }}?from_date=${fromDate}&to_date=${toDate}`;
+                    window.open(url, '_blank');
+                });
+            }
+            
+            if (printMonthlyExcelBtn) {
+                printMonthlyExcelBtn.addEventListener('click', function() {
+                    const year = document.getElementById('yearSelect').value;
+                    if (!year) {
+                        alert('Please select a year first.');
+                        return;
+                    }
+                    
+                    // Generate the Excel URL with query parameters
+                    const url = `{{ route('admin.statistics.monthly-excel') }}?year=${year}`;
+                    window.open(url, '_blank');
+                });
+            }
+
+            // Function to update the daily statistics UI
+            function updateDailyStats(data) {
+                // Update summary statistics
+                document.getElementById('totalRevenue').innerText = 'PHP ' + data.summary.totalRevenue.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                document.getElementById('totalSubscriptions').innerText = data.summary.totalSubscriptions;
+                document.getElementById('avgRevenue').innerText = 'PHP ' + data.summary.avgRevenue.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                // ... rest of your chart update code ...
+            }
+            
+            // Get the date filter button
+            const applyDateFilterBtn = document.getElementById('applyDateFilter');
+            
+            // Add event listener for the date filter button
+            if (applyDateFilterBtn) {
+                applyDateFilterBtn.addEventListener('click', function() {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    if (!fromDate) {
+                        alert('Please select a From date first.');
+                        return;
+                    }
+                    
+                    // Calculate toDate (7 days from fromDate)
+                    const toDateObj = new Date(fromDate);
+                    toDateObj.setDate(toDateObj.getDate() + 6);
+                    const toDate = toDateObj.toISOString().split('T')[0];
+                    
+                    // Update the toDate field for display
+                    document.getElementById('dateTo').value = toDate;
+                    
+                    // Fetch the subscription statistics
+                    fetch(`{{ route('admin.subscription-stats') }}?from_date=${fromDate}&to_date=${toDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                console.error('Error:', data.error);
+                                alert('Error fetching statistics: ' + data.error);
+                                return;
+                            }
+                            
+                            // Update the daily statistics
+                            updateDailyStats(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error fetching statistics: ' + error);
+                        });
+                });
+            }
+        });
+    </script>
 </x-admin_layout>

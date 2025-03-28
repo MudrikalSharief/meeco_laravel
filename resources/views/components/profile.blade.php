@@ -31,8 +31,23 @@
             </div>
         </div>
 
-         <!-- Subscription Status (Same Size as User Info) -->
-         <div class="  rounded-lg p-6 mb-6">
+        <!-- Total Reviewers and Quizzes -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-700 py-1">Statistics</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                    <h4 class="text-l font-semibold text-blue-700">Total Reviewers</h4>
+                    <p class="text-2xl font-bold text-gray-800">{{ $totalReviewers }}</p>
+                </div>
+                <div class="bg-green-100 p-4 rounded-lg shadow-md">
+                    <h4 class="text-l font-semibold text-green-700">Total Quiz</h4>
+                    <p class="text-2xl font-bold text-gray-800">{{ $totalQuizzes }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Status -->
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
             <div class="flex items-center justify-between">
                 <h3 class="text-xl font-bold text-gray-700">Subscription Status</h3>
             </div>
@@ -88,6 +103,52 @@
                 <p class="text-gray-500 mt-4">No active subscription.</p>
             @endif
         </div>
+          <!-- Subscription History -->
+<div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+    <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-gray-700">Subscription History</h3>
+    </div>
+
+    @if($subscriptionHistory->isNotEmpty())
+        <div class="mt-4 text-xs rounded-lg">
+            <hr class="my-3">
+            <div class="overflow-x-auto">
+                <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-100 text-gray-700 uppercase text-s">
+                        <tr>
+                            <th class="px-4 py-3 text-left border-b border-gray-200">Promo Name</th>
+                            <th class="px-4 py-3 text-left border-b border-gray-200">Status</th>
+                            <th class="px-4 py-3 text-left border-b border-gray-200">Start Date</th>
+                            <th class="px-4 py-3 text-left border-b border-gray-200">End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 text-s">
+                        @foreach($subscriptionHistory as $history)
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                                <td class="px-4 py-3">{{ $history->promo->name }}</td>
+                                <td class="px-4 py-3 font-medium 
+                                    @if($history->status == 'active') text-green-600 
+                                    @elseif($history->status == 'expired') text-red-600 
+                                    @else text-gray-600 
+                                    @endif">
+                                    {{ ucfirst($history->status) }}
+                                </td>
+                                <td class="px-4 py-3">{{ \Carbon\Carbon::parse($history->start_date)->format('F j, Y g:i A') }}</td>
+                                <td class="px-4 py-3">
+                                    {{ $history->end_date ? \Carbon\Carbon::parse($history->end_date)->format('F j, Y g:i A') : 'N/A' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <hr class="my-3">
+        </div>
+    @else
+        <p class="text-gray-500 mt-4">No subscription history available.</p>
+    @endif
+</div>
+
 
     <!-- Modal -->
     <div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
