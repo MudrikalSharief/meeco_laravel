@@ -6,11 +6,20 @@
     background-color: #f6f6ff;
 }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
 .dark *{
     background-color: black !important;
     color: white !important;
 }
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> main2
+>>>>>>> Stashed changes
 .filter-blue{
     filter: brightness(0) saturate(100%) invert(12%) sepia(88%) saturate(6253%) hue-rotate(220deg) brightness(72%) contrast(116%);
 }

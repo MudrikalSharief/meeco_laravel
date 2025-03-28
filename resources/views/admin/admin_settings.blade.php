@@ -84,8 +84,18 @@
                         </div>
                     </div>
                     
+<<<<<<< Updated upstream
                     <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
                          <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
+=======
+<<<<<<< HEAD
+                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openModal('themesModal')">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+=======
+                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg cursor-pointer" onclick="openThemeModal('themesModal')">
+                         <div class="w-2 h-2 bg-green-500 !bg-green-500 dark:bg-green-500 rounded-full mt-2 mix-blend-normal"></div>
+>>>>>>> main2
+>>>>>>> Stashed changes
                         <div>
                             <h3 class="font-medium text-gray-700">Themes</h3>
                             <p class="text-sm text-gray-500">Available themes for the application</p>
@@ -109,6 +119,20 @@
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Logo Settings</h3>
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500">Upload a new logo here.</p>
+                        <input type="file" class="mt-4" />
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300" onclick="closeModal('logoModal')">
+                            Save
+                        </button>
+                    </div>
+=======
+>>>>>>> Stashed changes
                     <form>
                         <div class="mt-2 px-7 py-3">
                             <p class="text-sm text-gray-500">Upload a new logo here.</p>
@@ -130,7 +154,11 @@
                     </form>
                 </div>
             </div>
+<<<<<<< Updated upstream
         </div> --> -->
+=======
+        </div> -->
+>>>>>>> Stashed changes
 
         <!-- Themes Modal -->
         <div id="themesModal" class="hidden fixed inset-0 z-50 settings-modal-backdrop">
@@ -158,6 +186,10 @@
                             </button>
                         </div>
                     </form>
+<<<<<<< Updated upstream
+=======
+>>>>>>> main2
+>>>>>>> Stashed changes
                 </div>
             </div>
         </div>
@@ -183,10 +215,24 @@
                     </div>
                 </div>
             </div>
+<<<<<<< Updated upstream
         </div> 
 ======
         <!-- Lightspeed Modal -->
         <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
+=======
+<<<<<<< HEAD
+        </div>
+
+        <!-- Lightspeed Modal -->
+        <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
+=======
+        </div> 
+======
+        <!-- Lightspeed Modal -->
+        <!-- <div id="lightspeedModal" class="hidden fixed inset-0 z-50">
+>>>>>>> main2
+>>>>>>> Stashed changes
             <div class="fixed inset-0 bg-gray-600 bg-opacity-50" onclick="closeModal('lightspeedModal')"></div>
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                 <div class="mt-3 text-center">
@@ -202,6 +248,33 @@
                     </div>
                 </div>
             </div>
+<<<<<<< Updated upstream
         </div> -->
+=======
+<<<<<<< HEAD
+        </div>
+
+        <script>
+            function openModal(modalId) {
+                document.getElementById(modalId).classList.remove('hidden');
+            }
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).classList.add('hidden');
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal('logoModal');
+                    closeModal('themesModal');
+                    closeModal('lightspeedModal');
+                }
+            });
+        </script>
+=======
+        </div> -->
+>>>>>>> main2
+>>>>>>> Stashed changes
     </main>
 </x-admin_layout>
