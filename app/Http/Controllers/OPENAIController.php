@@ -18,7 +18,83 @@ use Illuminate\Support\Facades\Log;
 
 
 class OPENAIController extends Controller
-{
+{   
+
+    public function gemma3(Request $request){
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])
+        ->timeout(300)
+        ->post("https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=AIzaSyC2nOeBHRx7RQQ9PZCpxYX16MqDZ9b4eMQ", [
+            'contents' => [
+                [   'role'  => 'user',
+                    'parts' => [
+                        ['text' => 'You are an AI that helps generate organized study reviewers. A user has uploaded notes, and your task is to analyze the content  and divide the information accordingly. 
+        
+                                Here are the rules for processing:
+                                1. Identify the main topics in the notes .
+                                2. Break the topics content into smaller, logically grouped pieces that fit on individual cards.
+                                3. Each piece should focus on a single concept or subtopic, with no piece being longer than 100 words.
+                                4. If the notes are unclear, use your best judgment to organize the content logically while keeping it concise and easy to understand.
+                                5. If there are term that you dont really know just disregard it and focus only on what you understand. do not create a reviewer in a specific topic if you doesnt know it.
+                                6. Use simple and clear language suitable for a reviewer.
+        
+                                Example format for the output:
+                                [
+                                    {
+                                                Topic, 
+                                                Description of the topic.
+                                    }
+                                ]
+        
+                                Input notes: Chemistry is the study of matter, its properties, changes, and the energy involved in those changes. Matter exists in different states: solids (fixed shape and volume), liquids (fixed volume but no fixed shape), gases (no fixed shape or volume), and plasma (high-energy ionized gas). Chemistry is divided into several branches, including organic chemistry (study of carbon-based compounds), inorganic chemistry (study of non-carbon substances), physical chemistry (focuses on energy and reactions), analytical chemistry (identifying substances), and biochemistry (chemical processes in living organisms). Changes in matter can be physical, where no new substance is formed (like melting ice), or chemical, where a new substance is created (like rusting iron). Chemistry plays a crucial role in our daily lives, from the food we eat to the medicines we take. Understanding chemical reactions helps in fields like medicine, engineering, and environmental science. One of the most important tools in chemistry is the periodic table, which organizes elements based on their properties. Scientists use it to predict how different elements will react. Chemistry is everywhere, and learning it helps us understand the world around us better!
+                        ']
+                    ]
+                ]
+            ]
+        ]);
+
+        $responseBody = $response->body();
+        $responseData = json_decode($responseBody, true);
+        
+        if ($response->failed()) {
+            return response()->json(['success' => false, 'message' => 'Failed to communicate with GEMINI API.', 'data' => $responseData]);
+        }
+
+
+        if (!isset($responseData['candidates'][0]['content']['parts'][0]['text'])) {
+            return response()->json(['success' => false, 'message' => 'Invalid response format from GEMINI API.', 'data' => $responseData]);
+        }
+
+        
+        // Fix 2: Extract the JSON content from the markdown code block
+        $rawText = $responseData['candidates'][0]['content']['parts'][0]['text'];
+        
+        // Remove markdown code block formatting if present
+        $jsonText = preg_replace('/```json\n|\n```$/', '', $rawText);
+        
+        // Decode the JSON content
+        $content = json_decode($jsonText, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to parse JSON response: ' . json_last_error_msg(),
+                'rawText' => $rawText
+            ]);
+        }
+
+        foreach($content as $item){
+            $reviewer = new Reviewer;
+            $reviewer->topic_id = 66;
+            $reviewer->reviewer_about = $item['Topic'];
+            $reviewer->reviewer_text = $item['Description'];
+            $reviewer->save();
+        }
+
+       return response()->json(['success' => true, 'data' => $content]);
+    }
     public function handleChat(Request $request)
     {   
         set_time_limit(300); // Set the maximum execution time to 300 seconds

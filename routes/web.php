@@ -22,6 +22,9 @@ use App\Http\Controllers\AdminActionController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
 
+Route::view('/gemmatest', 'posts.GemmaTest')->name('gemmatest');
+Route::get('/api/gemma3', [OPENAIController::class, 'gemma3']);
+
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('capture');
@@ -33,6 +36,7 @@ Route::get('/', function () {
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
     
+
     Route::view('/openai', 'openai.test')->name('test');
     Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
     
