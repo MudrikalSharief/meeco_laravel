@@ -267,7 +267,6 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
 
     Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
     Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
@@ -276,6 +275,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('admin/filter-weekly-stats', [StatisticsControllerFINALS::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
     //New Statistic Route
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    // Route::view('admin/newstatisticsfinals', 'admin.admin_newstatisticsFINALS')->name('admin.newstatisticsfinals');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
     //Settings Route:
