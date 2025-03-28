@@ -267,12 +267,13 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
 
-    Route::post('admin/get-weekly-statistics', [StatisticsController::class, 'get_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/get-yearly-statistics', [StatisticsController::class, 'get_yearly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/get-weekly-statistics', [StatisticsController::class, 'get_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-yearly-stats', [StatisticsController::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-weekly-stats', [StatisticsController::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-yearly-stats', [StatisticsControllerFINALS::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-weekly-stats', [StatisticsControllerFINALS::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
     //New Statistic Route
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
