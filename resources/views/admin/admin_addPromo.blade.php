@@ -1,144 +1,203 @@
 <x-admin_layout>
-    <main class="py-3">
-        <div class="container mx-auto px-4 sm:max-w-full md:max-w-2xl">
-            <h1 class="text-xl sm:text-lg md:text-2xl font-bold text-left mb-5">
-                {{ isset($promo) ? 'Edit Promo' : 'Add New Promo' }}
-            </h1>
+    <main class="py-6 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+            <div class="mb-6 flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {{ isset($promo) ? 'Edit Promo' : 'Add New Promo' }}
+                </h1>
+                <a href="{{ route('promos.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Promos
+                </a>
+            </div>
             
-            <form method="POST" action="{{ isset($promo) ? route('promos.update', $promo->promo_id) : route('promos.store') }}" class="bg-white sm:p-3 md:p-6 rounded-lg shadow-lg" onsubmit="return validateForm()">
+            <form method="POST" action="{{ isset($promo) ? route('promos.update', $promo->promo_id) : route('promos.store') }}" class="bg-white rounded-xl shadow-md overflow-hidden" onsubmit="return validateForm()">
                 @csrf
                 @if(isset($promo))
                     @method('PUT')
                     <input type="hidden" name="id" value="{{ $promo->promo_id }}">
                 @endif
                 
-                <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="name" class="block text-gray-700 font-bold mb-1 sm:text-sm">Promo Name:</label>
-                        <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('name', $promo->name ?? '') }}">
-                        @error('name')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="price" class="block text-gray-700 font-bold mb-1 sm:text-sm">Pricing:</label>
-                        <input type="number" id="price" name="price" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('price', $promo->price ?? '') }}">
-                        @error('price')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="duration" class="block text-gray-700 font-bold mb-1 sm:text-sm">Duration (Days):</label>
-                        <input type="number" id="duration" name="duration" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('duration', $promo->duration ?? '') }}">
-                        @error('duration')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                    <h2 class="text-lg font-medium text-gray-900">Promo Details</h2>
+                    <p class="mt-1 text-sm text-gray-500">Fill in the information below to {{ isset($promo) ? 'update' : 'create' }} your promo.</p>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="image_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Image limit : </label>
-                        <input type="number" id="image_limit" name="image_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('image_limit', $promo->image_limit ?? '') }}">
-                        @error('image_limit')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="reviewer_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Reviewer limit : </label>
-                        <input type="number" id="reviewer_limit" name="reviewer_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('reviewer_limit', $promo->reviewer_limit ?? '') }}">
-                        @error('reviewer_limit')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="quiz_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Quiz limit : </label>
-                        <input type="number" id="quiz_limit" name="quiz_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('quiz_limit', $promo->quiz_limit ?? '') }}">
-                        @error('quiz_limit')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="quiz_questions_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Question per Quiz limit : </label>
-                        <input type="number" id="quiz_questions_limit" name="quiz_questions_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('quiz_questions_limit', $promo->quiz_questions_limit ?? '') }}">
-                        @error('quiz_questions_limit')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <div class="mt-4">
-                            <label for="can_mix_quiz" class="block text-gray-700 font-bold mb-1 sm:text-sm">Mix Quiz Type : </label>
-                            <div class="flex gap-4">
-                                <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="1" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '1' ? 'checked' : '' }} onclick="toggleMixQuizLimit(true)">
-                                    Yes
-                                </label>
-                                <label class="inline-flex items-center text-sm">
-                                    <input type="radio" name="can_mix_quiz" value="0" class="mr-2" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)">
-                                    No
-                                </label>
+                
+                <div class="p-6">
+                    <!-- Basic Information -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Basic Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Promo Name</label>
+                                <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('name', $promo->name ?? '') }}">
+                                <span id="name_error" class="text-red-500 text-xs mt-1 hidden"></span>
+                                @error('name')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
-                            @error('can_mix_quiz')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <div>
+                                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Pricing</label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input type="number" id="price" name="price" class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('price', $promo->price ?? '') }}">
+                                </div>
+                                <span id="price_error" class="text-red-500 text-xs mt-1 hidden"></span>
+                                @error('price')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <input type="number" id="duration" name="duration" class="w-full pr-12 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('duration', $promo->duration ?? '') }}">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">Days</span>
+                                    </div>
+                                </div>
+                                <span id="duration_error" class="text-red-500 text-xs mt-1 hidden"></span>
+                                @error('duration')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Limits -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Usage Limits</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="image_limit" class="block text-sm font-medium text-gray-700 mb-1">Image Limit</label>
+                                <input type="number" id="image_limit" name="image_limit" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('image_limit', $promo->image_limit ?? '') }}">
+                                @error('image_limit')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="reviewer_limit" class="block text-sm font-medium text-gray-700 mb-1">Reviewer Limit</label>
+                                <input type="number" id="reviewer_limit" name="reviewer_limit" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('reviewer_limit', $promo->reviewer_limit ?? '') }}">
+                                @error('reviewer_limit')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="quiz_limit" class="block text-sm font-medium text-gray-700 mb-1">Quiz Limit</label>
+                                <input type="number" id="quiz_limit" name="quiz_limit" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('quiz_limit', $promo->quiz_limit ?? '') }}">
+                                @error('quiz_limit')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="quiz_questions_limit" class="block text-sm font-medium text-gray-700 mb-1">Questions per Quiz Limit</label>
+                                <input type="number" id="quiz_questions_limit" name="quiz_questions_limit" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('quiz_questions_limit', $promo->quiz_questions_limit ?? '') }}">
+                                @error('quiz_questions_limit')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mix Quiz Options -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Mix Quiz Options</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mix Quiz Type</label>
+                                <div class="flex items-center space-x-6">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="can_mix_quiz" value="1" class="form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '1' ? 'checked' : '' }} onclick="toggleMixQuizLimit(true)">
+                                        <span class="ml-2 text-sm text-gray-700">Yes</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="can_mix_quiz" value="0" class="form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" {{ old('can_mix_quiz', $promo->can_mix_quiz ?? '') == '0' ? 'checked' : '' }} onclick="toggleMixQuizLimit(false)">
+                                        <span class="ml-2 text-sm text-gray-700">No</span>
+                                    </label>
+                                </div>
+                                @error('can_mix_quiz')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="mix_quiz_limit" class="block text-sm font-medium text-gray-700 mb-1">Questions per Mix Quiz Limit</label>
+                                <input type="number" id="mix_quiz_limit" name="mix_quiz_limit" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('mix_quiz_limit', $promo->mix_quiz_limit ?? '') }}">
+                                <span id="mix_quiz_limit_message" class="text-amber-600 text-xs mt-1 hidden">This field does not apply when Mix Quiz is disabled.</span>
+                                @error('mix_quiz_limit')
+                                    <span class="text-red-500 text-xs mt-1 mix-quiz-error">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Perks -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Perks & Benefits</h3>
+                        <div>
+                            <label for="perks" class="block text-sm font-medium text-gray-700 mb-1">Perks Description</label>
+                            <textarea id="perks" name="perks" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="Enter subscription perks (one per line)">{{ old('perks', $promo->perks ?? '') }}</textarea>
+                            <p class="mt-1 text-xs text-gray-500">Describe the benefits users will receive with this promo. Each line will be displayed as a separate perk.</p>
+                            <span id="perks_error" class="text-red-500 text-xs mt-1 hidden"></span>
+                            @error('perks')
+                                <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
-                    <div>
-                        <label for="mix_quiz_limit" class="block text-gray-700 font-bold mb-1 sm:text-sm">Question per Mix Quiz limit : </label>
-                        <input type="number" id="mix_quiz_limit" name="mix_quiz_limit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('mix_quiz_limit', $promo->mix_quiz_limit ?? '') }}">
-                        <span id="mix_quiz_limit_message" class="text-red-500 text-sm hidden">This field does not apply.</span>
-                        @error('mix_quiz_limit')
-                            <span class="text-red-500 text-sm mix-quiz-error">{{ $message }}</span>
-                        @enderror
+                    
+                    <!-- Availability -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Availability</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Offer Start Date</label>
+                                <input type="date" id="start_date" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('start_date', isset($promo->start_date) ? \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') : '') }}">
+                                @error('start_date')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Offer End Date</label>
+                                <input type="date" id="end_date" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" value="{{ old('end_date', isset($promo->end_date) ? \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') : '') }}">
+                                @error('end_date')
+                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="perks" class="block text-gray-700 font-bold mb-1 sm:text-sm">Perks:</label>
-                    <textarea id="perks" name="perks" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" rows="3" placeholder="Enter subscription perks">{{ old('perks', $promo->perks ?? '') }}</textarea>
-                    <span id="perks_error" class="text-red-500 text-sm hidden"></span>
-                    @error('perks')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                
-                
-                <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="start_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('start_date', isset($promo->start_date) ? \Carbon\Carbon::parse($promo->start_date)->format('Y-m-d') : '') }}">
-                        @error('start_date')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                    
+                    <!-- Status -->
+                    <div class="mb-8">
+                        <h3 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">Status</h3>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Offer Status</label>
+                            <div class="flex items-center space-x-6">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="status" value="active" class="form-radio h-4 w-4 text-green-600 transition duration-150 ease-in-out" {{ old('status', $promo->status ?? '') == 'active' ? 'checked' : '' }}>
+                                    <span class="ml-2 text-sm text-gray-700">Active</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="status" value="inactive" class="form-radio h-4 w-4 text-red-600 transition duration-150 ease-in-out" {{ old('status', $promo->status ?? '') == 'inactive' ? 'checked' : '' }}>
+                                    <span class="ml-2 text-sm text-gray-700">Inactive</span>
+                                </label>
+                            </div>
+                            @error('status')
+                                <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
-                    <div>
-                        <label for="end_date" class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer End Date:</label>
-                        <input type="date" id="end_date" name="end_date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" value="{{ old('end_date', isset($promo->end_date) ? \Carbon\Carbon::parse($promo->end_date)->format('Y-m-d') : '') }}">
-                        @error('end_date')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                    
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-4 border-t border-gray-200">
+                        <button type="button" onclick="window.history.back()" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Cancel
+                        </button>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                            {{ isset($promo) ? 'Update Promo' : 'Create Promo' }}
+                        </button>
                     </div>
-                </div>
-                
-                <div class="mt-4">
-                    <label class="block text-gray-700 font-bold mb-1 sm:text-sm">Offer Status:</label>
-                    <div class="flex gap-4">
-                        <label class="inline-flex items-center text-sm">
-                            <input type="radio" name="status" value="active" class="mr-2" {{ old('status', $promo->status ?? '') == 'active' ? 'checked' : '' }}>
-                            Active
-                        </label>
-                        <label class="inline-flex items-center text-sm">
-                            <input type="radio" name="status" value="inactive" class="mr-2" {{ old('status', $promo->status ?? '') == 'inactive' ? 'checked' : '' }}>
-                            Inactive
-                        </label>
-                    </div>
-                    @error('status')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                
-                <div class="mt-6">
-                    <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transform hover:scale-105 transition text-sm md:text-base">Save Offer</button>
                 </div>
             </form>
         </div>
@@ -226,7 +285,14 @@
             const mixQuizLimitMessage = document.getElementById('mix_quiz_limit_message');
             mixQuizLimitInput.disabled = !enable;
             mixQuizLimitInput.required = enable;
-            mixQuizLimitMessage.classList.toggle('hidden', enable);
+            
+            if (!enable) {
+                mixQuizLimitMessage.classList.remove('hidden');
+                mixQuizLimitInput.classList.add('bg-gray-100');
+            } else {
+                mixQuizLimitMessage.classList.add('hidden');
+                mixQuizLimitInput.classList.remove('bg-gray-100');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {

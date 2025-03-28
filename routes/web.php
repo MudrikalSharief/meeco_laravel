@@ -17,7 +17,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
-
+use App\Http\Controllers\AdminActionController;
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function (){
     Route::get('/topics', [TopicController::class, 'getTopics'])->name('topics');
     Route::post('/topics/add', [TopicController::class, 'createTopic'])->name('topics.add');
     Route::get('/subject/topics/{subjectId}', [TopicController::class, 'getTopicsBySubject'])->name('topics.bySubject');
+    Route::get('/topics/subject/{subjectId}', [TopicController::class, 'getTopicsBySubjectincapture'])->name(']Subject.bytopic');
+    
+    
     Route::post('/topics/delete', [TopicController::class, 'deleteTopic'])->name('topics.delete');
     Route::get('/getTopicByTopicId/{topicId}',[TopicController::class,'getTopicByTopicId'])->name('getTopicByTopicId');
     Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');
@@ -267,6 +270,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
+    Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
 
     Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
     Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
@@ -278,8 +282,29 @@ Route::middleware(['auth:admin'])->group(function () {
     // Route::view('admin/newstatisticsfinals', 'admin.admin_newstatisticsFINALS')->name('admin.newstatisticsfinals');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
+
+    Route::resource('admin-actions', AdminActionController::class);
+    Route::get('/admin/logs', [AdminActionController::class, 'index'])->name('admin.logs');
     //Settings Route:
     Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
+
+    // Add these PDF generation routes
+    Route::get('/admin/statistics/daily-pdf', [App\Http\Controllers\SubscriptionController::class, 'generateDailyStatsPdf'])
+        ->name('admin.statistics.daily-pdf')
+        ->middleware(['auth:admin']);
+
+    Route::get('/admin/statistics/monthly-pdf', [App\Http\Controllers\SubscriptionController::class, 'generateMonthlyStatsPdf'])
+        ->name('admin.statistics.monthly-pdf')
+        ->middleware(['auth:admin']);
+
+    // Add these Excel generation routes
+    Route::get('/admin/statistics/daily-excel', [App\Http\Controllers\SubscriptionController::class, 'generateDailyStatsExcel'])
+        ->name('admin.statistics.daily-excel')
+        ->middleware(['auth:admin']);
+
+    Route::get('/admin/statistics/monthly-excel', [App\Http\Controllers\SubscriptionController::class, 'generateMonthlyStatsExcel'])
+        ->name('admin.statistics.monthly-excel')
+        ->middleware(['auth:admin']);
 });
    //Settings Route:
    Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');

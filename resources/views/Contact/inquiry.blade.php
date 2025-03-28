@@ -1,5 +1,8 @@
 <x-contact_layout>
     <main class="mt-5">
+        <div class="breadcrumb mb-2 flex  font-bold text-md px-4">
+            <a href="{{ route('contact') }}" class="text-gray-500 no-underline">← My Inquiry</a>
+        </div>
         <div class="form-container w-[90%] md:w-[70%] bg-white p-8 rounded-lg shadow-md mx-auto md:ml-48">
             <h1 class="text-blue-700 text-2xl mb-6 font-medium">Inquiry (Message Form)</h1>
             @if(session('error'))
