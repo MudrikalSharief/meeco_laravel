@@ -218,6 +218,14 @@
         const modalTitle = document.getElementById('dynamicModal-title');
         const modalMessage = document.getElementById('dynamicModal-message');
         const modalButton = document.getElementById('dynamicModalButton');
+        const successModal = document.getElementById('successModal');
+        const closeSuccessModalButton = document.getElementById('closeSuccessModalButton');
+
+        if (closeSuccessModalButton) {
+            closeSuccessModalButton.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+            });
+        }
 
         // Function to show the dynamic modal
         function showModal(title = '', message = '', titleColor = '', buttonText = '') {

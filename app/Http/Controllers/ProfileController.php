@@ -28,7 +28,7 @@ class ProfileController extends Controller
                 ->orderBy('start_date', 'desc')
                 ->get();
 
-// Check the limits for reviewers and quizzes
+        // Check the limits for reviewers and quizzes
         $reviewerLimit = $subscription->promo->reviewer_limit;
         $quizLimit = $subscription->promo->quiz_limit;
 
@@ -38,13 +38,21 @@ class ProfileController extends Controller
         $reviewerLimitReached = $reviewerCreated >= $reviewerLimit;
         $quizLimitReached = $quizCreated >= $quizLimit;
 
-        // Fetch total reviewers created by the user
-        $totalReviewers = Reviewer::where('user_id', $user->id)->count();
+        // Get all subjects owned by the user
+        $userSubjects = DB::table('subjects')
+            ->where('user_id', $user->user_id)
+            ->pluck('subject_id');
 
-        // Fetch total quiz questions by counting question_id from all tables
-        $totalQuizzes = DB::table('true_or_false')->count('question_id') +
-                        DB::table('multiple_choice')->count('question_id') +
-                        DB::table('identification')->count('question_id');
+        // Count total topics (each topic = one reviewer) from the user's subjects
+        $totalReviewers = DB::table('topics')
+            ->whereIn('subject_id', $userSubjects)
+            ->count();
+
+        // Count total quiz questions created by the user
+        $totalQuizzes = DB::table('questions')
+            ->join('topics', 'questions.topic_id', '=', 'topics.topic_id')
+            ->whereIn('topics.subject_id', $userSubjects)
+            ->count();
 
         return view('components.profile', compact('user', 'subscription', 'subscriptionHistory', 'totalReviewers', 'totalQuizzes'));
     }

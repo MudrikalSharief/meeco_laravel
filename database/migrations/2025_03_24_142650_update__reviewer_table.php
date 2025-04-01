@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up() {
         // Check if the 'reviewers' table doesn't exist before creating it
-        if (!Schema::hasTable('reviewers')) {
-            Schema::create('reviewers', function (Blueprint $table) {
+        if (!Schema::hasTable('reviewer')) {
+            Schema::create('reviewer', function (Blueprint $table) {
                 $table->id('reviewer_id'); // Primary Key (Auto Increment)
-                $table->unsignedBigInteger('user_id');  // Must match `users.user_id`
+                $table->unsignedBigInteger('user_id')->nullable();  // Making user_id nullable
                 $table->unsignedBigInteger('topic_id'); // Must match `topics.topic_id`
                 $table->longText('reviewer_about');
                 $table->longText('reviewer_text');
@@ -24,6 +24,6 @@ return new class extends Migration {
     }
 
     public function down() {
-        Schema::dropIfExists('reviewers');
+        Schema::dropIfExists('reviewer');
     }
 };
