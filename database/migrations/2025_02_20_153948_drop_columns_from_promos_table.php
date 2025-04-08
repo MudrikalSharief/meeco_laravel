@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id('promo_id')->primary();
             $table->string('name');
             $table->decimal('price', 10, 2);
-            $table->text('perks')->nullable();
+            $table->text('perks')->nullable();;
             $table->integer('duration');
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
@@ -27,8 +27,8 @@ return new class extends Migration {
         });
     }
 
-    public function down()
-    {
-        Schema::dropIfExists('promos');
-    }
+    // public function down()
+    // {
+    //     Schema::dropIfExists('promos');
+    // }
 };
