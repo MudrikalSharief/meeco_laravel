@@ -11,6 +11,7 @@
                 <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">End Date</th>
                 <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Status</th>
                 <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Subcription Type</th>
+                <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Promo Name</th>
                 <th class="text-left p-3 border-b border-gray-200 text-gray-800 font-medium text-sm">Actions</th>
               </tr>
             </thead>
@@ -29,6 +30,7 @@
                   </span>
                 </td>
                 <td class="p-3 border-b border-gray-200 text-sm font-medium">{{ $subscription->subscription_type }}</td>
+                <td class="p-3 border-b border-gray-200 text-sm font-medium">{{ $subscription->promo->name ?? 'N/A' }}</td>
                 <td class="p-3 border-b border-gray-200 text-sm">
                   <button onclick="openEditModal({{ $subscription->subscription_id }})" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200 text-xs font-medium">
                     Edit
@@ -37,7 +39,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="9" class="p-3 border-b border-gray-200 text-sm text-gray-600 text-center">No subscriptions found</td>
+                <td colspan="10" class="p-3 border-b border-gray-200 text-sm text-gray-600 text-center">No subscriptions found</td>
               </tr>
             @endforelse
             </tbody>
@@ -95,6 +97,14 @@
                         <input type="hidden" id="quiz_created" name="quiz_created">
                     </div>
                 </div>
+
+                <div class="mb-4">
+                    <label for="promo_id" class="block text-sm font-medium text-gray-700">Promo Name</label>
+                    <select id="promo_id" name="promo_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Select a promo</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
                 
                 <div class="mb-4">
                     <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
@@ -129,6 +139,22 @@
     </div>
 
     <script>
+        // Load all promos when the page loads
+        let allPromos = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch all promos to populate the dropdown
+            fetch('/admin/promos/list')
+                .then(response => response.json())
+                .then(data => {
+                    allPromos = data;
+                    console.log('Promos loaded:', allPromos.length);
+                })
+                .catch(error => {
+                    console.error('Error fetching promos:', error);
+                });
+        });
+        
         function openEditModal(id) {
             fetch(`/admin/subscription/${id}/edit-data`)
                 .then(response => response.json())
@@ -140,6 +166,27 @@
                     document.getElementById('quiz_created').value = data.quiz_created;
                     document.getElementById('reviewer_created_display').textContent = data.reviewer_created;
                     document.getElementById('quiz_created_display').textContent = data.quiz_created;
+                    
+                    // Populate promo dropdown
+                    const promoSelect = document.getElementById('promo_id');
+                    // Clear existing options
+                    promoSelect.innerHTML = '<option value="">Select a promo</option>';
+                    
+                    // Add options from our cached promos
+                    if (allPromos.length === 0) {
+                        // If promos weren't loaded yet, fetch them now
+                        fetch('/admin/promos/list')
+                            .then(response => response.json())
+                            .then(promos => {
+                                allPromos = promos;
+                                populatePromoDropdown(promoSelect, data.promo);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching promos:', error);
+                            });
+                    } else {
+                        populatePromoDropdown(promoSelect, data.promo);
+                    }
                     
                     // Format dates for display and hidden fields
                     const startDate = data.start_date ? new Date(data.start_date) : null;
@@ -216,6 +263,19 @@
                     console.error('Error fetching subscription data:', error);
                     alert('Failed to load subscription data. Please try again.');
                 });
+        }
+        
+        function populatePromoDropdown(selectElement, currentPromo) {
+            allPromos.forEach(promo => {
+                const option = new Option(promo.name, promo.promo_id);
+                selectElement.add(option);
+            });
+            
+            // If we have a current promo, select it
+            if (currentPromo && currentPromo.promo_id) {
+                selectElement.value = currentPromo.promo_id;
+                console.log('Selected promo:', currentPromo.name, currentPromo.promo_id);
+            }
         }
         
         // Add form submission debugging

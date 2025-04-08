@@ -267,6 +267,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
     Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
     Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
+    Route::get('admin/promos/list', [PromoController::class, 'getPromosList'])->name('admin.promos.list');
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');

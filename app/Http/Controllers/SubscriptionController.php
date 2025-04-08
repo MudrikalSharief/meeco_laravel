@@ -358,6 +358,7 @@ class SubscriptionController extends Controller
                 'status' => 'required|in:Active,Expired,Cancelled,Limit Reached',
                 // Modify the validation to be more permissive for testing
                 'subscription_type' => 'required|string',
+                'promo_id' => 'nullable|exists:promos,promo_id',
             ]);
 
             // Use the original start date to ensure it doesn't change
@@ -408,12 +409,25 @@ class SubscriptionController extends Controller
                 }
             }
             
+            // Update promo if a new one is selected
+            if (!empty($validatedData['promo_id']) && $subscription->promo_id != $validatedData['promo_id']) {
+                try {
+                    // Update the subscription's promo_id
+                    $subscription->promo_id = $validatedData['promo_id'];
+                    $subscription->save();
+                    Log::info('Subscription promo updated successfully to ID: ' . $validatedData['promo_id']);
+                } catch (\Exception $e) {
+                    Log::error('Failed to update subscription promo: ' . $e->getMessage());
+                }
+            }
+            
             // Verify the update worked
             $subscription->refresh();
             Log::info('Subscription after update:', [
                 'status' => $subscription->status,
                 'subscription_type' => $subscription->subscription_type,
-                'end_date' => $subscription->end_date
+                'end_date' => $subscription->end_date,
+                'promo_id' => $subscription->promo_id
             ]);
             
             return redirect()->route('admin.newtransactions')->with('success', 'Subscription updated successfully');

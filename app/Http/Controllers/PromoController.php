@@ -124,4 +124,20 @@ class PromoController extends Controller
     
         return view('subscriptionFolder.upgrade', compact('promos'));
     }
+
+    /**
+     * Get a list of all promos for dropdown
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPromosList()
+    {
+        try {
+            $promos = Promo::select('promo_id', 'name')->orderBy('name')->get();
+            return response()->json($promos);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching promos list: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load promos'], 500);
+        }
+    }
 }
