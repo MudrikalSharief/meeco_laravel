@@ -265,8 +265,13 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //New Transaction Route
     Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
+    Route::get('/admin/newtransactions/inactive-transactions', [SubscriptionController::class, 'getInactiveTransactions'])->name('admin.inactive-transactions');
     Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
     Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
+    
+    // Add Subscription Routes
+    Route::get('/admin/newtransactions/create', [SubscriptionController::class, 'create'])->name('admin.subscription.create');
+    Route::post('/admin/newtransactions/store', [SubscriptionController::class, 'storeAdminSubscription'])->name('admin.subscription.store');
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
