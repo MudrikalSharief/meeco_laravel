@@ -3,6 +3,8 @@ window.darkMode = function(){
 }
 
 const themeSelect = document.getElementById('themeSelect');
+const authButton = document.getElementById('authBtn');
+
 themeSelect.addEventListener('change', ()=>{
     if(themeSelect.value === 'dark'){
         localStorage.setItem('darkModeVal', 'true'); 
@@ -23,4 +25,39 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('closeThemeModal').addEventListener('click', ()=>{
         document.getElementById(themeModalId).classList.add('hidden');
     });
+
+    authButton.addEventListener('click', ()=>{
+
+        const toggle = this.getElementById('toggle');
+
+        fetch('/admin/settings-tfauth', {
+            method:'GET',
+            headers:{'Content-Type': "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(res => res.json())
+        .then(data =>{ 
+            const authState = data.auth_state[0].tf_auth_state;
+
+            console.log(authState);
+
+            if(authState === 'off'){
+                this.classList.remove('bg-gray-200');
+                this.classList.add('bg-blue-500');
+                toggle.classList.remove('translate-x-1');
+                toggle.classList.add('translate-x-6');
+        
+            }else{
+                this.classList.remove('bg-blue-500');
+                this.classList.add('bg-gray-200');
+                toggle.classList.remove('translate-x-6');
+                toggle.classList.add('translate-x-1');
+            }
+        });
+
+
+    });
+
+
 });

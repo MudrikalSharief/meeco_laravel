@@ -17,6 +17,7 @@ use App\Http\Controllers\AUTHadminController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
+use App\Http\Controller\SettingsController;
 
 
 use App\Http\Controllers\StatisticsController;
@@ -283,6 +284,7 @@ Route::middleware(['auth:admin'])->group(function () {
 });
    //Settings Route:
    Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
+   Route::get('admin/settings-tfauth', [SettingsController::class, 'toggleTwoFactorAuthState'])->name('admin.toggle-tfauth-state');
 
 
 
