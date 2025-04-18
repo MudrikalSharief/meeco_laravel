@@ -3,12 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Settings extends Model
 {
-    function getTwoFactorAuthState(){
-        $auth_state = $this->selectRaw('tf-auth-state')->get();
 
-        return $auth_state;
+    protected $fillable = ['tf_auth_state'];
+
+    static function updateTwoFactorAuthState(){
+        $state = Settings::first();
+
+
+        if($state){
+            $currentState = $state->tf_auth_state;
+
+            $newState = ($currentState === 'on') ? 'off' : 'on';
+
+            $state->tf_auth_state = $newState;
+            $state->save(); 
+
+        }
+
+
+        return $state;
     }
 }

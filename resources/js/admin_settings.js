@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function(){
         fetch('/admin/settings-tfauth', {
             method:'GET',
             headers:{'Content-Type': "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+              
             }
         })
         .then(res => res.json())
