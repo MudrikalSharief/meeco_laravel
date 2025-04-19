@@ -13,10 +13,6 @@ class SettingsController extends Controller{
         $auth_state = Settings::fetch2FactorAuthState();
         $new_state = Settings::update2FactorAuthState($auth_state);
 
-        return response()->json([
-            'auth_state'=>$new_state
-        ]);
-
     }
 
     function get2FactorAuthState(){
@@ -30,3 +26,5 @@ class SettingsController extends Controller{
     }
 
 }
+
+

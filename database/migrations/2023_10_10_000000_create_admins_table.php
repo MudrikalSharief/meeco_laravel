@@ -19,6 +19,7 @@ class CreateAdminsTable extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->string('password');
+            $table->char('tfauth_pin', 6);
             $table->timestamp('date_created')->useCurrent();
             $table->timestamp('last_login')->nullable();
             $table->timestamps();

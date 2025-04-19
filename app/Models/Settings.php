@@ -13,17 +13,11 @@ class Settings extends Model
     static function update2FactorAuthState($state){
 
         if($state){
+            
             $currentState = $state->tf_auth_state;
 
-            if($currentState === 'on'){
-                $newState = 'off';
-            }else{
-                $newState = 'on';
-            }
+            $newState = ($currentState === 'on') ? 'off' : 'on';
           
-
-            Log::info($newState);
-
             $state->tf_auth_state = $newState;
             $state->save(); 
 

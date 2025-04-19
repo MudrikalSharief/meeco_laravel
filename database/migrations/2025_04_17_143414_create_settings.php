@@ -13,7 +13,9 @@ return new class extends Migration
     {   
         Schema::dropIfExists('settings');
         Schema::create('settings', function (Blueprint $table) {
-            $table->enum('tf-auth-state', ['on', 'off'])->default('off');
+            $table->id('id');
+            $table->enum('tf_auth_state', ['on', 'off'])->default('off');
+            $table->timestamp('updated_at')->useCurrent();
         });
     }
 
