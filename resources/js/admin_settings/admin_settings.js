@@ -11,20 +11,12 @@ const themesModalExit = themesModal.querySelector('#themesModalExit');
 
 document.addEventListener('DOMContentLoaded', function(){
 
-    tfauthButton.addEventListener('click', ()=> {
-        toggle2FAuthState()
-    });
+    tfauthButton.addEventListener('click',  toggle2FAuthState);
     
-    themesButton.addEventListener('click', ()=>{
-        openThemesModal(themesModal);
-    });
+    themesButton.addEventListener('click', ()=> openThemesModal(themesModal));
 
-    themesSelect.addEventListener('change', ()=>{
-        setTheme(themesSelect);
-    });
+    themesSelect.addEventListener('change', ()=> setTheme(themesSelect));
     
-    themesModalExit.addEventListener('click', ()=>{
-        closeThemesModal(themesModal);
-    });
+    themesModalExit.addEventListener('click', ()=> closeThemesModal(themesModal));
 
 });
