@@ -17,9 +17,9 @@
                             <h3 class="font-medium text-gray-700">Two-Factor Authentication</h3>
                             <p class="text-sm text-gray-500">Enable two-factor authentication for admins</p>
                         </div>
-                        <button id = 'authBtn' class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200" data-button-state>
+                        <button id = 'authBtn' class="relative inline-flex h-6 w-11 items-center rounded-full" data-button-state>
                             <span class="sr-only">Enable two-factor authentication</span>
-                            <span id = 'toggle' class="inline-block h-4 w-4 transform rounded-full bg-white translate-x-1"></span>
+                            <span id = 'toggle' class="inline-block h-4 w-4 transform rounded-full bg-white"></span>
                         </button>
                     </div>
                 </div>

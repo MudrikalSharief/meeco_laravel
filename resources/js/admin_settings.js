@@ -15,6 +15,9 @@ themeSelect.addEventListener('change', ()=>{
 
 document.addEventListener('DOMContentLoaded', function(){
 
+    get2FactorAuthState();
+    toggle2FAuthState();
+
     let themeModalId;;
 
     window.openThemeModal = function(modalId){
@@ -26,38 +29,57 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById(themeModalId).classList.add('hidden');
     });
 
-    authButton.addEventListener('click', ()=>{
+});
 
-        const toggle = this.getElementById('toggle');
+async function get2FactorAuthState(){
 
-        fetch('/admin/settings-tfauth', {
-            method:'GET',
-            headers:{'Content-Type': "application/json",
-              
-            }
-        })
-        .then(res => res.json())
-        .then(data =>{ 
-            const authState = data.auth_state[0].tf_auth_state;
-
-            console.log(authState);
-
-            if(authState === 'off'){
-                this.classList.remove('bg-gray-200');
-                this.classList.add('bg-blue-500');
-                toggle.classList.remove('translate-x-1');
-                toggle.classList.add('translate-x-6');
-        
-            }else{
-                this.classList.remove('bg-blue-500');
-                this.classList.add('bg-gray-200');
-                toggle.classList.remove('translate-x-6');
-                toggle.classList.add('translate-x-1');
-            }
-        });
-
-
+    fetch('/admin/2f-auth-state', {
+        method: 'GET'
+    })
+    .then(res => res.json())
+    .then(data =>{
+        toggle2FAuthStateBtn(data);
     });
 
+}
 
-});
+function toggle2FAuthState() {
+    const authButton = document.getElementById('authBtn');
+    authButton.addEventListener('click', ()=> {
+   
+        fetch('/admin/2f-auth-state', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(data =>{
+
+            console.log(data);
+            get2FactorAuthState();
+        });
+  
+    });
+  }
+
+function toggle2FAuthStateBtn(data){
+
+    const authBtn = document.getElementById('authBtn');
+    const toggle = authBtn.querySelector('#toggle');
+
+    if(data.auth_state.tf_auth_state === 'on'){
+        authBtn.classList.remove('bg-gray-200');
+        authBtn.classList.add('bg-blue-500');
+        toggle.classList.remove('translate-x-1');
+        toggle.classList.add('translate-x-6');
+    }else{
+        toggle.classList.remove('bg-blue-500');
+        authBtn.classList.add('bg-gray-200');
+        toggle.classList.remove('translate-x-6');
+        toggle.classList.add('translate-x-1');
+    }
+
+}
