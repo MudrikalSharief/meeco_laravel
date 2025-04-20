@@ -106,9 +106,12 @@ class RawController extends Controller
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'NO TEXT FOUND', 'error' => $e->getMessage()]);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             }
             if(set_time_limit(300)){
                 return response()->json(['success' => false, 'message' => 'time limit reach']);
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             }
