@@ -425,17 +425,36 @@ class SubscriptionController extends Controller
 
     /**
      * Display a listing of the subscriptions for admin transactions page.
+     * Show only active subscriptions.
      *
      * @return \Illuminate\Http\Response
      */
     public function getAllTransactions()
     {
-        // Get all subscriptions with their associated user
+        // Get only active subscriptions with their associated user
         $subscriptions = Subscription::with('user', 'promo')
+            ->where('status', 'Active')
             ->orderBy('created_at', 'desc')
             ->get();
         
         return view('admin.admin_newtransactions', compact('subscriptions'));
+    }
+
+    /**
+     * Display a listing of inactive subscriptions (Expired, Cancelled, Limit Reached).
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getInactiveTransactions()
+    {
+        // Get only inactive subscriptions
+        $subscriptions = Subscription::with('user', 'promo')
+            ->whereIn('status', ['Expired', 'Cancelled', 'Limit Reached'])
+            ->orderBy('status')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('admin.admin_inactive_transactions', compact('subscriptions'));
     }
 
     /**
@@ -1218,6 +1237,143 @@ class SubscriptionController extends Controller
         } catch (\Exception $e) {
             Log::error('Error generating monthly stats Excel: ' . $e->getMessage());
             return back()->with('error', 'Failed to generate Excel: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show the form for creating a new subscription.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        // Get all available promos for the dropdown
+        $promos = Promo::where('status', 'active')->orderBy('name')->get();
+        
+        return view('admin.admin_add_subscription', compact('promos'));
+    }
+
+    /**
+     * Store a newly created subscription in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function storeAdminSubscription(Request $request)
+    {
+        try {
+            // Validate the input
+            $validatedData = $request->validate([
+                'email' => 'required|email',
+                'promo_id' => 'required|exists:promos,promo_id',
+                'start_date' => 'required|date',
+                'status' => 'required|in:Active,Limit Reached',
+                'subscription_type' => 'required|string|max:255',
+            ]);
+
+            // Find user by email
+            $user = User::where('email', $validatedData['email'])->first();
+            
+            // Check if user exists
+            if (!$user) {
+                return redirect()->back()->withInput()->with('error', 'User with this email does not exist.');
+            }
+            
+            // Get the promo details
+            $promo = Promo::findOrFail($validatedData['promo_id']);
+            
+            // Check if user already has an active subscription
+            $activeSubscription = Subscription::where('user_id', $user->user_id)
+                ->where('status', 'Active')
+                ->where('end_date', '>=', Carbon::now())
+                ->first();
+                
+            if ($activeSubscription) {
+                // Check if the active subscription is for the same promo
+                if ($activeSubscription->promo_id == $validatedData['promo_id']) {
+                    return redirect()->back()->withInput()->with(
+                        'error', 
+                        'This user already has an active subscription with the same plan. The current subscription expires on ' . 
+                        Carbon::parse($activeSubscription->end_date)->format('M d, Y') . '.'
+                    );
+                } else {
+                    // If it's a different promo, show a more detailed error message
+                    $currentPromo = Promo::find($activeSubscription->promo_id);
+                    $currentPromoName = $currentPromo ? $currentPromo->name : 'Unknown Plan';
+                    $newPromoName = $promo->name;
+                    
+                    // Use single quotes for HTML attributes to avoid double quote escaping issues
+                    $errorMessage = "This user already has an active subscription with a different plan ({$currentPromoName}). " .
+                        "You need to change the status of the current subscription to 'Expired' or 'Cancelled' before adding a new subscription. " .
+                        "The current subscription expires on " . Carbon::parse($activeSubscription->end_date)->format('M d, Y') . ".";
+                        
+                    return redirect()->back()->withInput()->with('error', $errorMessage);
+                }
+            }
+
+            // Calculate end date based on promo duration and start date
+            $startDate = Carbon::parse($validatedData['start_date']);
+            $endDate = $startDate->copy()->addDays($promo->duration);
+            
+            // Generate a truly unique reference number
+            $latestReferenceNumber = Subscription::max('reference_number');
+            
+            // Try to find an unused reference number
+            $referenceNumber = null;
+            $attempts = 0;
+            $maxAttempts = 10; // Prevent infinite loops
+            
+            do {
+                // If we have a latest reference, increment it, otherwise start with a random number
+                if (is_numeric($latestReferenceNumber)) {
+                    $referenceNumber = (int)$latestReferenceNumber + 1 + $attempts;
+                } else {
+                    // Generate a random 6-digit number as a starting point if no existing references
+                    $referenceNumber = mt_rand(100000, 999999);
+                }
+                
+                // Check if this reference number exists
+                $exists = Subscription::where('reference_number', $referenceNumber)->exists();
+                $attempts++;
+                
+            } while ($exists && $attempts < $maxAttempts);
+            
+            // If we couldn't find a unique reference after max attempts, use a timestamp-based one
+            if ($exists) {
+                $referenceNumber = time() . mt_rand(100, 999);
+                Log::info('Using timestamp-based reference number due to collision: ' . $referenceNumber);
+            }
+            
+            // Log the reference number we're using
+            Log::info('Using reference number: ' . $referenceNumber);
+            
+            // Create the new subscription
+            $subscription = Subscription::create([
+                'user_id' => $user->user_id,
+                'promo_id' => $promo->promo_id,
+                'reference_number' => $referenceNumber,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => $validatedData['status'],
+                'subscription_type' => $validatedData['subscription_type'],
+                'reviewer_created' => 0,
+                'quiz_created' => 0,
+            ]);
+
+            Log::info('New subscription added by admin', [
+                'subscription_id' => $subscription->subscription_id,
+                'user_email' => $user->email,
+                'promo' => $promo->name,
+                'admin' => Auth::user()->email ?? 'system'
+            ]);
+
+            return redirect()->route('admin.newtransactions')
+                ->with('success', 'Subscription added successfully for ' . $user->email);
+                
+        } catch (\Exception $e) {
+            Log::error('Error creating subscription: ' . $e->getMessage());
+            return redirect()->back()->withInput()
+                ->with('error', 'Failed to create subscription: ' . $e->getMessage());
         }
     }
 }

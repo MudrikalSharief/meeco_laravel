@@ -1,5 +1,29 @@
 <x-admin_layout>
     <main class="p-5">
+        <div class="flex justify-between items-center mb-5">
+            <h1 class="text-2xl font-bold text-gray-800">Active Subscriptions</h1>
+            <div class="flex space-x-2">
+                <a href="{{ route('admin.subscription.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200 text-sm font-medium">
+                    Add Subscription
+                </a>
+                <a href="{{ route('admin.inactive-transactions') }}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-200 text-sm font-medium">
+                    View Inactive Subscriptions
+                </a>
+            </div>
+        </div>
+        
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+        @endif
+        
         <table class="w-full border-collapse mb-5">
             <thead>
               <tr>
@@ -24,8 +48,8 @@
                 <td class="p-3 border-b border-gray-200 text-sm">{{ $subscription->start_date ? date('M d, Y', strtotime($subscription->start_date)) : 'N/A' }}</td>
                 <td class="p-3 border-b border-gray-200 text-sm">{{ $subscription->end_date ? date('M d, Y', strtotime($subscription->end_date)) : 'N/A' }}</td>
                 <td class="p-3 border-b border-gray-200 text-sm font-medium">
-                  <span class="px-2 py-1 rounded-full text-xs {{ $subscription->status === 'Active' ? 'bg-green-100 text-green-700' : ($subscription->status === 'Expired' ? 'bg-red-100 text-red-700' : ($subscription->status === 'Cancelled' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700')) }}">
-                {{ $subscription->status }}
+                  <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                    {{ $subscription->status }}
                   </span>
                 </td>
                 <td class="p-3 border-b border-gray-200 text-sm font-medium">{{ $subscription->subscription_type }}</td>
@@ -37,7 +61,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="9" class="p-3 border-b border-gray-200 text-sm text-gray-600 text-center">No subscriptions found</td>
+                <td colspan="9" class="p-3 border-b border-gray-200 text-sm text-gray-600 text-center">No active subscriptions found</td>
               </tr>
             @endforelse
             </tbody>
