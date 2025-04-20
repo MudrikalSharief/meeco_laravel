@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function (){
     //for quizzes list
     Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
     Route::view('/quiz_list', 'posts.quiz_list')->name('quiz.list');
+    Route::get('/quizzes-by-subject', [ReviewerController::class, 'getQuizzesGroupedBySubject'])->name('quizzes.by.subject');
 
     //contact us
     Route::view('/contact', 'Contact.contact')->name('contact');
@@ -271,14 +272,26 @@ Route::middleware(['auth:admin'])->group(function () {
 
     //New Transaction Route
     Route::get('admin/newtransactions', [SubscriptionController::class, 'getAllTransactions'])->name('admin.newtransactions');
+    Route::get('/admin/newtransactions/inactive-transactions', [SubscriptionController::class, 'getInactiveTransactions'])->name('admin.inactive-transactions');
     Route::get('admin/subscription/{subscription}/edit-data', [SubscriptionController::class, 'getSubscriptionData']);
     Route::put('admin/subscription/{subscription}/update', [SubscriptionController::class, 'updateSubscription']);
+    
+    // Add Subscription Routes
+    Route::get('/admin/newtransactions/create', [SubscriptionController::class, 'create'])->name('admin.subscription.create');
+    Route::post('/admin/newtransactions/store', [SubscriptionController::class, 'storeAdminSubscription'])->name('admin.subscription.store');
 
     //Statistic Route
     Route::view('admin/statistics', 'admin.admin_statistics')->name('admin.statistics');
-    Route::get('admin/get-statistics', [StatisticsController::class, 'get_statistics'])->name('admin.get-statistics');
+    Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
+
+    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-yearly-stats', [StatisticsControllerFINALS::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/filter-weekly-stats', [StatisticsControllerFINALS::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
     //New Statistic Route
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
+    // Route::view('admin/newstatisticsfinals', 'admin.admin_newstatisticsFINALS')->name('admin.newstatisticsfinals');
     Route::get('admin/subscription-stats', [SubscriptionController::class, 'getSubscriptionStats'])->name('admin.subscription-stats');
     Route::get('admin/subscription-stats/monthly', [SubscriptionController::class, 'getMonthlyStats'])->name('admin.subscription-stats.monthly');
 
@@ -305,7 +318,8 @@ Route::middleware(['auth:admin'])->group(function () {
         ->name('admin.statistics.monthly-excel')
         ->middleware(['auth:admin']);
 });
-
+   //Settings Route:
+   Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 
 
 

@@ -189,6 +189,28 @@ class ReviewerController extends Controller
         
     }
     //=======================================================================================================
+    public function getQuizzesGroupedBySubject(Request $request)
+    {
+        $userid = auth()->user()->user_id;
+        $subjects = Subject::where('user_id', $userid)->get();
+        
+        $quizzesBySubject = [];
+        
+        foreach ($subjects as $subject) {
+            $topics = Topic::where('subject_id', $subject->subject_id)->pluck('topic_id')->toArray();
+            $questions = Question::whereIn('topic_id', $topics)->get();
+            
+            if ($questions->count() > 0) {
+                $quizzesBySubject[] = [
+                    'subject' => $subject,
+                    'questions' => $questions
+                ];
+            }
+        }
+        
+        return response()->json(['success' => true, 'quizzesBySubject' => $quizzesBySubject]);
+    }
+    //=======================================================================================================
 
     
 }
