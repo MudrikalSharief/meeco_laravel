@@ -1,16 +1,9 @@
 <x-admin_layout>
-    <main data-page="settings" class= "h-screen w-full">
-        <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-sm h-screen w-full">
     <main>
-        <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-sm">
-            <!-- Settings Header -->
+        <div class="max-w-3xl mx-auto p-12 bg-white rounded-lg shadow-sm h-lscreen min-w-full container">
             <h1 class="text-2xl font-bold text-gray-900 mb-8">Settings</h1>
-
-            <!-- Security Section -->
             <section class="space-y-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Security</h2>
-
-                <!-- Two-Factor Auth -->
                 <div class="space-y-2">
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
@@ -23,10 +16,14 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Password Requirements Table -->
-                <div class="space-y-4">
-                    <h3 class="font-medium text-gray-700">Account Passwords</h3>
+                <div class="space-y-2">
+                    <div class = 'flex w-full justify-between'>
+                        <h3 class="font-medium text-gray-700">Account Passwords</h3>
+                            <button id = 'editAccountPasswordsBtn' class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
+                                Edit
+                            </button>
+                    </div>
+                   <!--  Account Passwords Modal -->
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="border-b border-gray-200">
@@ -35,33 +32,86 @@
                                 <th class="text-center py-3 text-gray-600 font-medium">Admin</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id = 'APtable'>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Characters</td>
-                                <td class="text-center py-3">8</td>
-                                <td class="text-center py-3">8</td>
+                                <td class="text-center py-3">
+                                    <p>8</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'UserMinCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
+                                <td class="text-center py-3">
+                                    <p>8</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
                             </tr>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Special Characters</td>
-                                <td class="text-center py-3">2</td>
-                                <td class="text-center py-3">1</td>
+                                <td class="text-center py-3">
+                                    <p>2</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'UserMinSpCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
+                                <td class="text-center py-3">
+                                    <p>1</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinSpCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
                             </tr>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Numbers</td>
-                                <td class="text-center py-3">2</td>
-                                <td class="text-center py-3">1</td>
-                            </tr>
-                            <tr>
-                                <td class="py-3 text-gray-600">Mix of Upper and Lower Case</td>
                                 <td class="text-center py-3">
-                                    <svg class="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <p>2</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>  
+                                        <button id = 'UserMinNumBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
                                 </td>
                                 <td class="text-center py-3">
-                                    <svg class="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <p>1</p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-auto max-w-24">
+                                            <input 
+                                                type="number" 
+                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinNumBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>
@@ -70,7 +120,6 @@
             </section>
 
             <hr class="my-8 border-gray-200">
-            <!-- Application Section -->
             <section class="space-y-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Application</h2>
     
@@ -86,7 +135,6 @@
             </section>
         </div>
               
-        <!-- Themes Modal -->
         <div id="themesModal" class="hidden fixed inset-0 z-50 settings-modal-backdrop">
             <div class="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
             <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 w-96 max-w-[95%] bg-white rounded-lg shadow-lg">
