@@ -48,34 +48,18 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 flex min-h-screen">
+<body class="bg-gray-100 px-3 flex items-center justify-center min-h-screen">
 
-    <div class="fixed left-0 top-0 m-6 z-10">
-      <a href="{{ route('landing')}}" class="rounded-full bg-white p-3 shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-      </a>
+    <div class=" fixed right-0 top-0 pt-3 pr-3">
+      <a href="{{ route('landing')}}"><img class="w-5" src="{{ asset('logo_icons/x.svg')}}" alt=""></a>
     </div>
-
-    <!-- Left side - Registration Form -->
-    <div class="w-full md:w-1/2 flex items-center justify-center p-8 animate-fade-in">
-        <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-400 to-blue-600"></div>
-            
-            <div class="flex justify-center mb-6">
-                <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                </div>
-            </div>
-            
-            <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Create Your Profile</h1>
-            <p class="text-gray-500 text-center mb-6 text-sm">Join our community and get started</p>
-            
-            <form action="{{ route('register.store') }}" class="space-y-4" method="POST">
-                @csrf
+    
+    <div class="bg-white p-6 rounded-lg shadow-md max-w-sm w-full">
+    
+        <h1 class="text-xl font-bold text-blue-500 text-center mb-4">Create your profile</h1>
+        
+        <form action="{{ route('register.store') }}" class="space-y-4" method="POST">
+            @csrf
 
               <!-- Firstname Field -->
               <div>

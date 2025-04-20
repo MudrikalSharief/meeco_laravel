@@ -22,6 +22,9 @@ use App\Http\Controllers\AdminActionController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
 
+Route::view('/gemmatest', 'posts.GemmaTest')->name('gemmatest');
+Route::get('/api/gemma3', [OPENAIController::class, 'gemma3']);
+
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('capture');
@@ -33,6 +36,7 @@ Route::get('/', function () {
 //these routes are only accecibble in authenticated or logged in users
 Route::middleware('auth')->group(function (){
     
+
     Route::view('/openai', 'openai.test')->name('test');
     Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
     
@@ -44,9 +48,11 @@ Route::middleware('auth')->group(function (){
     Route::post('/logout', [AUTHcontroller::class, 'logout_user'])->name('logout');
 
     Route::view('/capture', 'posts.capture')->name('capture');
-    Route::post('/capture/upload', [ImageController::class, 'upload'])->name('capture.upload');
-    Route::get('/capture/images', [ImageController::class, 'getUploadedImages'])->name('capture.images');
-    Route::post('/capture/delete', [ImageController::class, 'deleteImage'])->name('capture.delete');
+    Route::post('/capture/upload', [IMAGEcontroller::class, 'upload'])->name('capture.upload');
+    Route::get('/capture/images', [IMAGEcontroller::class, 'getUploadedImages'])->name('capture.images');
+    Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
+    Route::get('/capture/check', [IMAGEcontroller::class, 'checkimagesize'])->name('capture.image.check');
+
 
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
@@ -70,6 +76,15 @@ Route::middleware('auth')->group(function (){
     Route::view('/profile', 'components.profile')->name('profile');
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
+
+    //for the reviewer list
+    Route::get('/reviewers', [ReviewerController::class, 'getReviewerList'])->name('reviewers');
+    Route::view('/reviewer_list', 'posts.reviewer_list')->name('reviewer.list');
+
+    //for quizzes list
+    Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
+    Route::view('/quiz_list', 'posts.quiz_list')->name('quiz.list');
+    Route::get('/quizzes-by-subject', [ReviewerController::class, 'getQuizzesGroupedBySubject'])->name('quizzes.by.subject');
 
     //contact us
     Route::view('/contact', 'Contact.contact')->name('contact');
@@ -161,14 +176,6 @@ Route::middleware('guest')->group(function (){
     
     Route::view('/login', 'auth.login')->name('login');
     Route::post('/login', [AUTHcontroller::class, 'login_user']);
-    
-    // UI only routes for password reset (no backend)
-    Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
-    Route::view('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
-
-    // Password reset routes
-    Route::post('/forgot-password', [AUTHcontroller::class, 'forgotPassword'])->name('password.email');
-    Route::post('/reset-password', [AUTHcontroller::class, 'resetPassword'])->name('password.update');
 
     Route::view('/website', 'website.landing')->name('landing');
     Route::view('/faq', 'website.faq')->name('faq');
@@ -214,7 +221,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
     // Routes for promo actions
     Route::resource('promos', PromoController::class);
-    Route::post('/promos', [PromoController::class, 'store'])->name('promos.store');
+    Route::post('/promos', [PromoController::class, 'store'])->name('promos');
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::get('admin/promo', [PromoController::class, 'index'])->name('admin.promo.index');
     Route::get('admin/promo/create', [PromoController::class, 'create'])->name('admin.promo.create');
@@ -224,7 +231,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::delete('admin.promo/{promo}', [PromoController::class, 'destroy'])->name('admin.promo.destroy');
 
     // New route for adding a promo
-    Route::view('/admin/add-promo', 'admin.admin_addPromo')->name('admin.addPromo');
+    Route::view('/admin/add-promo', 'admin.admin_addPromo')->name('viewadmin.addPromo');
     Route::get('/admin/add-promo/{promo?}', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
@@ -236,7 +243,7 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/users/create', [AUTHadminController::class, 'createUser'])->name('admin.users.create');
     /* Route::delete('/admin/users/{email}', [AUTHadminController::class, 'deleteUserByEmail'])->name('admin.users.delete'); */
     
-    Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('admin.addPromo');
+    Route::get('/admin/addPromo', [PromoController::class, 'createOrEdit'])->name('editadmin.addPromo');
     Route::get('/admin/editPromo/{promo}', [PromoController::class, 'createOrEdit'])->name('admin.editPromo');
     Route::post('/promos/store', [PromoController::class, 'store'])->name('promos.store');
     Route::delete('/admin/deletePromo/{promo}', [PromoController::class, 'destroy'])->name('admin.deletePromo');
@@ -244,7 +251,7 @@ Route::middleware(['auth:admin'])->group(function () {
     //Support Ticket Routes
     Route::get('/admin/support', [ContactUsController::class, 'SupportTicketAdmin'])->name('admin.support');
     Route::get('/admin/support/filter', [ContactUsController::class, 'filterInquiriesByStatus'])->name('filter.inquiries');
-    Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('admin.reply');
+    Route::view('/admin/support/reply', 'admin.admin_supportReply')->name('viewadmin.reply');
     Route::get('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'getAdminInquiryDetails'])->name('admin.reply');
     Route::post('/admin/support/reply/{ticket_reference}', [ContactUsController::class, 'submitAdminReply'])->name('admin.submitReply');
    
@@ -317,11 +324,11 @@ Route::middleware(['auth:admin'])->group(function () {
 
 
 // Admin public routes for login/register
-    Route::view('/admin', 'auth.login-admin')->name('admin.login');
+    Route::view('/admin', 'auth.login-admin')->name('viewadmin.login');
     Route::view('/admin-register', 'auth.register-admin')->name('admin.register');
     Route::post('/admin-register', [AUTHadminController::class, 'register_admin']);
-    Route::view('/admin-login', 'auth.login-admin')->name('admin.login');
-    Route::post('/admin-login', [AUTHadminController::class, 'login_admin']);
+    Route::view('/admin-login', 'auth.login-admin')->name('loginadmin.login');
+    Route::post('/admin-login', [AUTHadminController::class, 'login_admin'])->name('admin.login');
 
 
 // Redirect to admin login if not authenticated

@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 
 class AUTHcontroller extends Controller
 {   
@@ -127,10 +125,27 @@ class AUTHcontroller extends Controller
             //remove all the image
             $user = $request->user();
             $userid = $user->user_id;
-        
+            
             $filePath = 'uploads/image' . $userid;
+            if (!Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->makeDirectory($filePath);
+            }
+
+            //get the file path and dlete whats inside
             if (Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->deleteDirectory($filePath);
+                // Get all files in the directory
+                $files = Storage::disk('public')->files($filePath);
+                
+                // Delete each file in the directory
+                foreach ($files as $file) {
+                    Storage::disk('public')->delete($file);
+                }
+                
+                // Also delete any subdirectories and their contents
+                $directories = Storage::disk('public')->directories($filePath);
+                foreach ($directories as $directory) {
+                    Storage::disk('public')->deleteDirectory($directory);
+                }
             }
 
             // Redirect to the capture route

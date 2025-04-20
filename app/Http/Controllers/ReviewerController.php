@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Question;
 use App\Models\Raw;
 use App\Models\Reviewer;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +15,20 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
 class ReviewerController extends Controller
-{
+{   
+    public function getQuizList(Request $request){
+        $userid = auth()->user()->user_id;
+        $subjects = Subject::where('user_id', $userid)->pluck('subject_id')->toArray();
+        $topics = Topic::whereIn('subject_id', $subjects)->pluck('topic_id')->toArray();
+        $questions = Question::whereIn('topic_id', $topics)->get();
+        return response()->json(['success' => true, 'questions' => $questions]);
+    }
+    public function getReviewerList(Request $request){
+        $userid = auth()->user()->user_id;
+        $subjects = Subject::where('user_id', $userid)->pluck('subject_id')->toArray();
+        $reviewer = Topic::whereIn('subject_id', $subjects)->get();
+        return response()->json(['success' => true, 'reviewer' => $reviewer]);
+    }
     public function downloadPdf(Request $request)
     {
         try {
@@ -172,6 +187,28 @@ class ReviewerController extends Controller
 
         return response()->json(['success' => true,'data' => $data]);
         
+    }
+    //=======================================================================================================
+    public function getQuizzesGroupedBySubject(Request $request)
+    {
+        $userid = auth()->user()->user_id;
+        $subjects = Subject::where('user_id', $userid)->get();
+        
+        $quizzesBySubject = [];
+        
+        foreach ($subjects as $subject) {
+            $topics = Topic::where('subject_id', $subject->subject_id)->pluck('topic_id')->toArray();
+            $questions = Question::whereIn('topic_id', $topics)->get();
+            
+            if ($questions->count() > 0) {
+                $quizzesBySubject[] = [
+                    'subject' => $subject,
+                    'questions' => $questions
+                ];
+            }
+        }
+        
+        return response()->json(['success' => true, 'quizzesBySubject' => $quizzesBySubject]);
     }
     //=======================================================================================================
 

@@ -358,24 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
 });
 
-    //This is for upload image modal logic
-    const openModal = document.getElementById('openModal');
-    const closeModal = document.getElementById('closeModal');
-    const uploadModal = document.getElementById('uploadModal');
-    const cancelUpload = document.getElementById('cancelUpload');
 
-    if(openModal){
-        openModal.addEventListener('click', () => uploadModal.classList.remove('hidden'));
-    }
-    if(closeModal){
-        closeModal.addEventListener('click', () => uploadModal.classList.add('hidden'));
-    }
-    if(cancelUpload){
-        cancelUpload.addEventListener('click', () => uploadModal.classList.add('hidden'));
-    }
-
-
-  
 
   
 //THis is for FAQ in WEBSITE
