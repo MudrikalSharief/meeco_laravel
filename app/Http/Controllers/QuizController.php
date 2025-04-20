@@ -163,159 +163,161 @@ class QuizController extends Controller
         return response()->json(['success' => true, 'questions' => $questions, 'type' => $question_type]);
     }
 
-        public function submitQuiz(Request $request)
-        {
-            // return response()->json(['success' => false, 'request' => $request->all()]);
-            $score = 0;
+    public function submitQuiz(Request $request)
+    {
+        $score = 0;
+        
+        $validatedData = $request->validate([
+            'questionId' => 'required|integer',
+        ]);
+        
+        $questionId = $validatedData['questionId'];
+        $question_type = Question::where('question_id', $questionId)->pluck('question_type')->first();
+        
+        $answers = $request->except('questionId');
+        $userAnswers = [];
+        
+        if(!$question_type === 'Mixed'){
+            foreach ($answers as $question => $answer) {
+                $choiceId = intval(explode('_', $question)[1]);
+                $userAnswers[$choiceId] = $answer;
+            }
+        }            
+       
+        if ($question_type === 'Multiple Choice') {
+            $mcAnswers = $request->input('multiple_choice', []);
+            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
+            foreach ($multiple_choice_data as $index => $data) {
+                if (isset($mcAnswers[$index])) {
+                    multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
+                        ->update(['user_answer' => $mcAnswers[$index]]);
+
+                    if ($mcAnswers[$index] === $data->answer) {
+                        $score++;
+                    }
+                }
+            }
+        } elseif ($question_type == 'True or false') {
+            $tfAnswers = $request->input('true_or_false', []);
             
-            $validatedData = $request->validate([
-                'questionId' => 'required|integer',
-            ]);
+            $tf_data = true_or_false::where('question_id', $questionId)->get();
+            foreach ($tf_data as $index => $data) {
+                if (isset($tfAnswers[$index])) {
+                    true_or_false::where('true_or_false_id', $data->true_or_false_id)
+                        ->update(['user_answer' => $tfAnswers[$index]]);
+
+                    if ($tfAnswers[$index] === $data->answer) {
+                        $score++;
+                    }
+                }
+            }
+        } elseif ($question_type == 'Identification') {
             
-            $questionId = $validatedData['questionId'];
-            $question_type = Question::where('question_id', $questionId)->pluck('question_type')->first();
+            $idAnswers = $request->input('identification', []);
+            $identification_data = Identification::where('question_id', $questionId)->get();
+             
+             foreach ($identification_data as $index => $data) {
+                if (isset($idAnswers[$index])) {
+                    Identification::where('Identification_id', $data->Identification_id)
+                        ->update(['user_answer' => $idAnswers[$index]]);
+
+                    if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
+                        $score++;
+                    }
+                }
+            }
+        } elseif ($question_type == 'Mixed') {
             
-            $answers = $request->except('questionId');
-            $userAnswers = [];
+            $mcAnswers = $request->input('multiple_choice', []);
+            $tfAnswers = $request->input('true_or_false', []);
+            $idAnswers = $request->input('identification', []);
             
-            if(!$question_type === 'Mixed'){
-                //this is the code for the non mixed question
-                foreach ($answers as $question => $answer) {
-                    $choiceId = intval(explode('_', $question)[1]);
-                    $userAnswers[$choiceId] = $answer;
-                }
-            }            
-           
-            if ($question_type === 'Multiple Choice') {
-                $mcAnswers = $request->input('multiple_choice', []);
-                $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
-                // Update multiple choice answers
-                foreach ($multiple_choice_data as $index => $data) {
-                    if (isset($mcAnswers[$index])) {
-                        multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
-                            ->update(['user_answer' => $mcAnswers[$index]]);
+            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
+            $tf_data = true_or_false::where('question_id', $questionId)->get();
+            $identification_data = Identification::where('question_id', $questionId)->get();
+            
+            foreach ($multiple_choice_data as $index => $data) {
+                if (isset($mcAnswers[$index])) {
+                    multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
+                        ->update(['user_answer' => $mcAnswers[$index]]);
 
-                        if ($mcAnswers[$index] === $data->answer) {
-                            $score++;
-                        }
-                    }
-                }
-                // return response()->json(['success' => false, 'request' => $request->all()]);
-            } elseif ($question_type == 'True or false') {
-                $tfAnswers = $request->input('true_or_false', []);
-                
-                $tf_data = true_or_false::where('question_id', $questionId)->get();
-                // Update true or false answers
-                foreach ($tf_data as $index => $data) {
-                    if (isset($tfAnswers[$index])) {
-                        true_or_false::where('true_or_false_id', $data->true_or_false_id)
-                            ->update(['user_answer' => $tfAnswers[$index]]);
-
-                        if ($tfAnswers[$index] === $data->answer) {
-                            $score++;
-                        }
-                    }
-                }
-                
-
-            } elseif ($question_type == 'Identification') {
-                
-                $idAnswers = $request->input('identification', []);
-                $identification_data = Identification::where('question_id', $questionId)->get();
-                // Update identification answers
-                 
-                 foreach ($identification_data as $index => $data) {
-                    if (isset($idAnswers[$index])) {
-                        Identification::where('Identification_id', $data->Identification_id)
-                            ->update(['user_answer' => $idAnswers[$index]]);
-
-                        if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
-                            $score++;
-                        }
-                    }
-                }
-                
-            } elseif ($question_type == 'Mixed') {
-                
-                // Separate user answers by type based on the data structure submitted by JavaScript
-                $mcAnswers = $request->input('multiple_choice', []);
-                $tfAnswers = $request->input('true_or_false', []);
-                $idAnswers = $request->input('identification', []);
-                
-                // Get the correct answers and IDs
-                $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
-                $tf_data = true_or_false::where('question_id', $questionId)->get();
-                $identification_data = Identification::where('question_id', $questionId)->get();
-                
-                // Update multiple choice answers
-                foreach ($multiple_choice_data as $index => $data) {
-                    if (isset($mcAnswers[$index])) {
-                        multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
-                            ->update(['user_answer' => $mcAnswers[$index]]);
-
-                        if ($mcAnswers[$index] === $data->answer) {
-                            $score++;
-                        }
-                    }
-                }
-
-                // Update true or false answers
-                foreach ($tf_data as $index => $data) {
-                    if (isset($tfAnswers[$index])) {
-                        true_or_false::where('true_or_false_id', $data->true_or_false_id)
-                            ->update(['user_answer' => $tfAnswers[$index]]);
-
-                        if ($tfAnswers[$index] === $data->answer) {
-                            $score++;
-                        }
-                    }
-                }
-
-                // Update identification answers
-                foreach ($identification_data as $index => $data) {
-                    if (isset($idAnswers[$index])) {
-                        Identification::where('Identification_id', $data->Identification_id)
-                            ->update(['user_answer' => $idAnswers[$index]]);
-
-                        if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
-                            $score++;
-                        }
+                    if ($mcAnswers[$index] === $data->answer) {
+                        $score++;
                     }
                 }
             }
 
-            Question::where('question_id', $questionId)->update(['score' => $score]);
-            
-            return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
+            foreach ($tf_data as $index => $data) {
+                if (isset($tfAnswers[$index])) {
+                    true_or_false::where('true_or_false_id', $data->true_or_false_id)
+                        ->update(['user_answer' => $tfAnswers[$index]]);
+
+                    if ($tfAnswers[$index] === $data->answer) {
+                        $score++;
+                    }
+                }
+            }
+
+            foreach ($identification_data as $index => $data) {
+                if (isset($idAnswers[$index])) {
+                    Identification::where('Identification_id', $data->Identification_id)
+                        ->update(['user_answer' => $idAnswers[$index]]);
+
+                    if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
+                        $score++;
+                    }
+                }
+            }
         }
 
-        public function deleteQuiz($id)
-        {
-            $quiz = Question::find($id);
-            // return response()->json(['success' => false, 'quiz' => $id]);
-            if (!$quiz) {
-                return response()->json(['success' => false, 'message' => 'Quiz not found']);
-            }
+        Question::where('question_id', $questionId)->update(['score' => $score]);
+        
+        return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
+    }
+
+    public function resetQuiz($id)
+    {
+        $quiz = Question::find($id);
+        if (!$quiz) {
+            return response()->json(['success' => false, 'message' => 'Quiz not found']);
+        }
+        
+        $quiz->score = 0;
+        $quiz->save();
+        
+        multiple_choice::where('question_id', $id)->update(['user_answer' => null]);
+        true_or_false::where('question_id', $id)->update(['user_answer' => null]);
+        Identification::where('question_id', $id)->update(['user_answer' => null]);
+        
+        return response()->json(['success' => true, 'message' => 'Quiz reset successfully']);
+    }
+
+    public function deleteQuiz($id)
+    {
+        $quiz = Question::find($id);
+        if (!$quiz) {
+            return response()->json(['success' => false, 'message' => 'Quiz not found']);
+        }
+
+        $quiz->delete();
+
+        return response()->json(['success' => true, 'message' => 'Quiz deleted successfully']);
+    }
+
+    public function editQuizName(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
     
-            $quiz->delete();
+        $quiz = Question::find($id);
+        if (!$quiz) {
+            return response()->json(['success' => false, 'message' => 'Quiz not found']);
+        }
     
-            return response()->json(['success' => true, 'message' => 'Quiz deleted successfully']);
-        }
-
-        public function editQuizName(Request $request, $id)
-        {
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-            ]);
-        
-            $quiz = Question::find($id);
-            if (!$quiz) {
-                return response()->json(['success' => false, 'message' => 'Quiz not found']);
-            }
-        
-            $quiz->question_title = $validatedData['name'];
-            $quiz->save();
-        
-            return response()->json(['success' => true, 'message' => 'Quiz name updated successfully']);
-        }
+        $quiz->question_title = $validatedData['name'];
+        $quiz->save();
+    
+        return response()->json(['success' => true, 'message' => 'Quiz name updated successfully']);
+    }
 }

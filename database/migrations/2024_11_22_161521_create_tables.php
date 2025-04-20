@@ -109,6 +109,7 @@ return new class extends Migration
             $table->text('B');
             $table->text('C');
             $table->text('D');
+            $table->string('blooms_level')->nullable(); // Added blooms_level column
             $table->timestamps();
         });
 
@@ -121,6 +122,7 @@ return new class extends Migration
             $table->longText('question_text');
             $table->string('answer');
             $table->string('user_answer')->nullable();
+            $table->string('blooms_level')->nullable(); // Added blooms_level column
             $table->timestamps();
         });
 
@@ -133,6 +135,7 @@ return new class extends Migration
             $table->longText('question_text');
             $table->string('answer');
             $table->string('user_answer')->nullable();
+            $table->string('blooms_level')->nullable(); // Added blooms_level column
             $table->timestamps();
         });
     }

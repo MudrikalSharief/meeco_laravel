@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/takequiz/{questionId}',[QuizController::class,'takeQuiz'])->name('take-quiz');
     Route::get('/getquizresult/{questionId}',[QuizController::class,'getQuizResult'])->name('get.quizresult');
     Route::post('/submitquiz',[QuizController::class,'submitQuiz'])->name('submit.quiz');
+    Route::post('/resetquiz/{id}',[QuizController::class,'resetQuiz'])->name('reset.quiz');
     Route::view('/quiz', 'posts.quiz')->name('quiz');
     Route::view('/takequiz', 'posts.takequiz')->name('takequiz');
     Route::view('/quizresult', 'posts.quizresult')->name('quizresult');
@@ -139,18 +140,18 @@ Route::middleware('auth')->group(function (){
     Route::view('/testpay', 'posts.paymongo')->name('testpay');
 
     Route::view('/upgrade/payment', 'subscriptionFolder.payment')->name('upgrade.payment');
-    // Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
-    // Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
-    // Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subscriptionFolder.authentication')->name('upgrade.authentication');
-    // Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subscriptionFolder.mpin')->name('upgrade.mpin');
-    // Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subscriptionFolder.payment1')->name('upgrade.payment1');
-    // Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subscriptionFolder.receipt')->name('upgrade.receipt');
-    // Route::get('/upgrade', [PromoController::class, 'showPromos'])->name('upgrade');
-    // Route::get('/upgrade/payment1/{promo_id}', [SubscriptionController::class, 'payment1'])->name('upgrade.payment1');
-    // Route::get('/upgrade/receipt/{promo_id}', [SubscriptionController::class, 'receipt'])->name('upgrade.receipt');
-    // Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
-    // Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
-    // Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
+    Route::get('/upgrade/paymentEmail/{promo_id}', [SubscriptionController::class, 'paymentEmail'])->name('upgrade.paymentEmail');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber', 'subscriptionFolder.gcashNumber')->name('upgrade.gcashNumber');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication', 'subscriptionFolder.authentication')->name('upgrade.authentication');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin', 'subscriptionFolder.mpin')->name('upgrade.mpin');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subscriptionFolder.payment1')->name('upgrade.payment1');
+    Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subscriptionFolder.receipt')->name('upgrade.receipt');
+    Route::get('/upgrade', [PromoController::class, 'showPromos'])->name('upgrade');
+    Route::get('/upgrade/payment1/{promo_id}', [SubscriptionController::class, 'payment1'])->name('upgrade.payment1');
+    Route::get('/upgrade/receipt/{promo_id}', [SubscriptionController::class, 'receipt'])->name('upgrade.receipt');
+    Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
+    Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
+    Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
 
     //profile
     Route::get('/profile/cancelled', function () {
