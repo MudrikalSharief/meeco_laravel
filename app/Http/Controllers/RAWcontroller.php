@@ -75,7 +75,9 @@ class RawController extends Controller
         if (empty($rawText)) {
             try {
                 
-                $imageAnnotatorClient = new ImageAnnotatorClient();
+                $imageAnnotatorClient = new ImageAnnotatorClient([
+                    'credentials' => json_decode(file_get_contents(base_path('meeco-443507-7ced85bcffff.json')), true)
+                ]);
                 $userId = Auth::user()->user_id;
                 $directory = storage_path("app/public/uploads/image{$userId}/");
                 $image_paths = glob("{$directory}*.{jpg,jpeg,png,gif}", GLOB_BRACE);
@@ -99,12 +101,16 @@ class RawController extends Controller
                     ['raw_text' => $extractedText]
                 );
 
-                return response()->json(['success' => true, 'raw_text' => $extractedText, 'message' => $directory]);
+                
+                return response()->json(['success' => true, 'raw_text' => $extractedText, 'message' => $directory, 'time' => time() - $startTime]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'NO TEXT FOUND', 'error' => $e->getMessage()]);
+<<<<<<< Updated upstream
             }
             if(set_time_limit(300)){
                 return response()->json(['success' => false, 'message' => 'time limit reach']);
+=======
+>>>>>>> Stashed changes
             }
         } else {
             return response()->json(['success' => true, 'raw_text' => $rawText]);
