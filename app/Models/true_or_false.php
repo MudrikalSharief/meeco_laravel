@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class true_or_false extends Model
 {
     use HasFactory;
+
     // Specify the table name if it doesn't follow the convention
     protected $table = 'true_or_false';
 
@@ -23,19 +23,16 @@ class true_or_false extends Model
 
     // Define the fillable attributes
     protected $fillable = [
-        'true_or_false_id', 
         'question_id',
         'question_text',
         'answer',
+        'blooms_level',
         'user_answer',
     ];
 
     // Define the relationship with the User model
-    
     public function question()
     {
         return $this->belongsTo(Question::class, 'question_id', 'question_id');
     }
-
-
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,14 +22,15 @@ class multiple_choice extends Model
 
     // Define the fillable attributes
     protected $fillable = [
-        'question_id', 
+        'question_id',
         'question_text',
         'answer',
-        'user_answer',
         'A',
         'B',
         'C',
         'D',
+        'blooms_level',
+        'user_answer',
     ];
 
     // Define the relationship with the User model
@@ -39,6 +39,4 @@ class multiple_choice extends Model
     {
         return $this->belongsTo(Question::class, 'question_id', 'question_id');
     }
-
-
 }

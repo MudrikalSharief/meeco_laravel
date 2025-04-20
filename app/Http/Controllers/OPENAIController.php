@@ -244,21 +244,31 @@ class OPENAIController extends Controller
                 ->post('https://api.openai.com/v1/chat/completions', [
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that require analysis. Each question must encourage critical thinking by asking the user to compare, categorize, identify relationships, recognize patterns, or evaluate cause and effect. 
+                        ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+
+                        1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
+                        2. COMPREHENSION: Questions that test understanding of the material.
+                        3. APPLICATION: Questions that require applying knowledge to new situations.
+                        4. ANALYSIS: Questions that ask students to break down information and show relationships.
+                        5. SYNTHESIS: Questions that require combining ideas to create something new.
+                        6. EVALUATION: Questions that ask for judgments based on criteria.
                 
                         Guidelines:
                         - Each question must have four options labeled A, B, C, and D.
                         - Only one option should be correct.
-                        - Ensure that the questions challenge the user to analyze the information, not just recall facts.
-                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+                        - Include at least one question from each cognitive level.
+                        - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
+                        - The order of the questions should be mixed to provide variety.
+                        - Indicate which Bloom's level each question addresses in the JSON response.
                 
                         Format your response in JSON like this: 
                 
                         {
                         \"questions\": [
                             {
-                            \"question\": \"Which of the following best explains the relationship between X and Y?\",
+                            \"blooms_level\": \"Knowledge\",
+                            \"question\": \"What is the definition of X?\",
                             \"choices\": {
                                 \"A\": \"choice\",
                                 \"B\": \"choice\",
@@ -321,6 +331,7 @@ class OPENAIController extends Controller
                         'B' => $questionData['choices']['B'],
                         'C' => $questionData['choices']['C'],
                         'D' => $questionData['choices']['D'],
+                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                     ]);
                 }
 
@@ -352,20 +363,29 @@ class OPENAIController extends Controller
                 ->post('https://api.openai.com/v1/chat/completions', [
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " true or false quiz questions that require analysis. Each question must challenge the user to evaluate relationships, identify patterns, assess cause and effect, or detect logical inconsistencies.
+                        ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " true or false quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+
+                        1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
+                        2. COMPREHENSION: Questions that test understanding of the material.
+                        3. APPLICATION: Questions that require applying knowledge to new situations.
+                        4. ANALYSIS: Questions that ask students to break down information and show relationships.
+                        5. SYNTHESIS: Questions that require combining ideas to create something new.
+                        6. EVALUATION: Questions that ask for judgments based on criteria.
 
                         Guidelines:
-                        - Ensure that the statements require analysis rather than simple recall.
-                        - Some statements should contain subtle logical twists or require recognizing underlying principles.
-                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+                        - Ensure statements align with the appropriate cognitive level in Bloom's Taxonomy.
+                        - Some statements should be straightforward (Knowledge, Comprehension) while others should require deeper thinking (Analysis, Synthesis, Evaluation).
+                        - The order of the questions must be mixed to provide variety in cognitive challenge.
+                        - Indicate which Bloom's level each question addresses in the JSON response.
 
                         Format your response in JSON like this: 
 
                         {
                         \"questions\": [
                             {
-                            \"question\": \"Analyzing X and Y, it can be concluded that Z is a direct result. True or False?\",
+                            \"blooms_level\": \"Analysis\",
+                            \"question\": \"Based on the principles discussed, X can be classified as a direct cause of Y. True or False?\",
                             \"correct_answer\": \"True\"
                             }
                         ]
@@ -417,6 +437,7 @@ class OPENAIController extends Controller
                         'question_id' => $question->question_id,
                         'question_text' => $questionData['question'],
                         'answer' => $questionData['correct_answer'],
+                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                     ]);
                 }
                 
@@ -448,21 +469,31 @@ class OPENAIController extends Controller
                 ->post('https://api.openai.com/v1/chat/completions', [
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions designed to assess analytical thinking. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " identification quiz questions that require analysis. Each question must challenge the user to recognize relationships, identify causes, classify concepts, or draw conclusions based on the given text.
+                        ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " identification quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+
+                        1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
+                        2. COMPREHENSION: Questions that test understanding of the material.
+                        3. APPLICATION: Questions that require applying knowledge to new situations.
+                        4. ANALYSIS: Questions that ask students to break down information and show relationships.
+                        5. SYNTHESIS: Questions that require combining ideas to create something new.
+                        6. EVALUATION: Questions that ask for judgments based on criteria.
                 
                         Guidelines:
-                        - The question must require critical thinking rather than simple recall.
-                        - Ensure that the answer is a **single word or a short phrase**.
-                        - The order of the questions must be rearranged so they do not follow the same sequence as the text.
+                        - Ensure questions reflect the appropriate cognitive level in Bloom's Taxonomy.
+                        - The answer must be a **single word or a short phrase**.
+                        - Include questions that cover a range of difficulty levels, from basic recall to higher-order thinking.
+                        - The order of the questions must be mixed to provide variety in cognitive challenge.
+                        - Indicate which Bloom's level each question addresses in the JSON response.
                 
                         Format your response in JSON like this: 
                 
                         {
                         \"questions\": [
                             {
-                            \"question\": \"What process involves the breakdown of complex molecules into simpler ones to release energy?\",
-                            \"correct_answer\": \"Catabolism\"
+                            \"blooms_level\": \"Application\",
+                            \"question\": \"What process would you use to solve this specific problem based on the principles discussed?\",
+                            \"correct_answer\": \"Correct Answer\"
                             }
                         ]
                         } 
@@ -514,6 +545,7 @@ class OPENAIController extends Controller
                         'question_id' => $question->question_id,
                         'question_text' => $questionData['question'],
                         'answer' => $questionData['correct_answer'],
+                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                     ]);
                 }
                 
@@ -541,21 +573,30 @@ class OPENAIController extends Controller
             $jsonFormat = "{\n";
             
             if ($multiple > 0) {
-                $quizTypes[] = "$multiple multiple-choice quiz questions that assess analytical thinking";
-                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"question\": \"Which of the following best explains the relationship between X and Y?\",\n            \"choices\": {\n                \"A\": \"Choice 1\",\n                \"B\": \"Choice 2\",\n                \"C\": \"Choice 3\",\n                \"D\": \"Choice 4\"\n            },\n            \"correct_answer\": \"B\"\n        }\n    ],\n";
+                $quizTypes[] = "$multiple multiple-choice quiz questions that assess different levels of Bloom's Taxonomy";
+                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"blooms_level\": \"Analysis\",\n            \"question\": \"Which of the following best explains the relationship between X and Y?\",\n            \"choices\": {\n                \"A\": \"Choice 1\",\n                \"B\": \"Choice 2\",\n                \"C\": \"Choice 3\",\n                \"D\": \"Choice 4\"\n            },\n            \"correct_answer\": \"B\"\n        }\n    ],\n";
             }
             
             if ($true_or_false > 0) {
-                $quizTypes[] = "$true_or_false true or false quiz questions that require analysis";
-                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"question\": \"Given the cause-and-effect relationship between X and Y, does Z logically follow? True or False?\",\n            \"correct_answer\": \"True\"\n        }\n    ],\n";
+                $quizTypes[] = "$true_or_false true or false quiz questions covering various cognitive levels";
+                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"blooms_level\": \"Evaluation\",\n            \"question\": \"Given the evidence presented, the conclusion that X leads to Y is valid. True or False?\",\n            \"correct_answer\": \"True\"\n        }\n    ],\n";
             }
             
             if ($identification > 0) {
-                $quizTypes[] = "$identification identification quiz questions that assess understanding of relationships and classification";
-                $jsonFormat .= "    \"identification\": [\n        {\n            \"question\": \"What principle explains the connection between A and B?\",\n            \"correct_answer\": \"Correct Answer\"\n        }\n    ],\n";
+                $quizTypes[] = "$identification identification quiz questions spanning different levels of Bloom's Taxonomy";
+                $jsonFormat .= "    \"identification\": [\n        {\n            \"blooms_level\": \"Synthesis\",\n            \"question\": \"What term describes the process of combining concepts A and B to create a new solution?\",\n            \"correct_answer\": \"Correct Answer\"\n        }\n    ],\n";
             }
             
-            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}\n\nText: " . $text . " The order of the questions must not be the same as the order of the text I gave you. Rearrange the order of the questions to promote deeper understanding.";
+            $bloomsInstructions = "\n\nInclude questions from these cognitive levels of Bloom's Taxonomy:\n
+            1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
+            2. COMPREHENSION: Questions that test understanding of the material.
+            3. APPLICATION: Questions that require applying knowledge to new situations.
+            4. ANALYSIS: Questions that ask students to break down information and show relationships.
+            5. SYNTHESIS: Questions that require combining ideas to create something new.
+            6. EVALUATION: Questions that ask for judgments based on criteria.\n
+            Ensure each question type includes a mixture of different cognitive levels. For higher levels (Analysis, Synthesis, Evaluation), the questions should require critical thinking rather than simple recall.\n";
+            
+            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}" . $bloomsInstructions . "\nText: " . $text . " The order of the questions must be mixed to provide variety in cognitive challenge.";
             
             try {
                 $response = Http::withHeaders([
@@ -566,7 +607,7 @@ class OPENAIController extends Controller
                 ->post('https://api.openai.com/v1/chat/completions', [
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates quiz questions to test analytical thinking at Level 4 of Bloom\'s Taxonomy. Return the response in JSON format.'],
+                        ['role' => 'system', 'content' => 'You are an AI that generates quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
                         ['role' => 'user', 'content' => $prompt]
                     ],
                     'temperature' => 0.7,
@@ -616,6 +657,7 @@ class OPENAIController extends Controller
                             'B' => $questionData['choices']['B'],
                             'C' => $questionData['choices']['C'],
                             'D' => $questionData['choices']['D'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                         ]);
                     }
                 }
@@ -626,6 +668,7 @@ class OPENAIController extends Controller
                             'question_id' => $question->question_id,
                             'question_text' => $questionData['question'],
                             'answer' => $questionData['correct_answer'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                         ]);
                     }
                 }
@@ -636,6 +679,7 @@ class OPENAIController extends Controller
                             'question_id' => $question->question_id,
                             'question_text' => $questionData['question'],
                             'answer' => $questionData['correct_answer'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
                         ]);
                     }
                 }
