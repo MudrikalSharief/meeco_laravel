@@ -126,7 +126,7 @@
                                 );
                                 reviewerDiv.innerHTML = `
                                     <p>${reviewer.question_title}</p>
-                                    <a href="/reviewer/${reviewer.question_id}" class="text-blue-500">View</a>
+                                    <a href="/quizresult?questionId=${reviewer.question_id}" class="text-blue-500">View</a>
                                 `;
                                 reviewersContainer.appendChild(reviewerDiv);
                             });
@@ -228,7 +228,7 @@
                                 );
                                 quizDiv.innerHTML = `
                                     <p>${quiz.question_title}</p>
-                                    <a href="/reviewer/${quiz.question_id}" class="text-blue-500 hover:text-blue-700 hover:underline">View</a>
+                                    <a href="/quizresult?questionId=${quiz.question_id}" class="text-blue-500 hover:text-blue-700 hover:underline">View</a>
                                 `;
                                 quizzesContainer.appendChild(quizDiv);
                             });
