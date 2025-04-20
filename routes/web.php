@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function (){
     //for quizzes list
     Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
     Route::view('/quiz_list', 'posts.quiz_list')->name('quiz.list');
+    Route::get('/quizzes-by-subject', [ReviewerController::class, 'getQuizzesGroupedBySubject'])->name('quizzes.by.subject');
 
     //contact us
     Route::view('/contact', 'Contact.contact')->name('contact');
