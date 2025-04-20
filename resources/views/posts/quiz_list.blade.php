@@ -54,7 +54,7 @@
                             );
                             reviewerDiv.innerHTML = `
                                 <p>${reviewer.question_title}</p>
-                                <a href="/reviewer/${reviewer.question_id}" class="text-blue-500">View</a>
+                                <a href="/quizresult?questionId=${reviewer.question_id}" class="text-blue-500">View</a>
                             `;
                             reviewersContainer.appendChild(reviewerDiv);
                         });
