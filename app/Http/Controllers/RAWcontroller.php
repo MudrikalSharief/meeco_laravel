@@ -105,16 +105,11 @@ class RawController extends Controller
                 return response()->json(['success' => true, 'raw_text' => $extractedText, 'message' => $directory, 'time' => time() - $startTime]);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'NO TEXT FOUND', 'error' => $e->getMessage()]);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
             }
-            if(set_time_limit(300)){
-                return response()->json(['success' => false, 'message' => 'time limit reach']);
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-            }
+            // if(set_time_limit(300)){
+            //     return response()->json(['success' => false, 'message' => 'time limit reach']);
+            // }
         } else {
             return response()->json(['success' => true, 'raw_text' => $rawText]);
         }
