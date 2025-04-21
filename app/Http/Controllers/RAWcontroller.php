@@ -74,21 +74,41 @@ class RawController extends Controller
 
         if (empty($rawText)) {
             try {
-                
                 $imageAnnotatorClient = new ImageAnnotatorClient();
-                $userId = Auth::user()->user_id;
                 $directory = storage_path("app/public/uploads/image{$userId}/");
                 $image_paths = glob("{$directory}*.{jpg,jpeg,png,gif}", GLOB_BRACE);
+                
+                if (empty($image_paths)) {
+                    return response()->json(['success' => false, 'message' => 'No images found in directory']);
+                }
+                
                 $extractedText = '';
                 foreach ($image_paths as $index => $image_path) {
+                    // Check if we're approaching the time limit
+                    if (time() - $startTime > 280) { // Leave 20 seconds buffer
+                        $extractedText .= "\n[Process timed out - not all images were processed]";
+                        break;
+                    }
                     
-                    $imageContent = file_get_contents($image_path);
-                    $response = $imageAnnotatorClient->textDetection($imageContent,['timeout' => 300]);
-                    $text = $response->getTextAnnotations();
-                    $extractedText .= '=Image ' . ($index + 1) . '=' . PHP_EOL;
-                    $extractedText .= $text[0]->getDescription() . PHP_EOL . PHP_EOL;
-                    if ($error = $response->getError()) {
-                        $extractedText .= 'API Error: ' . $error->getMessage() . PHP_EOL;
+                    try {
+                        $imageContent = file_get_contents($image_path);
+                        $response = $imageAnnotatorClient->textDetection($imageContent, ['timeout' => 60]); // Lower timeout per image
+                        $text = $response->getTextAnnotations();
+                        
+                        $extractedText .= '=Image ' . ($index + 1) . '=' . PHP_EOL;
+                        
+                        if (!empty($text)) {
+                            $extractedText .= $text[0]->getDescription() . PHP_EOL . PHP_EOL;
+                        } else {
+                            $extractedText .= "[No text detected in this image]" . PHP_EOL . PHP_EOL;
+                        }
+                        
+                        if ($error = $response->getError()) {
+                            $extractedText .= 'API Error: ' . $error->getMessage() . PHP_EOL;
+                        }
+                    } catch (\Exception $e) {
+                        $extractedText .= '=Image ' . ($index + 1) . '=' . PHP_EOL;
+                        $extractedText .= '[Error processing image: ' . $e->getMessage() . ']' . PHP_EOL . PHP_EOL;
                     }
                 }
                 
@@ -99,21 +119,14 @@ class RawController extends Controller
                     ['raw_text' => $extractedText]
                 );
 
-                return response()->json(['success' => true, 'raw_text' => $extractedText, 'message' => $directory]);
+                return response()->json(['success' => true, 'raw_text' => $extractedText]);
             } catch (\Exception $e) {
-                return response()->json(['success' => false, 'message' => 'NO TEXT FOUND']);
-            }
-            if(set_time_limit(300)){
-                return response()->json(['success' => false, 'message' => 'time limit reach']);
+                return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
             }
         } else {
             return response()->json(['success' => true, 'raw_text' => $rawText]);
         }
     }
-
-
- 
-    
 
     public function storeReviewer(Request $request)
     {
