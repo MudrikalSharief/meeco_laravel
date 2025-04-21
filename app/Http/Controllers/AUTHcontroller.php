@@ -311,7 +311,7 @@ class AUTHcontroller extends Controller
         } catch (\Exception $e) {
             // Log the error and store the code to display to the user
             Log::error('Email sending failed: ' . $e->getMessage());
-            // Session::flash('email_error', 'Email could not be sent due to server configuration. Your verification code is: ' . $code);
+            Session::flash('email_error', 'Email could not be sent due to server configuration. Your verification code is: ' . $code);
         }
     }
 
