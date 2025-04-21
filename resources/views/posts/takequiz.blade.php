@@ -472,8 +472,6 @@
             // Start the timer when the page loads
             startTime = Date.now();
 
-<<<<<<< Updated upstream
-=======
             // Update the timer display every second
             const timerDisplay = document.getElementById('timerDisplay');
             const timerInterval = setInterval(() => {
@@ -482,17 +480,13 @@
             }, 1000);
 
             // Stop the timer and submit the quiz
->>>>>>> Stashed changes
             const submitQuizButton = document.getElementById('submitQuizButton');
             submitQuizButton.addEventListener('click', function (event) {
                 event.preventDefault();
 
-<<<<<<< Updated upstream
-=======
                 // Stop the timer
                 clearInterval(timerInterval);
 
->>>>>>> Stashed changes
                 // Calculate elapsed time in seconds
                 const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
 
@@ -508,17 +502,23 @@
                     },
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Quiz submitted successfully!');
-                        window.location.href = `/quizresult?questionId=${data.question_id}`;
-                    } else {
-                        alert('Failed to submit quiz: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Quiz submitted successfully!');
+                            window.location.href = `/quizresult?questionId=${data.question_id}`;
+                        } else {
+                            alert('Failed to submit quiz: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
             });
+
         });
     </script>
 </x-layout>
