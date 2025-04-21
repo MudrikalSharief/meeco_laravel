@@ -165,6 +165,8 @@ class QuizController extends Controller
 
     public function submitQuiz(Request $request)
     {
+        \Log::info('Submit Quiz Request:', $request->all());
+
         $score = 0;
 
         $validatedData = $request->validate([

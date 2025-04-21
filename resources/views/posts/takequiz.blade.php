@@ -520,5 +520,65 @@
             });
 
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const quizForm = document.getElementById('quizForm');
+            const submitQuizButton = document.getElementById('submitQuizButton');
+            let startTime = Date.now(); // Start the timer when the page loads
+
+            // Update the timer display every second
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60); // Calculate minutes
+                const seconds = elapsedTime % 60; // Calculate remaining seconds
+                timerDisplay.textContent = `Time: ${minutes}m ${seconds}s`;
+            }, 1000);
+
+            // Stop the timer and submit the quiz
+            submitQuizButton.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                // Stop the timer
+                clearInterval(timerInterval);
+
+                // Calculate elapsed time in seconds
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+
+                // Format elapsed time as "minutes and seconds"
+                const formattedElapsedTime = `${minutes}m ${seconds}s`;
+                console.log(`Elapsed Time: ${formattedElapsedTime}`);
+
+                // Collect form data
+                const formData = new FormData(quizForm);
+                formData.append('elapsed_time', elapsedTime); // Send total seconds to the backend
+
+                // Submit the quiz with the elapsed time
+                fetch('/submitquiz', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Quiz submitted successfully!');
+                            window.location.href = `/quizresult?questionId=${data.question_id}`;
+                        } else {
+                            alert('Failed to submit quiz: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
     </script>
 </x-layout>
