@@ -99,68 +99,37 @@ class QuizController extends Controller
     public function getQuizResult($questionId)
     {
         $id = intval($questionId);
-        $question_type = Question::where('question_id', $id)->pluck('question_type')->first();
+        $question = Question::find($id);
+
+        if (!$question) {
+            return response()->json(['success' => false, 'message' => 'Quiz not found']);
+        }
+
+        $question_type = $question->question_type;
 
         if ($question_type == 'Multiple Choice') {
             $questions = multiple_choice::where('question_id', $id)->get();
-            $userAnswers = multiple_choice::where('question_id', $questionId)->pluck('user_answer')->filter();
-           
-            
-            if($userAnswers->isEmpty()){
-                return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type]);
-            }
-            
         } elseif ($question_type == 'True or false') {
             $questions = true_or_false::where('question_id', $id)->get();
-            $userAnswers = true_or_false::where('question_id', $questionId)->pluck('user_answer')->filter();
-            if($userAnswers->isEmpty()){
-                return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type]);
-            }
         } elseif ($question_type == 'Identification') {
             $questions = Identification::where('question_id', $id)->get();
-            $userAnswers = Identification::where('question_id', $questionId)->pluck('user_answer')->filter();
-            if($userAnswers->isEmpty()){
-                return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type]);
-            }
         } elseif ($question_type == 'Mixed') {
-            $multiple_choice_questions = multiple_choice::where('question_id', $id)->get();
-            $true_or_false_questions = true_or_false::where('question_id', $id)->get();
-            $identification_questions = Identification::where('question_id', $id)->get();
-
             $questions = [
-                'multiple_choice' => $multiple_choice_questions,
-                'true_or_false' => $true_or_false_questions,
-                'identification' => $identification_questions,
+                'multiple_choice' => multiple_choice::where('question_id', $id)->get(),
+                'true_or_false' => true_or_false::where('question_id', $id)->get(),
+                'identification' => Identification::where('question_id', $id)->get(),
             ];
-
-            $userAnswers = [
-                'multiple_choice' => multiple_choice::where('question_id', $questionId)->pluck('user_answer')->toArray(),
-                'true_or_false' => true_or_false::where('question_id', $questionId)->pluck('user_answer')->toArray(),
-                'identification' => Identification::where('question_id', $questionId)->pluck('user_answer')->toArray(),
-            ];
-
-            // Check if all user answers are empty or null
-            $allEmpty = true;
-            foreach ($userAnswers as $answers) {
-                if (!empty(array_filter($answers, function($answer) { return $answer !== null; }))) {
-                    $allEmpty = false;
-                    break;
-                }
-            }
-
-            if ($allEmpty) {
-                return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type]);
-            }
-
-        } else {    
-            return response()->json(['success' => false, 'message' => 'Unidentified Question Type!']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Unidentified Question Type']);
         }
 
-        if (empty($userAnswers)) {
-            return response()->json(['success' => false, 'message' => 'No Answer Yet', 'type' => $question_type]);
-        }
-
-        return response()->json(['success' => true, 'questions' => $questions, 'type' => $question_type]);
+        return response()->json([
+            'success' => true,
+            'questions' => $questions,
+            'type' => $question_type,
+            'score' => $question->score,
+            'timer_result' => $question->timer_result, // Include the time taken
+        ]);
     }
 
     public function submitQuiz(Request $request)
