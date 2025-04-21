@@ -83,17 +83,33 @@ return new class extends Migration
         
         // Create Questions table
         
-        Schema::dropIfExists('questions');
+        // Schema::dropIfExists('questions');
+        // Schema::create('questions', function (Blueprint $table) {
+        //     $table->id('question_id');
+        //     $table->unsignedBigInteger('topic_id');
+        //     $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
+        //     $table->text('question_type');
+        //     $table->string('question_title');
+        //     $table->integer('number_of_question');
+        //     $table->integer('score')->default(0);
+        //     $table->timestamps();
+        // });
+
         Schema::create('questions', function (Blueprint $table) {
-            $table->id('question_id');
+            $table->bigIncrements('question_id');
             $table->unsignedBigInteger('topic_id');
-            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
             $table->text('question_type');
-            $table->string('question_title');
+            $table->string('question_title', 255);
             $table->integer('number_of_question');
             $table->integer('score')->default(0);
-            $table->timestamps();
+            $table->integer('timer_result')->nullable();
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
+
+            // Foreign key constraint
+            $table->foreign('topic_id')->references('topic_id')->on('topics')->onDelete('cascade');
         });
+
         
         
         // Create Multiple Choice table 
