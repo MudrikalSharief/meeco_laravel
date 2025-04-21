@@ -104,7 +104,7 @@
                             data.reviewer.forEach(reviewer => {
                                 let reviewerDiv = document.createElement('div');
                                 reviewerDiv.classList.add(
-                                    'curosor-pointer',
+                                    'cursor-pointer',
                                     'w-full',
                                     'text-start',
                                     'py-2',
@@ -124,10 +124,20 @@
                                     'transition',
                                     'duration-300'
                                 );
+                                
+                                // Create clickable container
                                 reviewerDiv.innerHTML = `
-                                    <p>${reviewer.name}</p>
-                                    <a href="/reviewer/${reviewer.topic_id}" class="text-blue-500">View</a>
+                                    <a href="/reviewer/${reviewer.topic_id}" class="w-full flex justify-between items-center">
+                                        <p>${reviewer.name}</p>
+                                        <span class="text-blue-500">View</span>
+                                    </a>
                                 `;
+                                
+                                // Make the entire div clickable
+                                reviewerDiv.addEventListener('click', function() {
+                                    window.location.href = `/reviewer/${reviewer.topic_id}`;
+                                });
+                                
                                 reviewersContainer.appendChild(reviewerDiv);
                             });
                         } else {
@@ -224,12 +234,23 @@
                                     'transition',
                                     'duration-300',
                                     'border',
-                                    'border-gray-100'
+                                    'border-gray-100',
+                                    'cursor-pointer'
                                 );
+                                
+                                // Create clickable container
                                 reviewerDiv.innerHTML = `
-                                    <p>${reviewer.name}</p>
-                                    <a href="/reviewer/${reviewer.topic_id}" class="text-blue-500 hover:text-blue-700 hover:underline">View</a>
+                                    <a href="/reviewer/${reviewer.topic_id}" class="w-full flex justify-between items-center">
+                                        <p>${reviewer.name}</p>
+                                        <span class="text-blue-500">View</span>
+                                    </a>
                                 `;
+                                
+                                // Make the entire div clickable
+                                reviewerDiv.addEventListener('click', function() {
+                                    window.location.href = `/reviewer/${reviewer.topic_id}`;
+                                });
+                                
                                 reviewersListContainer.appendChild(reviewerDiv);
                             });
                             
