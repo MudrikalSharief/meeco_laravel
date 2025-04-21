@@ -9,6 +9,7 @@ use App\Models\Question;
 use App\Models\Topic;
 use App\Models\true_or_false;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QuizController extends Controller
 {
@@ -192,7 +193,8 @@ class QuizController extends Controller
                     multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
                         ->update(['user_answer' => $mcAnswers[$index]]);
 
-                    if ($mcAnswers[$index] === $data->answer) {
+                    // Check if answer is correct, considering both letter and direct value formats
+                    if ($this->isCorrectMultipleChoiceAnswer($mcAnswers[$index], $data)) {
                         $score++;
                     }
                 }
@@ -241,7 +243,8 @@ class QuizController extends Controller
                     multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
                         ->update(['user_answer' => $mcAnswers[$index]]);
 
-                    if ($mcAnswers[$index] === $data->answer) {
+                    // Check if answer is correct, considering both letter and direct value formats
+                    if ($this->isCorrectMultipleChoiceAnswer($mcAnswers[$index], $data)) {
                         $score++;
                     }
                 }
@@ -273,6 +276,86 @@ class QuizController extends Controller
         Question::where('question_id', $questionId)->update(['score' => $score]);
         
         return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
+    }
+    
+    /**
+     * Check if the provided answer is correct for a multiple choice question
+     * Handles both direct letter answers (A, B, C, D) and actual content answers
+     * Also handles special case where answer might be in format "A.8000"
+     *
+     * @param string $userAnswer The user's answer
+     * @param object $questionData The question data from the database
+     * @return bool Whether the answer is correct
+     */
+    private function isCorrectMultipleChoiceAnswer($userAnswer, $questionData)
+    {
+        // If the answer in the database is a single character (A, B, C, D)
+        if (in_array($questionData->answer, ['A', 'B', 'C', 'D'])) {
+            // Direct comparison of letters
+            return $userAnswer === $questionData->answer;
+        }
+        
+        // Special case for answers in format "A.8000" or similar
+        if (preg_match('/^([A-D])\.(.+)$/', $questionData->answer, $matches)) {
+            $letterPart = $matches[1]; // Extract the letter (A, B, C, or D)
+            $valuePart = $matches[2]; // Extract the value (8000 in this example)
+            
+            // Check if user answered with just the letter
+            if ($userAnswer === $letterPart) {
+                return true;
+            }
+            
+            // Check if user answered with the full value
+            if ($userAnswer === $valuePart || $userAnswer === $questionData->answer) {
+                return true;
+            }
+        }
+        
+        // If the answer in the database is the actual content, check if user's answer matches any option
+        if ($userAnswer === 'A' && $questionData->A === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'B' && $questionData->B === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'C' && $questionData->C === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'D' && $questionData->D === $questionData->answer) {
+            return true;
+        }
+        
+        // Also check for options that might have formatted values like "A.8000"
+        if ($userAnswer === 'A' && preg_match('/^A\.(.+)$/', $questionData->A, $matches) && $matches[1] === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'B' && preg_match('/^B\.(.+)$/', $questionData->B, $matches) && $matches[1] === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'C' && preg_match('/^C\.(.+)$/', $questionData->C, $matches) && $matches[1] === $questionData->answer) {
+            return true;
+        }
+        if ($userAnswer === 'D' && preg_match('/^D\.(.+)$/', $questionData->D, $matches) && $matches[1] === $questionData->answer) {
+            return true;
+        }
+        
+        // If user's answer is the actual content (not A, B, C, D), check direct match
+        if ($userAnswer === $questionData->answer) {
+            return true;
+        }
+        
+        // Check if user's answer is just a numeric/text part of an answer like "8000" from "A.8000"
+        foreach (['A', 'B', 'C', 'D'] as $option) {
+            $optionValue = $questionData->{$option};
+            if (preg_match('/^[A-D]\.(.+)$/', $optionValue, $matches)) {
+                $valueOnly = $matches[1];
+                if ($userAnswer === $valueOnly && $optionValue === $questionData->answer) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     public function resetQuiz($id)
@@ -319,5 +402,107 @@ class QuizController extends Controller
         $quiz->save();
     
         return response()->json(['success' => true, 'message' => 'Quiz name updated successfully']);
+    }
+
+    /**
+     * Redistribute answer choices to achieve a more balanced distribution of correct answers
+     * This method modifies the data in place before storing in the database
+     * 
+     * @param array $multipleChoiceQuestions The array of multiple choice questions
+     * @return array The modified questions with balanced answer distribution
+     */
+    private function balanceMultipleChoiceAnswers($quizData)
+    {
+        // Check if we have 'questions' key (for single quiz type) or specific quiz types
+        if (isset($quizData['questions'])) {
+            $questions = $quizData['questions'];
+            $balancedQuestions = $this->redistributeAnswers($questions);
+            $quizData['questions'] = $balancedQuestions;
+        } elseif (isset($quizData['multiple_choice'])) {
+            $questions = $quizData['multiple_choice'];
+            $balancedQuestions = $this->redistributeAnswers($questions);
+            $quizData['multiple_choice'] = $balancedQuestions;
+        }
+        
+        return $quizData;
+    }
+    
+    /**
+     * Helper method to redistribute answers evenly across A, B, C, D options
+     * 
+     * @param array $questions The array of questions to redistribute
+     * @return array The questions with redistributed answers
+     */
+    private function redistributeAnswers($questions)
+    {
+        // Count current distribution of answers
+        $answerDistribution = ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0];
+        foreach ($questions as $question) {
+            if (isset($question['correct_answer']) && in_array($question['correct_answer'], ['A', 'B', 'C', 'D'])) {
+                $answerDistribution[$question['correct_answer']]++;
+            }
+        }
+        
+        // Calculate target distribution (roughly equal)
+        $totalQuestions = count($questions);
+        $targetPerOption = ceil($totalQuestions / 4);
+        
+        // Redistribute answers
+        foreach ($questions as $index => &$question) {
+            $currentAnswer = $question['correct_answer'];
+            
+            // If the current answer is overrepresented, try to find a less used option
+            if ($answerDistribution[$currentAnswer] > $targetPerOption) {
+                $options = ['A', 'B', 'C', 'D'];
+                shuffle($options); // Randomize to avoid always picking the same alternative
+                
+                foreach ($options as $newAnswer) {
+                    if ($answerDistribution[$newAnswer] < $targetPerOption) {
+                        // Swap the current correct answer with the new one
+                        $temp = $question['choices'][$newAnswer];
+                        $question['choices'][$newAnswer] = $question['choices'][$currentAnswer];
+                        $question['choices'][$currentAnswer] = $temp;
+                        
+                        // Update tracking
+                        $answerDistribution[$currentAnswer]--;
+                        $answerDistribution[$newAnswer]++;
+                        $question['correct_answer'] = $newAnswer;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $questions;
+    }
+    
+    /**
+     * Store quiz questions in the database with balanced answer distribution
+     * This could be used by the OPENAI controller after generating questions
+     *
+     * @param int $questionId The question ID to associate with
+     * @param array $content The content array with questions
+     * @return void
+     */
+    public function storeMultipleChoiceQuestions($questionId, $content)
+    {
+        // First balance the answers
+        $balancedContent = $this->balanceMultipleChoiceAnswers($content);
+        
+        // Now save to database with more balanced distribution
+        $questions = isset($balancedContent['questions']) ? $balancedContent['questions'] : $balancedContent['multiple_choice'];
+        
+        foreach ($questions as $questionData) {
+            multiple_choice::create([
+                'question_id' => $questionId,
+                'question_text' => $questionData['question'],
+                'answer' => $questionData['correct_answer'],
+                'A' => $questionData['choices']['A'],
+                'B' => $questionData['choices']['B'],
+                'C' => $questionData['choices']['C'],
+                'D' => $questionData['choices']['D'],
+                'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
+            ]);
+        }
     }
 }
