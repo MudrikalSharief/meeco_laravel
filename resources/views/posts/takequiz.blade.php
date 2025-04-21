@@ -28,7 +28,7 @@
             let topicId = null;
             
             // Determine the question ID based on the quiz type
-            if (Array.isArray(questions)) {
+            if (Array.isArray(questions) && questions.length > 0) {
                 questionid = questions[0].question_id;
             } else if (questions.multiple_choice && questions.multiple_choice.length > 0) {
                 questionid = questions.multiple_choice[0].question_id;
@@ -36,6 +36,11 @@
                 questionid = questions.true_or_false[0].question_id;
             } else if (questions.identification && questions.identification.length > 0) {
                 questionid = questions.identification[0].question_id;
+            }
+
+            // Add a fallback to handle cases where questionid is still null
+            if (!questionid) {
+                console.error('Error: questionid is not defined. Please check the quiz data.');
             }
 
             // Get the title of the question
@@ -469,6 +474,7 @@
             });
 
             let startTime = null;
+            let elapsedTime = 0; // Declare elapsedTime in a higher scope
 
             // Start the timer when the page loads
             startTime = Date.now();
@@ -476,8 +482,10 @@
             // Update the timer display every second
             const timerDisplay = document.getElementById('timerDisplay');
             const timerInterval = setInterval(() => {
-                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-                timerDisplay.textContent = `Time: ${elapsedTime}s`;
+                elapsedTime = Math.floor((Date.now() - startTime) / 1000); // Update elapsedTime
+                const minutes = Math.floor(elapsedTime / 60); // Calculate minutes
+                const seconds = elapsedTime % 60; // Calculate remaining seconds
+                timerDisplay.textContent = `Time: ${minutes}m ${seconds}s`;
             }, 1000);
 
             // Stop the timer and submit the quiz
@@ -544,28 +552,54 @@
                 // Stop the timer
                 clearInterval(timerInterval);
 
+                // Use the globally updated elapsedTime
+                console.log(`Elapsed Time: ${elapsedTime}s`);
+
                 // Collect form data
                 const formData = new FormData(quizForm);
                 formData.append('elapsed_time', elapsedTime); // Use the globally updated elapsedTime
+
+                // Prepare answers object
+                const answers = {
+                    multiple_choice: [],
+                    true_or_false: [],
+                    identification: [],
+                    questionId: questionid,
+                    elapsedTime: elapsedTime // Use the globally updated elapsedTime
+                };
+
+                console.log(answers);
 
                 // Submit the quiz with the elapsed time
                 fetch('/submitquiz', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: formData
+                    body: JSON.stringify(answers)
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Quiz submitted successfully!');
-                            window.location.href = `/quizresult?questionId=${data.question_id}`;
+                            console.log(data);
+                            const scoreModal = document.createElement('div');
+                            scoreModal.id = 'scoreModal';
+                            scoreModal.classList.add('z-50', 'fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                            scoreModal.innerHTML = `
+                                <div class="bg-white p-6 rounded-lg shadow-lg">
+                                    <h2 class="text-2xl mb-4">Congratulations!</h2>
+                                    <p id="scoreText" class="text-lg">The result of your quiz is ready.</p>
+                                    <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Result</button>
+                                </div>
+                            `;
+                            document.body.appendChild(scoreModal);
+
+                            const closeModalButton = document.getElementById('closeModalButton');
+                            closeModalButton.addEventListener('click', function () {
+                                scoreModal.remove();
+                                window.location.href = `/quizresult?questionId=${data.question_id}`;
+                            });
                         } else {
                             alert('Failed to submit quiz: ' + data.message);
                         }
