@@ -76,6 +76,15 @@
             </div>
             
             <div class="mb-4">
+                <label for="difficulty" class="block text-xs text-gray-600 mb-1">Select Difficulty</label>
+                <select name="difficulty" id="difficulty" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
                 <label for="quiznumber" class="quiznumber_label block text-xs  text-gray-600 mb-1">Number of Questions</label>
                 <select name="quiznumber" id="quiznumber" class=" w-full border border-gray-300 shadow-sm p-1 rounded-lg">
                     <option value="10">10 Questions</option>
@@ -554,6 +563,7 @@
             const QuizName = newQuizName.value.trim();
             const QuizType = quiztype.value;
             const QuizNumber = quiznumber.value;
+            const difficultyLevel = difficulty.value;
             let quiznumber_multiple_value = 0;
             let quiznumber_true_or_false_value = 0;
             let quiznumber_identification_value = 0;
@@ -628,6 +638,7 @@
                             body: JSON.stringify({
                                 name: QuizName,
                                 type: QuizType,
+                                difficulty: difficultyLevel,
                                 number: QuizNumber,
                                 multiple: quiznumber_multiple_value,
                                 true_or_false: quiznumber_true_or_false_value,  
