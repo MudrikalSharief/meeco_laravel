@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/topics/edit', [TopicController::class, 'editTopic'])->name('topics.edit');
 
     Route::view('/deleted', 'posts.delete')->name('deleted');
-    Route::view('/upgrade', 'subcriptionFolder.upgrade')->name('upgrade');
+    Route::view('/upgrade', 'subscriptionFolder.upgrade')->name('upgrade');
     Route::view('/profile', 'components.profile')->name('profile');
     Route::view('/capture/extracted', 'posts.extracted')->name('capture.extracted');
     Route::post('/capture/extract', [CaptureController::class, 'extractText'])->name('capture.extract');
@@ -149,11 +149,11 @@ Route::middleware('auth')->group(function (){
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1', 'subscriptionFolder.payment1')->name('upgrade.payment1');
     Route::view('/upgrade/payment/paymentEmail/gcashNumber/authentication/mpin/payment1/receipt', 'subscriptionFolder.receipt')->name('upgrade.receipt');
     Route::get('/upgrade', [PromoController::class, 'showPromos'])->name('upgrade');
-    Route::get('/upgrade/payment1/{promo_id}', [SubscriptionController::class, 'payment1'])->name('upgrade.payment1');
-    Route::get('/upgrade/receipt/{promo_id}', [SubscriptionController::class, 'receipt'])->name('upgrade.receipt');
-    Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment');
-    Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber');
-    Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin');
+    Route::get('/upgrade/payment1/{promo_id}', [SubscriptionController::class, 'payment1'])->name('upgrade.payment3');
+    Route::get('/upgrade/receipt/{promo_id}', [SubscriptionController::class, 'receipt'])->name('upgrade.receipt2');
+    Route::get('/upgrade/payment/{promo_id}', [SubscriptionController::class, 'payment'])->name('upgrade.payment2');
+    Route::get('/upgrade/paymentEmail/gcashNumber/{promo_id}', [SubscriptionController::class, 'gcashNumber'])->name('upgrade.gcashNumber2');
+    Route::get('/upgrade/paymentEmail/gcashNumber/authentication/mpin/{promo_id}', [SubscriptionController::class, 'mpin'])->name('upgrade.mpin2');
 
     //profile
     Route::get('/profile/cancelled', function () {
@@ -288,10 +288,10 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::view('admin/finalsstatistics', 'admin.admin_statisticsFINALS')->name('admin.statistics-finals');
 
     Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-yearly-stats', [StatisticsControllerFINALS::class, 'filter_yearly_statistics'])->name('admin.get-statistics');
-    Route::post('admin/filter-weekly-stats', [StatisticsControllerFINALS::class, 'filter_weekly_statistics'])->name('admin.get-statistics');
+    Route::post('admin/get-yearly-statistics', [StatisticsControllerFINALS::class, 'get_yearly_statistics'])->name('admin.get-statistics1');
+    Route::post('admin/get-weekly-statistics', [StatisticsControllerFINALS::class, 'get_weekly_statistics'])->name('admin.get-statistics2');
+    Route::post('admin/filter-yearly-stats', [StatisticsControllerFINALS::class, 'filter_yearly_statistics'])->name('admin.get-statistics3');
+    Route::post('admin/filter-weekly-stats', [StatisticsControllerFINALS::class, 'filter_weekly_statistics'])->name('admin.get-statistics4');
     //New Statistic Route
     Route::view('admin/newstatistics', 'admin.admin_newstatistics')->name('admin.newstatistics');
     // Route::view('admin/newstatisticsfinals', 'admin.admin_newstatisticsFINALS')->name('admin.newstatisticsfinals');
