@@ -211,6 +211,27 @@ class ReviewerController extends Controller
         return response()->json(['success' => true, 'quizzesBySubject' => $quizzesBySubject]);
     }
     //=======================================================================================================
+    public function getReviewersGroupedBySubject(Request $request)
+    {
+        $userid = auth()->user()->user_id;
+        $subjects = Subject::where('user_id', $userid)->get();
+        
+        $reviewersBySubject = [];
+        
+        foreach ($subjects as $subject) {
+            $topics = Topic::where('subject_id', $subject->subject_id)->get();
+            
+            if ($topics->count() > 0) {
+                $reviewersBySubject[] = [
+                    'subject' => $subject,
+                    'reviewers' => $topics
+                ];
+            }
+        }
+        
+        return response()->json(['success' => true, 'reviewersBySubject' => $reviewersBySubject]);
+    }
+    //=======================================================================================================
 
     
 }

@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function (){
     //for the reviewer list
     Route::get('/reviewers', [ReviewerController::class, 'getReviewerList'])->name('reviewers');
     Route::view('/reviewer_list', 'posts.reviewer_list')->name('reviewer.list');
+    Route::get('/reviewers-by-subject', [ReviewerController::class, 'getReviewersGroupedBySubject'])->name('reviewers.by.subject');
 
     //for quizzes list
     Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
