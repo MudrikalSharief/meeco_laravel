@@ -18,8 +18,6 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
 use App\Http\Controllers\AdminActionController;
-use App\Http\Controllers\SettingsController;
-
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
@@ -322,9 +320,7 @@ Route::middleware(['auth:admin'])->group(function () {
         ->middleware(['auth:admin']);
 });
    //Settings Route:
-   Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
-   Route::post('/admin/2f-auth-state', [SettingsController::class, 'toggle2FactorAuthState'])->name('admin.toggle-2f-auth-state');
-   Route::get('/admin/2f-auth-state', [SettingsController::class, 'get2FactorAuthState'])->name('admin.get-2f-auth-state');
+   Route::view('admin/settings', 'admin.admin_settings')->name('admin.settings');
 
 
 

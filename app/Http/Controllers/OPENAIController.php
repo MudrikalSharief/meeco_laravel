@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 
-
 class OPENAIController extends Controller
 {   
 
@@ -233,6 +232,8 @@ class OPENAIController extends Controller
         $multiple = $request->post('multiple');
         $true_or_false = $request->post('true_or_false');
         $identification = $request->post('identification');
+        $difficulty = $request->post('difficulty', 'easy'); // Default to easy if not specified
+        $bloomsLevels = $this->mapDifficultyToBloomsLevels($difficulty);
         $total_quiz = intval($multiple) + intval($true_or_false) + intval($identification);
         if($request->post('type') == 'Multiple Choice'){
             try {
@@ -245,7 +246,7 @@ class OPENAIController extends Controller
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that cover the " . $bloomsLevels . " levels of Bloom's Taxonomy:
 
                         1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
                         2. COMPREHENSION: Questions that test understanding of the material.
@@ -255,9 +256,11 @@ class OPENAIController extends Controller
                         6. EVALUATION: Questions that ask for judgments based on criteria.
                 
                         Guidelines:
+                        - The difficulty level requested is '" . $difficulty . "', so focus on creating questions at the " . $bloomsLevels . " levels.
                         - Each question must have four options labeled A, B, C, and D.
                         - Only one option should be correct.
-                        - Include at least one question from each cognitive level.
+                        - IMPORTANT: Distribute the correct answers evenly across options A, B, C, and D. Do not bias toward any particular option.
+                        - Ensure approximately 25% of answers are A, 25% are B, 25% are C, and 25% are D.
                         - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
                         - The order of the questions should be mixed to provide variety.
                         - Indicate which Bloom's level each question addresses in the JSON response.
@@ -321,22 +324,12 @@ class OPENAIController extends Controller
                 // Log the created question to check if the id is set
                 Log::info('Created Question:', ['question' => $question]);
         
-                // Save the questions and multiple choices
-                foreach ($content['questions'] as $questionData) {
-                    multiple_choice::create([
-                        'question_id' => $question->question_id,
-                        'question_text' => $questionData['question'],
-                        'answer' => $questionData['correct_answer'],
-                        'A' => $questionData['choices']['A'],
-                        'B' => $questionData['choices']['B'],
-                        'C' => $questionData['choices']['C'],
-                        'D' => $questionData['choices']['D'],
-                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                    ]);
-                }
-
+                // Use QuizController to store and balance the questions
+                $quizController = new QuizController();
+                $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
+                
                 // Calculate and log the cost using the helper function
-                Log::info('Action : Generate Quiz Multple Choice');
+                Log::info('Action : Generate Quiz Multiple Choice');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
                 // Update the Quiz count in the subscription
@@ -364,7 +357,7 @@ class OPENAIController extends Controller
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " true or false quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " true or false quiz questions that cover the " . $bloomsLevels . " levels of Bloom's Taxonomy:
 
                         1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
                         2. COMPREHENSION: Questions that test understanding of the material.
@@ -374,8 +367,9 @@ class OPENAIController extends Controller
                         6. EVALUATION: Questions that ask for judgments based on criteria.
 
                         Guidelines:
+                        - The difficulty level requested is '" . $difficulty . "', so focus on creating questions at the " . $bloomsLevels . " levels.
                         - Ensure statements align with the appropriate cognitive level in Bloom's Taxonomy.
-                        - Some statements should be straightforward (Knowledge, Comprehension) while others should require deeper thinking (Analysis, Synthesis, Evaluation).
+                        - Some statements should be straightforward (Knowledge, Comprehension) while others should require deeper thinking (Analysis, Synthesis, Evaluation) based on the requested difficulty.
                         - The order of the questions must be mixed to provide variety in cognitive challenge.
                         - Indicate which Bloom's level each question addresses in the JSON response.
 
@@ -470,7 +464,7 @@ class OPENAIController extends Controller
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " identification quiz questions that cover different levels of Bloom's Taxonomy. Include questions from these cognitive levels:
+                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " identification quiz questions that cover the " . $bloomsLevels . " levels of Bloom's Taxonomy:
 
                         1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
                         2. COMPREHENSION: Questions that test understanding of the material.
@@ -480,9 +474,10 @@ class OPENAIController extends Controller
                         6. EVALUATION: Questions that ask for judgments based on criteria.
                 
                         Guidelines:
+                        - The difficulty level requested is '" . $difficulty . "', so focus on creating questions at the " . $bloomsLevels . " levels.
                         - Ensure questions reflect the appropriate cognitive level in Bloom's Taxonomy.
                         - The answer must be a **single word or a short phrase**.
-                        - Include questions that cover a range of difficulty levels, from basic recall to higher-order thinking.
+                        - Include questions that match the requested difficulty level.
                         - The order of the questions must be mixed to provide variety in cognitive challenge.
                         - Indicate which Bloom's level each question addresses in the JSON response.
                 
@@ -573,17 +568,17 @@ class OPENAIController extends Controller
             $jsonFormat = "{\n";
             
             if ($multiple > 0) {
-                $quizTypes[] = "$multiple multiple-choice quiz questions that assess different levels of Bloom's Taxonomy";
+                $quizTypes[] = "$multiple multiple-choice quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
                 $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"blooms_level\": \"Analysis\",\n            \"question\": \"Which of the following best explains the relationship between X and Y?\",\n            \"choices\": {\n                \"A\": \"Choice 1\",\n                \"B\": \"Choice 2\",\n                \"C\": \"Choice 3\",\n                \"D\": \"Choice 4\"\n            },\n            \"correct_answer\": \"B\"\n        }\n    ],\n";
             }
             
             if ($true_or_false > 0) {
-                $quizTypes[] = "$true_or_false true or false quiz questions covering various cognitive levels";
+                $quizTypes[] = "$true_or_false true or false quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
                 $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"blooms_level\": \"Evaluation\",\n            \"question\": \"Given the evidence presented, the conclusion that X leads to Y is valid. True or False?\",\n            \"correct_answer\": \"True\"\n        }\n    ],\n";
             }
             
             if ($identification > 0) {
-                $quizTypes[] = "$identification identification quiz questions spanning different levels of Bloom's Taxonomy";
+                $quizTypes[] = "$identification identification quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
                 $jsonFormat .= "    \"identification\": [\n        {\n            \"blooms_level\": \"Synthesis\",\n            \"question\": \"What term describes the process of combining concepts A and B to create a new solution?\",\n            \"correct_answer\": \"Correct Answer\"\n        }\n    ],\n";
             }
             
@@ -594,9 +589,16 @@ class OPENAIController extends Controller
             4. ANALYSIS: Questions that ask students to break down information and show relationships.
             5. SYNTHESIS: Questions that require combining ideas to create something new.
             6. EVALUATION: Questions that ask for judgments based on criteria.\n
-            Ensure each question type includes a mixture of different cognitive levels. For higher levels (Analysis, Synthesis, Evaluation), the questions should require critical thinking rather than simple recall.\n";
             
-            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}" . $bloomsInstructions . "\nText: " . $text . " The order of the questions must be mixed to provide variety in cognitive challenge.";
+            Guidelines:
+            - The difficulty level requested is '" . $difficulty . "', so focus on creating questions at the " . $bloomsLevels . " levels.
+            - Ensure each question type includes questions appropriate for the requested difficulty.
+            - For multiple-choice questions, distribute the correct answers evenly across options A, B, C, and D. Do not bias toward any particular option.
+            - Aim for approximately 25% of answers being A, 25% B, 25% C, and 25% D.
+            - For higher levels (Analysis, Synthesis, Evaluation), the questions should require critical thinking rather than simple recall.
+            - The order of the questions must be mixed to provide variety in cognitive challenge.\n";
+            
+            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}" . $bloomsInstructions . "\nText: " . $text;
             
             try {
                 $response = Http::withHeaders([
@@ -647,21 +649,13 @@ class OPENAIController extends Controller
 
                 Log::info('Created Question:', ['question' => $question]);
 
+                // Use QuizController to store and balance the multiple choice questions
                 if (!empty($content['multiple_choice'])) {
-                    foreach ($content['multiple_choice'] as $questionData) {
-                        multiple_choice::create([
-                            'question_id' => $question->question_id,
-                            'question_text' => $questionData['question'],
-                            'answer' => $questionData['correct_answer'],
-                            'A' => $questionData['choices']['A'],
-                            'B' => $questionData['choices']['B'],
-                            'C' => $questionData['choices']['C'],
-                            'D' => $questionData['choices']['D'],
-                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                        ]);
-                    }
+                    $quizController = new QuizController();
+                    $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
                 }
 
+                // Store true/false and identification questions directly
                 if (!empty($content['true_or_false'])) {
                     foreach ($content['true_or_false'] as $questionData) {
                         true_or_false::create([
@@ -704,7 +698,25 @@ class OPENAIController extends Controller
         }else{
             return response()->json(['success' => false, 'message' => "Unidentified Question Type"]);
         }
-    
-       
+    }
+
+    /**
+     * Map difficulty level to Bloom's taxonomy levels
+     * 
+     * @param string $difficulty The difficulty level (easy, medium, hard)
+     * @return string The corresponding Bloom's taxonomy levels
+     */
+    private function mapDifficultyToBloomsLevels($difficulty)
+    {
+        switch(strtolower($difficulty)) {
+            case 'easy':
+                return 'Knowledge and Comprehension';
+            case 'medium':
+                return 'Application and Analysis';
+            case 'hard':
+                return 'Synthesis and Evaluation';
+            default:
+                return 'Knowledge and Comprehension'; // Default to easy
+        }
     }
 }
