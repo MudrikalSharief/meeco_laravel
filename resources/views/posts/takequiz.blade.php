@@ -369,7 +369,8 @@
                     
                     // Add the questionId to the answers object
                     answers.questionId = questionid;
-                    
+                    answers.elapsedTime = elapsedTime;
+
                         console.log(answers);
                         fetch('/submitquiz', {
                             method: 'POST',
@@ -524,12 +525,13 @@
         document.addEventListener('DOMContentLoaded', function () {
             const quizForm = document.getElementById('quizForm');
             const submitQuizButton = document.getElementById('submitQuizButton');
+            const timerDisplay = document.getElementById('timerDisplay');
             let startTime = Date.now(); // Start the timer when the page loads
+            let elapsedTime = 0; // Declare elapsedTime in a higher scope
 
             // Update the timer display every second
-            const timerDisplay = document.getElementById('timerDisplay');
             const timerInterval = setInterval(() => {
-                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                elapsedTime = Math.floor((Date.now() - startTime) / 1000); // Update elapsedTime
                 const minutes = Math.floor(elapsedTime / 60); // Calculate minutes
                 const seconds = elapsedTime % 60; // Calculate remaining seconds
                 timerDisplay.textContent = `Time: ${minutes}m ${seconds}s`;
@@ -542,18 +544,9 @@
                 // Stop the timer
                 clearInterval(timerInterval);
 
-                // Calculate elapsed time in seconds
-                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsedTime / 60);
-                const seconds = elapsedTime % 60;
-
-                // Format elapsed time as "minutes and seconds"
-                const formattedElapsedTime = `${minutes}m ${seconds}s`;
-                console.log(`Elapsed Time: ${formattedElapsedTime}`);
-
                 // Collect form data
                 const formData = new FormData(quizForm);
-                formData.append('elapsed_time', elapsedTime); // Send total seconds to the backend
+                formData.append('elapsed_time', elapsedTime); // Use the globally updated elapsedTime
 
                 // Submit the quiz with the elapsed time
                 fetch('/submitquiz', {
