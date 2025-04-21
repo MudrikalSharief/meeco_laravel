@@ -166,18 +166,22 @@ class QuizController extends Controller
     public function submitQuiz(Request $request)
     {
         $score = 0;
-        
+
         $validatedData = $request->validate([
             'questionId' => 'required|integer',
+            'elapsed_time' => 'required|integer', // Validate elapsed time
         ]);
-        
+
         $questionId = $validatedData['questionId'];
+        $elapsedTime = $validatedData['elapsed_time'];
+
         $question_type = Question::where('question_id', $questionId)->pluck('question_type')->first();
-        
-        $answers = $request->except('questionId');
+
+        // Process answers (existing logic)
+        $answers = $request->except(['questionId', 'elapsed_time']);
         $userAnswers = [];
         
-        if(!$question_type === 'Mixed'){
+        if ($question_type !== 'Mixed') {
             foreach ($answers as $question => $answer) {
                 $choiceId = intval(explode('_', $question)[1]);
                 $userAnswers[$choiceId] = $answer;
@@ -270,9 +274,13 @@ class QuizController extends Controller
             }
         }
 
-        Question::where('question_id', $questionId)->update(['score' => $score]);
-        
-        return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
+        // Save the elapsed time in the database
+        Question::where('question_id', $questionId)->update([
+            'score' => $score,
+            'timer_result' => $elapsedTime,
+        ]);
+
+        return response()->json(['success' => true, 'question_id' => $questionId]);
     }
 
     public function resetQuiz($id)
