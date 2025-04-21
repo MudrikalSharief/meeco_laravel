@@ -101,13 +101,23 @@ class OPENAIController extends Controller
         try {
             $request->validate([
                 'content' => 'required|string',
+                'topic_id' => 'required',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
 
-
-        \Log::info('OPENAI_API_KEY: ' . env('OPENAI_API_KEY'));
+        // Get the API key directly from the .env file
+        $apiKey = config('app.openai_api_key', env('OPENAI_API_KEY'));
+        
+        // Log the API key (first few characters only for security)
+        if (!empty($apiKey)) {
+            $keyPreview = substr($apiKey, 0, 10) . '...';
+            \Log::info('OPENAI_API_KEY available: ' . $keyPreview);
+        } else {
+            \Log::error('OPENAI_API_KEY is missing or empty');
+            return response()->json(['success' => false, 'message' => 'OpenAI API Key is missing or invalid']);
+        }
 
         $true = Reviewer::where(['topic_id' => $request->post('topic_id')])->get();
         if(!$true->isEmpty()){
@@ -117,7 +127,7 @@ class OPENAIController extends Controller
             try {
                 $response = Http::withHeaders([
                     "Content-Type" => "application/json",
-                    "Authorization" => "Bearer " . env('OPENAI_API_KEY')
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -193,11 +203,23 @@ class OPENAIController extends Controller
     }
     public function generate_quiz($topic_id, Request $request)
     {   
-        // return response()->json(['success' => false, 'Request' => $request->post()]);
-            set_time_limit(300); // Set the maximum execution time to 300 seconds
+        // Set the maximum execution time to 300 seconds
+        set_time_limit(300);
 
         Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
-    
+
+        // Get the API key directly from the .env file
+        $apiKey = config('app.openai_api_key', env('OPENAI_API_KEY'));
+        
+        // Log the API key (first few characters only for security)
+        if (empty($apiKey)) {
+            \Log::error('OPENAI_API_KEY is missing or empty');
+            return response()->json(['success' => false, 'message' => 'OpenAI API Key is missing or invalid']);
+        } else {
+            $keyPreview = substr($apiKey, 0, 10) . '...';
+            \Log::info('OPENAI_API_KEY available: ' . $keyPreview);
+        }
+
         $topic = Topic::find($topic_id);
         if (!$topic) {
             Log::error('Topic not found', ['topic_id' => $topic_id]);
@@ -237,7 +259,7 @@ class OPENAIController extends Controller
         if($request->post('type') == 'Multiple Choice'){
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                    'Authorization' => "Bearer " . $apiKey,
                     'Content-Type'  => 'application/json',
                 ])
                 ->timeout(300)
@@ -356,7 +378,7 @@ class OPENAIController extends Controller
 
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                    'Authorization' => "Bearer " . $apiKey,
                     'Content-Type'  => 'application/json',
                 ])
                 ->timeout(120)
@@ -462,7 +484,7 @@ class OPENAIController extends Controller
 
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                    'Authorization' => "Bearer " . $apiKey,
                     'Content-Type'  => 'application/json',
                 ])
                 ->timeout(300)
@@ -600,7 +622,7 @@ class OPENAIController extends Controller
             
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
+                    'Authorization' => "Bearer " . $apiKey,
                     'Content-Type'  => 'application/json',
                 ])
                 ->timeout(120)

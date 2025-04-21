@@ -123,5 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | External API Keys
+    |--------------------------------------------------------------------------
+    |
+    | API keys for external services used by the application.
+    |
+    */
+
+    'openai_api_key' => env('OPENAI_API_KEY'),
+    'gemini_api_key' => env('GEMINI_API_KEY'),
 
 ];
