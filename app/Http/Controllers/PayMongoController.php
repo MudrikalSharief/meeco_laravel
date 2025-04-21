@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Subscription;
 
-
 class PayMongoController extends Controller
 {   
 
@@ -167,7 +166,29 @@ class PayMongoController extends Controller
                 }
 
                 $endDate = $startDate->copy()->addDays($promo->duration);
-                // return response()->json(['success' => false, 'message' => 'Payment not successful']);
+                
+                // Cancel any active free trials for this user - note the capitalized 'Active' status
+                $freeTrials = Subscription::where('user_id', $user->user_id)
+                    ->where('status', 'Active')
+                    ->where(function($query) {
+                        $query->where('reference_number', 'like', '%Free Trial%')
+                              ->orWhere('subscription_type', 'free');
+                    })
+                    ->get();
+                    
+                foreach ($freeTrials as $freeTrial) {
+                    // Update using capitalized status value
+                    $freeTrial->status = 'Cancelled';
+                    $freeTrial->save();
+                    
+                    Log::info('Free trial cancelled due to paid subscription', [
+                        'user_id' => $user->user_id,
+                        'subscription_id' => $freeTrial->subscription_id,
+                        'reference_number' => $freeTrial->reference_number
+                    ]);
+                }
+                
+                // Create new paid subscription with capitalized status
                 $subscriptionData = [
                     'user_id' => $user->user_id,
                     'promo_id' => $promoId,
@@ -175,7 +196,7 @@ class PayMongoController extends Controller
                     'duration' => $promo->duration,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
-                    'status' => 'active',
+                    'status' => 'Active',
                     'subscription_type' => 'paid',
                 ];
 
