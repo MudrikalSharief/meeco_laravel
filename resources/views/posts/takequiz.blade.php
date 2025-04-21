@@ -9,7 +9,8 @@
 
                 <div class="quiz-container bg-white text-sm px-5 pt-5 pb-3 ">
                     <form id="quizForm" method="POST">
-                        <!-- Questions will be dynamically inserted here -->
+                        {{-- Timer Display --}}
+                        <p id="timerDisplay" class="text-gray-600 font-bold mb-4">Time: 0s</p>
                     </form>
                     <button id="submitQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Quiz</button>
                 </div>
@@ -471,10 +472,27 @@
             // Start the timer when the page loads
             startTime = Date.now();
 
+<<<<<<< Updated upstream
+=======
+            // Update the timer display every second
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                timerDisplay.textContent = `Time: ${elapsedTime}s`;
+            }, 1000);
+
+            // Stop the timer and submit the quiz
+>>>>>>> Stashed changes
             const submitQuizButton = document.getElementById('submitQuizButton');
             submitQuizButton.addEventListener('click', function (event) {
                 event.preventDefault();
 
+<<<<<<< Updated upstream
+=======
+                // Stop the timer
+                clearInterval(timerInterval);
+
+>>>>>>> Stashed changes
                 // Calculate elapsed time in seconds
                 const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
 
@@ -490,6 +508,7 @@
                     },
                     body: formData
                 })
+<<<<<<< Updated upstream
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -501,6 +520,25 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
+=======
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Quiz submitted successfully!');
+                            window.location.href = `/quizresult?questionId=${data.question_id}`;
+                        } else {
+                            alert('Failed to submit quiz: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+
+>>>>>>> Stashed changes
         });
     </script>
 </x-layout>

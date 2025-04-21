@@ -186,8 +186,8 @@ class QuizController extends Controller
                 $choiceId = intval(explode('_', $question)[1]);
                 $userAnswers[$choiceId] = $answer;
             }
-        }            
-       
+        }
+
         if ($question_type === 'Multiple Choice') {
             $mcAnswers = $request->input('multiple_choice', []);
             $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
@@ -203,7 +203,6 @@ class QuizController extends Controller
             }
         } elseif ($question_type == 'True or false') {
             $tfAnswers = $request->input('true_or_false', []);
-            
             $tf_data = true_or_false::where('question_id', $questionId)->get();
             foreach ($tf_data as $index => $data) {
                 if (isset($tfAnswers[$index])) {
@@ -216,11 +215,9 @@ class QuizController extends Controller
                 }
             }
         } elseif ($question_type == 'Identification') {
-            
             $idAnswers = $request->input('identification', []);
             $identification_data = Identification::where('question_id', $questionId)->get();
-             
-             foreach ($identification_data as $index => $data) {
+            foreach ($identification_data as $index => $data) {
                 if (isset($idAnswers[$index])) {
                     Identification::where('Identification_id', $data->Identification_id)
                         ->update(['user_answer' => $idAnswers[$index]]);
@@ -231,7 +228,6 @@ class QuizController extends Controller
                 }
             }
         } elseif ($question_type == 'Mixed') {
-            
             $mcAnswers = $request->input('multiple_choice', []);
             $tfAnswers = $request->input('true_or_false', []);
             $idAnswers = $request->input('identification', []);
