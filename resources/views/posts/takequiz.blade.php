@@ -508,7 +508,6 @@
                     },
                     body: formData
                 })
-<<<<<<< Updated upstream
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -520,25 +519,6 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
-=======
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert('Quiz submitted successfully!');
-                            window.location.href = `/quizresult?questionId=${data.question_id}`;
-                        } else {
-                            alert('Failed to submit quiz: ' + data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-
->>>>>>> Stashed changes
         });
     </script>
 </x-layout>
