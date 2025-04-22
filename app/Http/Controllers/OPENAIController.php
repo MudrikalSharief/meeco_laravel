@@ -725,4 +725,300 @@ class OPENAIController extends Controller
                 return 'Knowledge and Comprehension'; // Default to easy
         }
     }
+
+    /**
+     * Generate additional questions to complete a quiz when initial generation was insufficient
+     * 
+     * @param int $topicId Topic ID for context
+     * @param int $count Number of additional questions needed
+     * @param string $type Type of questions ('Multiple Choice', 'True or false', 'Identification')
+     * @return array Array of question objects in the format expected by QuizController
+     */
+    public function generateAdditionalQuestions($topicId, $count, $type)
+    {
+        Log::info("Generating {$count} additional {$type} questions for topic {$topicId}");
+        
+        // Get reviewer content for the topic to provide context for questions
+        $reviewer = Reviewer::where('topic_id', $topicId)->get(['reviewer_about', 'reviewer_text']);
+        if ($reviewer->isEmpty()) {
+            Log::error('No reviewer content found for this topic', ['topic_id' => $topicId]);
+            return [];
+        }
+        
+        // Combine reviewer text into a string
+        $text = "";
+        foreach ($reviewer as $item) {
+            $text .= $item->reviewer_about . " " . $item->reviewer_text . " | ";
+        }
+        
+        // Use medium difficulty for consistency
+        $difficulty = 'medium';
+        $bloomsLevels = $this->mapDifficultyToBloomsLevels($difficulty);
+        
+        // Call appropriate method based on question type
+        switch ($type) {
+            case 'Multiple Choice':
+                return $this->generateAdditionalMultipleChoice($count, $bloomsLevels, $text);
+            case 'True or false':
+                return $this->generateAdditionalTrueFalse($count, $bloomsLevels, $text);
+            case 'Identification':
+                return $this->generateAdditionalIdentification($count, $bloomsLevels, $text);
+            default:
+                Log::error('Unsupported question type', ['type' => $type]);
+                return [];
+        }
+    }
+    
+    /**
+     * Generate additional multiple-choice questions
+     * 
+     * @param int $count Number of questions to generate
+     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
+     * @param string $text Content to base questions on
+     * @return array Array of generated questions
+     */
+    private function generateAdditionalMultipleChoice($count, $bloomsLevels, $text)
+    {
+        try {
+            $apiKey = OpenAIHelper::getApiKey();
+            $response = Http::withHeaders([
+                'Content-Type'  => 'application/json',
+                'Authorization' => "Bearer " . $apiKey
+            ])
+            ->timeout(300)
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4o-mini-2024-07-18',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} multiple-choice quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. I need EXACTLY {$count} questions, no more, no less.
+
+                    Guidelines:
+                    - Each question must have four options labeled A, B, C, and D.
+                    - Only one option should be correct.
+                    - Distribute the correct answers evenly across options A, B, C, and D.
+                    - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
+                    - Indicate which Bloom's level each question addresses.
+                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
+            
+                    Format your response in JSON like this: 
+            
+                    {
+                    \"questions\": [
+                        {
+                        \"blooms_level\": \"Knowledge\",
+                        \"question\": \"What is the definition of X?\",
+                        \"choices\": {
+                            \"A\": \"choice\",
+                            \"B\": \"choice\",
+                            \"C\": \"choice\",
+                            \"D\": \"choice\"
+                        },
+                        \"correct_answer\": \"C\"
+                        }
+                    ]
+                    } 
+            
+                    Text: {$text}"]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 4096
+            ]);
+            
+            if ($response->failed()) {
+                Log::error('Failed to generate additional multiple-choice questions', ['response' => $response->body()]);
+                return [];
+            }
+            
+            $responseData = json_decode($response->body(), true);
+            
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
+                return [];
+            }
+            
+            // Strip any code block formatting
+            $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+            $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
+            
+            $content = json_decode($jsonContent, true);
+            
+            // Log the cost
+            OpenAIHelper::calculateAndLogCost($responseData);
+            
+            if (empty($content['questions'])) {
+                Log::error('No questions generated in additional request', ['content' => $content]);
+                return [];
+            }
+            
+            return $content['questions'];
+            
+        } catch (\Exception $e) {
+            Log::error('Exception generating additional multiple-choice questions', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+    
+    /**
+     * Generate additional true/false questions
+     * 
+     * @param int $count Number of questions to generate
+     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
+     * @param string $text Content to base questions on
+     * @return array Array of generated questions
+     */
+    private function generateAdditionalTrueFalse($count, $bloomsLevels, $text)
+    {
+        try {
+            $apiKey = OpenAIHelper::getApiKey();
+            $response = Http::withHeaders([
+                'Content-Type'  => 'application/json',
+                'Authorization' => "Bearer " . $apiKey
+            ])
+            ->timeout(300)
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4o-mini-2024-07-18',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} true or false quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. I need EXACTLY {$count} questions, no more, no less.
+
+                    Guidelines:
+                    - Ensure statements align with the appropriate cognitive level in Bloom's Taxonomy.
+                    - Some statements should be straightforward while others should require deeper thinking.
+                    - Balance the number of true and false statements.
+                    - Indicate which Bloom's level each question addresses.
+                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
+            
+                    Format your response in JSON like this: 
+            
+                    {
+                    \"questions\": [
+                        {
+                        \"blooms_level\": \"Analysis\",
+                        \"question\": \"Based on the principles discussed, X can be classified as a direct cause of Y. True or False?\",
+                        \"correct_answer\": \"True\"
+                        }
+                    ]
+                    } 
+            
+                    Text: {$text}"]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 4096
+            ]);
+            
+            if ($response->failed()) {
+                Log::error('Failed to generate additional true/false questions', ['response' => $response->body()]);
+                return [];
+            }
+            
+            $responseData = json_decode($response->body(), true);
+            
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
+                return [];
+            }
+            
+            // Strip any code block formatting
+            $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+            $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
+            
+            $content = json_decode($jsonContent, true);
+            
+            // Log the cost
+            OpenAIHelper::calculateAndLogCost($responseData);
+            
+            if (empty($content['questions'])) {
+                Log::error('No questions generated in additional request', ['content' => $content]);
+                return [];
+            }
+            
+            return $content['questions'];
+            
+        } catch (\Exception $e) {
+            Log::error('Exception generating additional true/false questions', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
+    
+    /**
+     * Generate additional identification questions
+     * 
+     * @param int $count Number of questions to generate
+     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
+     * @param string $text Content to base questions on
+     * @return array Array of generated questions
+     */
+    private function generateAdditionalIdentification($count, $bloomsLevels, $text)
+    {
+        try {
+            $apiKey = OpenAIHelper::getApiKey();
+            $response = Http::withHeaders([
+                'Content-Type'  => 'application/json',
+                'Authorization' => "Bearer " . $apiKey
+            ])
+            ->timeout(300)
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4o-mini-2024-07-18',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} identification quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. I need EXACTLY {$count} questions, no more, no less.
+
+                    Guidelines:
+                    - Ensure questions reflect the appropriate cognitive level in Bloom's Taxonomy.
+                    - The answer must be a single word or a short phrase.
+                    - Include questions that match the medium difficulty level.
+                    - Indicate which Bloom's level each question addresses.
+                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
+            
+                    Format your response in JSON like this: 
+            
+                    {
+                    \"questions\": [
+                        {
+                        \"blooms_level\": \"Application\",
+                        \"question\": \"What process would you use to solve this specific problem based on the principles discussed?\",
+                        \"correct_answer\": \"Correct Answer\"
+                        }
+                    ]
+                    } 
+            
+                    Text: {$text}"]
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 4096
+            ]);
+            
+            if ($response->failed()) {
+                Log::error('Failed to generate additional identification questions', ['response' => $response->body()]);
+                return [];
+            }
+            
+            $responseData = json_decode($response->body(), true);
+            
+            if (!isset($responseData['choices'][0]['message']['content'])) {
+                Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
+                return [];
+            }
+            
+            // Strip any code block formatting
+            $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+            $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
+            
+            $content = json_decode($jsonContent, true);
+            
+            // Log the cost
+            OpenAIHelper::calculateAndLogCost($responseData);
+            
+            if (empty($content['questions'])) {
+                Log::error('No questions generated in additional request', ['content' => $content]);
+                return [];
+            }
+            
+            return $content['questions'];
+            
+        } catch (\Exception $e) {
+            Log::error('Exception generating additional identification questions', ['error' => $e->getMessage()]);
+            return [];
+        }
+    }
 }
