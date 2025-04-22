@@ -83,7 +83,7 @@ class IMAGEcontroller extends Controller
         
         foreach ($request->file('images') as $file) {
             // Create a folder named image{userid} for each user if it doesn't exist
-            $folder = 'uploads/image' . $userid;
+            $folder = 'uploads/user_' . $userid . '/imagecontainer';
             $path = $file->store($folder, 'public');
             $uploadedFiles[] = $path;
         }
@@ -112,13 +112,21 @@ class IMAGEcontroller extends Controller
 
 public function deleteImage(Request $request)
 {
-
     $filePath = $request->input('filePath');
+    
+    // Check if the file exists in storage
     if (Storage::disk('public')->exists($filePath)) {
         Storage::disk('public')->delete($filePath);
         return response()->json(['success' => true]);
     }
-    return response()->json(['success' => false, 'message' => 'File not found.']);
+    
+    // If file not found at the original path, try adding 'uploads/' prefix
+    if (Storage::disk('public')->exists('uploads/' . $filePath)) {
+        Storage::disk('public')->delete('uploads/' . $filePath);
+        return response()->json(['success' => true]);
+    }
+    
+    return response()->json(['success' => false, 'message' => 'File not found.', 'path' => $filePath]);
 }
 }
 

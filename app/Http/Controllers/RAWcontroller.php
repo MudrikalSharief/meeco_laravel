@@ -79,7 +79,7 @@ class RawController extends Controller
                     'credentials' => json_decode(file_get_contents(base_path('meeco-443507-7ced85bcffff.json')), true)
                 ]);
                 $userId = Auth::user()->user_id;
-                $directory = storage_path("app/public/uploads/image{$userId}/");
+                $directory = storage_path("app/public/uploads/user_{$userId}/imagecontainer/");
                 $image_paths = glob("{$directory}*.{jpg,jpeg,png,gif}", GLOB_BRACE);
                 $extractedText = '';
                 foreach ($image_paths as $index => $image_path) {

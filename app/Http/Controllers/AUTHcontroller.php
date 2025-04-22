@@ -99,11 +99,11 @@ class AUTHcontroller extends Controller
             if ($subscription) {
 
                 // // Check if the subscription's reviewer and quiz limits have been reached
-                // if ($subscription->promo->reviewer_limit <= $subscription->reviewer_created && $subscription->promo->quiz_limit <= $subscription->quiz_created) {
+                if ($subscription->promo->reviewer_limit <= $subscription->reviewer_created && $subscription->promo->quiz_limit <= $subscription->quiz_created) {
                     
-                //     // Update the subscription status to inactive
-                //     $subscription->update(['status' => 'Limit Reached']);
-                // }
+                    // Update the subscription status to inactive
+                    $subscription->update(['status' => 'Limit Reached']);
+                }
 
                 // Check if the subscription's end date and time have already passed the current date and time
                 // Parse the end date
@@ -126,25 +126,31 @@ class AUTHcontroller extends Controller
             $user = $request->user();
             $userid = $user->user_id;
             
-            $filePath = 'uploads/image' . $userid;
-            if (!Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->makeDirectory($filePath);
-            }
+            $filePaths = [
+                'uploads/user_' . $userid . '/imagecontainer',
+                'uploads/user_' . $userid . '/graph',
+            ];
 
-            //get the file path and dlete whats inside
-            if (Storage::disk('public')->exists($filePath)) {
-                // Get all files in the directory
-                $files = Storage::disk('public')->files($filePath);
-                
-                // Delete each file in the directory
-                foreach ($files as $file) {
-                    Storage::disk('public')->delete($file);
+            foreach ($filePaths as $filePath) {
+                if (!Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->makeDirectory($filePath);
                 }
-                
-                // Also delete any subdirectories and their contents
-                $directories = Storage::disk('public')->directories($filePath);
-                foreach ($directories as $directory) {
-                    Storage::disk('public')->deleteDirectory($directory);
+
+                // Get the file path and delete what's inside
+                if (Storage::disk('public')->exists($filePath)) {
+                    // Get all files in the directory
+                    $files = Storage::disk('public')->files($filePath);
+                    
+                    // Delete each file in the directory
+                    foreach ($files as $file) {
+                        Storage::disk('public')->delete($file);
+                    }
+                    
+                    // Also delete any subdirectories and their contents
+                    $directories = Storage::disk('public')->directories($filePath);
+                    foreach ($directories as $directory) {
+                        Storage::disk('public')->deleteDirectory($directory);
+                    }
                 }
             }
 

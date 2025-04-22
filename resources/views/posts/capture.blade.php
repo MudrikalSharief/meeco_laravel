@@ -34,7 +34,7 @@
         
         <!-- Analyze Graph Container -->
         <h2 class="py-2 mt-4 text-gray-700 text-base font-medium">Analyze Graph</h2>
-        <div id="analyzeGraph" class="mt-2 px-3 py-4 bg-white min-h-40 rounded-md border-gray-200 border flex flex-wrap items-center">
+        <div id="analyzeGraph" class="mt-2 px-3 py-4 text-center bg-white min-h-40 rounded-md border-gray-200 border flex flex-wrap items-center">
             <p class="text-gray-500 text-sm">No graph analysis available yet.</p>
         </div>
         
@@ -395,7 +395,7 @@
                     });
                 } else {
                     const message = document.createElement('p');
-                    message.classList.add('text-gray-500', 'text-sm', 'mt-2', 'text-center', 'w-full', 'p-4');
+                    message.classList.add('text-gray-500', 'text-sm', 'mt-2', 'text-center','flex','items-center','justify-center', 'w-full', 'p-4');
                     message.textContent = 'No images uploaded yet.';
                     imageContainer.appendChild(message);
                 }
@@ -717,7 +717,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                            body: JSON.stringify({ filePath: filePath }) // Remove the 'uploads/' prefix, the controller will handle the path
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -783,7 +783,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                            body: JSON.stringify({ filePath: filePath })  // Remove the 'uploads/' prefix
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -792,7 +792,7 @@
                                 
                                 // Check if the container is now empty
                                 if (analyzeGraph.querySelectorAll('.img-wrapper').length === 0) {
-                                    analyzeGraph.innerHTML = '<p class="text-gray-500 text-sm">No graph analysis available yet.</p>';
+                                    analyzeGraph.innerHTML = '<p class="text-gray-500 text-sm text-center w-full">No graph analysis available yet.</p>';
                                 }
                             } else {
                                 alert('Failed to delete image.');
