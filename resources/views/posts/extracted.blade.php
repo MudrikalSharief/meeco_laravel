@@ -18,8 +18,8 @@
     <div class="p-6 h-full  md:overflow-hidden">
         <h1 class="pb-3 text-xl font-bold text-blue-500">Extracted Text for Topic: {{ request('topic_name') }}</h1>
         <div class="flex flex-col md:flex-row h-screen">
-            <div class="image-container  md:max-h-[80vh] md:w-1/3 w-full">
-                <h3 class=" mb-2 text-blue-400">Images Uploaded <hr></h3>
+            <div class="image-container md:max-h-[80vh] md:w-1/3 w-full">
+                <h3 class="mb-2 text-blue-400">Images Uploaded <hr></h3>
                 <div class="image_holder flex gap-3 md:flex-col overflow-x-auto md:overflow-y-auto scrollable">
                     <?php
                     $userid = auth()->user()->user_id;
@@ -33,6 +33,29 @@
                             <p class="text-center">Image <?php echo $index + 1; ?></p>
                         </div>
                         <?php
+                    }
+                    ?>
+                </div>
+                
+                <h3 class="mt-6 mb-2 text-blue-400">Graphs <hr></h3>
+                <div class="graph_holder flex gap-3 md:flex-col overflow-x-auto md:overflow-y-auto scrollable">
+                    <?php
+                    $graphDirectory = storage_path('app/public/uploads/user_' . $userid . '/graph');
+                    if (file_exists($graphDirectory)) {
+                        $graph_paths = glob($graphDirectory . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+                        foreach ($graph_paths as $index => $graph_path) {
+                            $publicGraphPath = str_replace(storage_path('app/public'), 'storage', $graph_path);
+                            $filename = basename($graph_path);
+                            ?>
+                            <div class="mb-4 mt-2 flex flex-col items-center min-w-32">
+                                <img src="<?php echo asset($publicGraphPath); ?>" alt="<?php echo $filename; ?>" class="w-32 h-32 object-cover cursor-pointer" 
+                                     onclick="openModal('<?php echo asset($publicGraphPath); ?>')">
+                                <p class="text-center">Graph <?php echo $index + 1; ?></p>
+                            </div>
+                            <?php
+                        }
+                    } else {
+                        echo "<p class='text-gray-500 italic'>No graphs available</p>";
                     }
                     ?>
                 </div>
@@ -53,6 +76,43 @@
     <div id="imageModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeModal(event)">
         <div class="bg-white p-4 rounded" onclick="event.stopPropagation()" style="width: 80%; min-width: 270px;">
             <img id="modalImage" src="" alt="Image" class="max-w-full max-h-full">
+        </div>
+    </div>
+
+    <!-- Graph Analysis Modal -->
+    <div id="graphAnalysisModal" class="z-50 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeGraphModal(event)">
+        <div class="bg-white p-4 rounded max-w-2xl w-full" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-blue-500">Graph Analysis</h2>
+                <button onclick="closeGraphModal(event)" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 p-2">
+                    <img id="graphModalImage" src="" alt="Graph" class="w-full object-contain max-h-64">
+                    <p id="graphFilename" class="text-center text-sm text-gray-500 mt-2"></p>
+                </div>
+                <div class="md:w-1/2 p-2">
+                    <div id="graphAnalysisLoader" class="flex justify-center items-center h-32">
+                        <div class="loader" style="width: 40px; height: 40px; border-width: 5px;"></div>
+                    </div>
+                    <div id="graphAnalysisContent" class="hidden">
+                        <h3 id="graphTitle" class="font-bold text-lg text-blue-600 mb-2"></h3>
+                        <div class="mb-3">
+                            <p class="text-gray-700" id="graphSummary"></p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-blue-500 mb-1">Notable Trends:</h4>
+                            <ul id="graphTrends" class="list-disc pl-5 text-gray-700"></ul>
+                        </div>
+                    </div>
+                    <div id="graphAnalysisError" class="hidden text-red-500">
+                        Error analyzing graph. Please try again.
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <button onclick="closeGraphModal(event)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
+            </div>
         </div>
     </div>
 
@@ -113,6 +173,17 @@
             .then(data => {
                 if (data.raw_text.trim() !== '') {
                     extractedTextArea.value = data.raw_text;
+                    // Check if raw text already has graph analysis
+                    if (!data.raw_text.includes("--- GRAPH ANALYSES ---")) {
+                        // Add a button to analyze graphs instead of doing it automatically
+                        const analyzeGraphsButton = document.createElement('button');
+                        analyzeGraphsButton.textContent = 'Analyze Graphs';
+                        analyzeGraphsButton.className = 'bg-blue-500 text-white px-4 py-2 rounded mt-2 mr-2 hover:bg-blue-600';
+                        analyzeGraphsButton.addEventListener('click', analyzeAllGraphsAndAddToText);
+                        
+                        const submitButton = document.getElementById('genereate_reviewer_button');
+                        submitButton.parentNode.insertBefore(analyzeGraphsButton, submitButton);
+                    }
                 } else {
                      // Show the loader
                     loader.classList.remove('hidden');
@@ -143,11 +214,14 @@
                         console.log('Success:', data);
                         // Display the returned raw_text in the textarea
                         extractedTextArea.value = data.raw_text;
+                        
+                        // After text extraction, analyze graphs and add results to text
+                        analyzeAllGraphsAndAddToText();
                     })
                     .catch((error) => {
                          // Hide the loader
                          loader.classList.add('hidden');
-                         alert('eror');
+                         alert('error');
                         console.error('Error:', error);
                     });
                 }
@@ -155,7 +229,7 @@
             .catch((error) => {
                  // Hide the loader
                  loader.classList.add('hidden');
-                 alert('eror');
+                 alert('error');
                 console.error('Error:', error);
             });
 
@@ -182,23 +256,29 @@
                         },
                         body: JSON.stringify({ content: extractedTextArea.value, topic_id: topicId })
                     })
-                    .then(response => {
-                        json = response.json();
-                        return json;
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         loader.classList.add('hidden');
 
                         if (data.success) {
-                                document.getElementById('successModal').classList.remove('hidden');
-                                console.log('Success: OpenAi have Created the reviewer');
-                        
-                        } 
+                            document.getElementById('successModal').classList.remove('hidden');
+                            console.log('Success: OpenAI has created the reviewer');
+                        } else {
+                            // Show error to user
+                            console.error('Error:', data.message);
+                            alert('Error generating reviewer: ' + data.message);
+                        }
                     })
                     .catch((error) => {
+                        loader.classList.add('hidden');
                         console.error('Error:', error);
                         alert('An error occurred: ' + error.message);
                     });
+                })
+                .catch((error) => {
+                    loader.classList.add('hidden');
+                    console.error('Error updating raw text:', error);
+                    alert('Error updating text: ' + error.message);
                 });
             });
 
@@ -220,6 +300,111 @@
 
             function closeSuccessModal() {
                 document.getElementById('successModal').classList.add('hidden');
+            }
+
+            window.openModal = function(imageSrc) {
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('imageModal').classList.remove('hidden');
+            }
+            
+            window.closeModal = function(event) {
+                if (event.target.id === 'imageModal') {
+                    document.getElementById('imageModal').classList.add('hidden');
+                }
+            }
+            
+            async function analyzeAllGraphsAndAddToText() {
+                const extractedTextArea = document.querySelector('textarea[name="raw_text"]');
+                const loader = document.getElementById('loader');
+                
+                // Check if there are any graphs
+                const graphElements = document.querySelectorAll('.graph_holder img');
+                if (graphElements.length === 0) {
+                    console.log('No graphs to analyze');
+                    alert('No graphs found to analyze.');
+                    return;
+                }
+                
+                // Show loader
+                loader.classList.remove('hidden');
+                
+                try {
+                    let allAnalysisText = "\n\n--- GRAPH ANALYSES ---\n\n";
+                    let graphsAnalyzed = 0;
+                    
+                    // Analyze each graph one by one
+                    for (let i = 0; i < graphElements.length; i++) {
+                        const graphImg = graphElements[i];
+                        const imageSrc = graphImg.src;
+                        const filename = graphImg.getAttribute('alt') || `Graph ${i+1}`;
+                        
+                        console.log(`Analyzing graph ${i+1}/${graphElements.length}: ${filename}`);
+                        
+                        try {
+                            // Add CSRF token to headers explicitly
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                            
+                            // Make API request to analyze the graph
+                            const response = await fetch('/openai/analyze-graph', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken
+                                },
+                                body: JSON.stringify({
+                                    image_url: imageSrc,
+                                    image_id: filename,
+                                    detailed: true // Request detailed analysis
+                                })
+                            });
+                            
+                            if (!response.ok) {
+                                console.error(`Error analyzing graph ${i+1}: HTTP ${response.status}`);
+                                const errorText = await response.text();
+                                console.error(`Error details: ${errorText}`);
+                                allAnalysisText += `GRAPH ${i+1}: ${filename}\nAnalysis failed (HTTP ${response.status})\n\n`;
+                                continue;
+                            }
+                            
+                            const data = await response.json();
+                            
+                            if (data.error) {
+                                console.error(`Error analyzing graph ${i+1}:`, data.error);
+                                allAnalysisText += `GRAPH ${i+1}: ${filename}\n${data.error}\n\n`;
+                                continue;
+                            }
+                            
+                            if (data.result && data.result.trim() !== '' && data.result !== 'no graph detected') {
+                                // Format the graph analysis with a header including the image name
+                                allAnalysisText += `GRAPH ${i+1}: ${filename}\n${data.result}\n\n`;
+                                graphsAnalyzed++;
+                            } else if (data.result === 'no graph detected') {
+                                console.log(`Image ${filename} is not a graph/chart - skipping`);
+                            }
+                        } catch (error) {
+                            console.error(`Error processing graph ${i+1}:`, error);
+                            allAnalysisText += `GRAPH ${i+1}: ${filename}\nProcessing error: ${error.message}\n\n`;
+                        }
+                    }
+                    
+                    // Add the analysis text to the textarea
+                    if (graphsAnalyzed > 0) {
+                        extractedTextArea.value += allAnalysisText;
+                        alert(`Successfully analyzed ${graphsAnalyzed} graphs and added the results to your text.`);
+                        console.log(`Added analysis for ${graphsAnalyzed} graphs to text`);
+                    } else {
+                        alert('No valid graphs were detected for analysis.');
+                        console.log('No valid graph analyses to add');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error during graph analysis:', error);
+                    alert('Error analyzing graphs: ' + error.message);
+                } finally {
+                    // Hide loader
+                    loader.classList.add('hidden');
+                }
             }
         });
 

@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function (){
 
     Route::view('/openai', 'openai.test')->name('test');
     Route::post('/openai/chat', [OPENAIController::class, 'handleChat']);
+    // Add the new route for analyze-graph
+    Route::post('/openai/analyze-graph', [OPENAIController::class, 'analyze_graph']);
     
     Route::get('/js/openai.js', function () {
         return response()->file(resource_path('js/openai.js'));

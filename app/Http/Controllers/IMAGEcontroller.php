@@ -97,13 +97,13 @@ class IMAGEcontroller extends Controller
         $userid = $user->user_id;
     
         $images = [];
-        $directory = storage_path('app/public/uploads/image' . $userid);
+        $directory = storage_path('app/public/uploads/user_' . $userid);
     
         // Check if directory exists
         if (file_exists($directory)) {
             $files = array_diff(scandir($directory), ['.', '..']); // Get all files in the directory
             foreach ($files as $file) {
-                $images[] = asset('storage/uploads/image' . $userid . '/' . $file); // Generate public URL for each file
+                $images[] = asset('storage/uploads/user_' . $userid . '/' . $file); // Generate public URL for each file
             }
         }
     

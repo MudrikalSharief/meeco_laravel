@@ -94,6 +94,395 @@ class OPENAIController extends Controller
 
        return response()->json(['success' => true, 'data' => $content]);
     }
+
+    public function analyze_graph(Request $request)
+    {
+        Log::info('analyze_graph called', [
+            'request' => $request->all(),
+            'user_id' => auth()->id(),
+            'method' => $request->method()
+        ]);
+        
+        $userId = auth()->id();
+        
+        if (!$userId) {
+            Log::error('User not authenticated in analyze_graph');
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+        
+        $directoryPath = public_path('storage/uploads/user_' . $userId . '/graph');
+        
+        if (!file_exists($directoryPath)) {
+            Log::info('Graph directory does not exist: ' . $directoryPath);
+            return response()->json(['error' => 'Graph directory not found'], 404);     
+        }
+        
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $files = [];
+        
+        try {
+            foreach (scandir($directoryPath) as $file) {
+                if ($file === '.' || $file === '..') continue;
+                
+                $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                if (in_array($extension, $allowedExtensions)) {
+                    $fullPath = $directoryPath . '/' . $file;
+                    $files[] = [
+                        'filename' => $file,
+                        'path' => $fullPath,
+                        'modified' => filemtime($fullPath)
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error scanning directory', [
+                'path' => $directoryPath,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['error' => 'Error accessing graph directory: ' . $e->getMessage()], 500);
+        }
+        
+        if (empty($files)) {
+            Log::info('No image files found in directory', ['path' => $directoryPath]);
+            return response()->json([
+                'images' => [],
+                'message' => 'No graph images found. Please upload some graph images first.'
+            ]);
+        }
+        
+        Log::info('Found graph files', ['count' => count($files)]);
+        
+        usort($files, function($a, $b) {
+            return $b['modified'] - $a['modified'];
+        });
+        
+        $requestedImages = $request->input('images', []);
+        if ($request->has('image_id')) {
+            $requestedImages[] = $request->input('image_id');
+        }
+        
+        if (empty($requestedImages) && !$request->has('analyze_latest') && !$request->has('image_url')) {
+            Log::info('No specific images requested, returning list');
+            $imageList = [];
+            foreach ($files as $file) {
+                $publicPath = str_replace(public_path('storage'), '/storage', $file['path']);
+                $imageList[] = [
+                    'filename' => $file['filename'],
+                    'url' => asset($publicPath)
+                ];
+            }
+            return response()->json(['images' => $imageList]);
+        }
+        
+        $imagesToAnalyze = [];
+        
+        if ($request->has('image_url')) {
+            $imageUrl = $request->input('image_url');
+            $imagePath = null;
+            
+            foreach ($files as $file) {
+                $publicPath = str_replace(public_path('storage'), '/storage', $file['path']);
+                if (asset($publicPath) === $imageUrl || $publicPath === $imageUrl) {
+                    $imagePath = $file['path'];
+                    Log::info('Found matching file for URL', ['url' => $imageUrl, 'path' => $imagePath]);
+                    $imagesToAnalyze[] = [
+                        'filename' => $file['filename'],
+                        'path' => $imagePath
+                    ];
+                    break;
+                }
+            }
+            
+            if (empty($imagesToAnalyze)) {
+                Log::error('Could not find matching file for URL', ['url' => $imageUrl]);
+                return response()->json(['error' => 'Could not find image file matching the provided URL'], 404);
+            }
+        }
+        else if ($request->has('analyze_latest')) {
+            Log::info('Analyzing latest image');
+            $imagesToAnalyze[] = $files[0];
+        } else if (!empty($requestedImages)) {
+            Log::info('Analyzing specified images', ['requested' => $requestedImages]);
+            foreach ($files as $file) {
+                if (in_array($file['filename'], $requestedImages)) {
+                    $imagesToAnalyze[] = $file;
+                }
+            }
+        }
+        
+        if (empty($imagesToAnalyze)) {
+            Log::error('No valid images found to analyze', [
+                'requested' => $requestedImages,
+                'available' => array_column($files, 'filename')
+            ]);
+            return response()->json(['error' => 'No valid images found to analyze'], 404);
+        }
+
+        $detailed = $request->input('detailed', false);
+        
+        try {
+            $apiKey = OpenAIHelper::getApiKey();
+            Log::info('Got API key for OpenAI');
+            
+            if (empty($apiKey)) {
+                Log::error('OpenAI API Key is empty');
+                return response()->json(['error' => 'API key is missing or invalid'], 500);
+            }
+            
+            $results = [];
+            
+            foreach ($imagesToAnalyze as $image) {
+                Log::info('Analyzing image', ['image' => $image['filename'], 'path' => $image['path']]);
+                
+                try {
+                    $imageData = file_get_contents($image['path']);
+                    if ($imageData === false) {
+                        Log::error('Failed to read image file', ['path' => $image['path']]);
+                        $results[] = [
+                            'image' => $image['filename'],
+                            'image_url' => str_replace(public_path('storage'), '/storage', $image['path']),
+                            'error' => 'Failed to read image file'
+                        ];
+                        continue;
+                    }
+                    
+                    $base64Image = base64_encode($imageData);
+                    $mimeType = mime_content_type($image['path']);
+                    $dataUri = "data:{$mimeType};base64,{$base64Image}";
+                    
+                    Log::info('Converted image to base64', [
+                        'image' => $image['filename'],
+                        'mimeType' => $mimeType,
+                        'dataUriLength' => strlen($dataUri)
+                    ]);
+                    
+                    $payload = [
+                        'model' => 'gpt-4o',
+                        'messages' => [
+                            [
+                                'role' => 'system',
+                                'content' => $detailed 
+                                    ? 'You are an AI specialized in providing detailed analysis of data visualizations. For charts and graphs, provide a comprehensive analysis including: (1) A descriptive title, (2) A thorough explanation of what the chart represents, (3) Detailed analysis of the data trends, patterns, and anomalies, (4) At least 5 notable observations, (5) Possible interpretations or implications of the data. If the image is NOT a chart or graph, respond with "no graph detected" only.'
+                                    : 'You are an AI specialized only in analyzing charts, graphs, and data visualizations. If the image contains a chart or graph (bar chart, pie chart, line graph, scatter plot, etc.), analyze it and provide a title, summary, and notable trends. If the image is NOT a chart or graph (like a photo, screenshot of text, drawing, diagram without data, etc.), return ONLY "no graph detected" without explanation. Do not attempt to analyze non-chart images.'
+                            ],
+                            [
+                                'role' => 'user',
+                                'content' => [
+                                    [
+                                        'type' => 'text',
+                                        'text' => $detailed
+                                            ? 'Please provide a detailed analysis of this chart or graph. Include the title, comprehensive explanation, data trends, at least 5 notable observations, and potential implications. If this is not a chart or graph, respond with "no graph detected" only.'
+                                            : 'Is this a chart or graph? If yes, analyze it and provide the title, a brief summary, and 3-5 notable trends. If this is NOT a chart or graph, respond with "no graph detected" only.'
+                                    ],
+                                    [
+                                        'type' => 'image_url',
+                                        'image_url' => [
+                                            'url' => $dataUri
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'temperature' => $detailed ? 0.5 : 0.3
+                    ];
+
+                    $response = Http::withHeaders([
+                        'Content-Type'  => 'application/json',
+                        'Authorization' => 'Bearer ' . $apiKey
+                    ])
+                    ->timeout(60)
+                    ->post('https://api.openai.com/v1/chat/completions', $payload);
+
+                    if ($response->failed()) {
+                        Log::error('API call failed for image', [
+                            'image' => $image['filename'], 
+                            'status' => $response->status(),
+                            'response' => $response->body()
+                        ]);
+                        $results[] = [
+                            'image' => $image['filename'],
+                            'image_url' => str_replace(public_path('storage'), '/storage', $image['path']),
+                            'error' => 'API call failed: ' . $response->status() . ' - ' . $response->body()
+                        ];
+                        continue;
+                    }
+
+                    $content = $response->json('choices.0.message.content');
+                    
+                    if (empty($content) || trim($content) === '' || 
+                        stripos($content, 'not a chart') !== false || 
+                        stripos($content, 'not a graph') !== false ||
+                        stripos($content, 'no chart') !== false ||
+                        stripos($content, 'no graph') !== false) {
+                        
+                        Log::info('Image is not a graph/chart', ['image' => $image['filename']]);
+                        $results[] = [
+                            'image' => $image['filename'],
+                            'image_url' => asset(str_replace(public_path('storage'), '/storage', $image['path'])),
+                            'result' => 'no graph detected'
+                        ];
+                        continue;
+                    }
+                    
+                    $processedContent = $this->processGraphAnalysisContent($content, $detailed);
+                    
+                    $results[] = [
+                        'image' => $image['filename'],
+                        'image_url' => asset(str_replace(public_path('storage'), '/storage', $image['path'])),
+                        'result' => $processedContent
+                    ];
+                    
+                    OpenAIHelper::calculateAndLogCost($response->json());
+                } catch (\Exception $e) {
+                    Log::error('Exception processing image', [
+                        'image' => $image['filename'],
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    $results[] = [
+                        'image' => $image['filename'],
+                        'image_url' => asset(str_replace(public_path('storage'), '/storage', $image['path'])),
+                        'error' => 'Exception: ' . $e->getMessage()
+                    ];
+                }
+            }
+            
+            if (count($results) === 1) {
+                Log::info('Returning single image analysis result');
+                return response()->json([
+                    'result' => $results[0]['result'] ?? null,
+                    'error' => isset($results[0]['error']) ? $results[0]['error'] : null,
+                    'image_analyzed' => $results[0]['image'],
+                    'image_url' => $results[0]['image_url']
+                ]);
+            }
+            
+            Log::info('Returning multiple image analysis results', ['count' => count($results)]);
+            return response()->json([
+                'analyses' => $results
+            ]);
+        } catch (\Exception $e) {
+            Log::error('General exception in analyze_graph', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Failed to analyze graph: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function processGraphAnalysisContent($content, $detailed = false)
+    {
+        $notGraphKeywords = ['not a chart', 'not a graph', 'is not a', 'no chart', 'no graph', 'cannot analyze', "doesn't contain", 'does not contain'];
+        foreach ($notGraphKeywords as $keyword) {
+            if (stripos($content, $keyword) !== false) {
+                return 'no graph detected';
+            }
+        }
+        
+        if ($detailed) {
+            $cleanContent = preg_replace('/```(?:json|)\n?|\n?```/', '', $content);
+            
+            $structuredContent = '';
+            
+            if (preg_match('/(?:title|chart title|graph title)[:\s]+(.+?)(?:\n|$)/i', $cleanContent, $titleMatches)) {
+                $structuredContent .= "TITLE: " . trim($titleMatches[1]) . "\n\n";
+            }
+            
+            if (preg_match('/(?:description|summary|explanation|overview)[:\s]+(.+?)(?=\n\n|\n[A-Z]|$)/is', $cleanContent, $descMatches)) {
+                $structuredContent .= "DESCRIPTION: " . trim($descMatches[1]) . "\n\n";
+            }
+            
+            if (preg_match('/(?:analysis|interpretation|data analysis)[:\s]+(.+?)(?=\n\n|\n[A-Z]|$)/is', $cleanContent, $analysisMatches)) {
+                $structuredContent .= "ANALYSIS: " . trim($analysisMatches[1]) . "\n\n";
+            }
+            
+            if (preg_match('/(?:trends|observations|findings|notable trends)[:\s]+(.+?)(?=\n\n|\n[A-Z]|$)/is', $cleanContent, $trendsMatches)) {
+                $observations = $trendsMatches[1];
+                $structuredContent .= "KEY OBSERVATIONS:\n";
+                
+                if (preg_match_all('/(?:^|\n)(?:\d+\.|\*|-)\s*(.+?)(?=(?:\n(?:\d+\.|\*|-))|$)/s', $observations, $pointMatches)) {
+                    foreach ($pointMatches[1] as $point) {
+                        $structuredContent .= "- " . trim($point) . "\n";
+                    }
+                } else {
+                    $structuredContent .= $observations . "\n";
+                }
+                $structuredContent .= "\n";
+            }
+            
+            if (preg_match('/(?:implications|conclusions|insights)[:\s]+(.+?)(?=\n\n|\n[A-Z]|$)/is', $cleanContent, $implicationsMatches)) {
+                $structuredContent .= "IMPLICATIONS: " . trim($implicationsMatches[1]) . "\n";
+            }
+            
+            return !empty($structuredContent) ? $structuredContent : $cleanContent;
+        }
+        
+        if (strpos($content, '{') !== false && strpos($content, '}') !== false) {
+            try {
+                preg_match('/\{.*\}/s', $content, $matches);
+                if (!empty($matches[0])) {
+                    $jsonData = json_decode($matches[0], true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $processedContent = "";
+                        
+                        if (isset($jsonData['title'])) {
+                            $processedContent .= "title: " . $jsonData['title'] . "\n";
+                        }
+                        
+                        if (isset($jsonData['summary'])) {
+                            $processedContent .= "summary: " . $jsonData['summary'] . "\n";
+                        }
+                        
+                        if (isset($jsonData['notable_trends']) && is_array($jsonData['notable_trends'])) {
+                            $processedContent .= "notable_trends:\n";
+                            foreach ($jsonData['notable_trends'] as $trend) {
+                                $processedContent .= "- " . $trend . "\n";
+                            }
+                        }
+                        
+                        return trim($processedContent);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Error processing JSON content', ['error' => $e->getMessage(), 'content' => $content]);
+            }
+        }
+
+        if (preg_match('/title[:\s]+(.*?)[\r\n]+/i', $content, $titleMatches)) {
+            $title = trim($titleMatches[1]);
+            $summary = '';
+            $trends = [];
+            
+            if (preg_match('/summary[:\s]+(.*?)(?=notable|trend|\n\n|$)/is', $content, $summaryMatches)) {
+                $summary = trim($summaryMatches[1]);
+            }
+            
+            if (preg_match('/(?:notable trends|trends)[:\s]+(.*?)(?=\n\n|$)/is', $content, $trendSection)) {
+                $trendText = $trendSection[1];
+                if (preg_match_all('/(?:^|\n)\s*(?:-|\*|\d+\.)\s*(.*?)(?=\n\s*(?:-|\*|\d+\.)|$)/s', $trendText, $trendMatches)) {
+                    $trends = array_map('trim', $trendMatches[1]);
+                }
+            }
+            
+            $processedContent = "title: " . $title . "\n";
+            $processedContent .= "summary: " . $summary . "\n";
+            $processedContent .= "notable_trends:\n";
+            
+            foreach ($trends as $trend) {
+                $processedContent .= "- " . $trend . "\n";
+            }
+            
+            return trim($processedContent);
+        }
+        
+        if (!empty(trim($content))) {
+            $cleanContent = preg_replace('/```(?:json|)\n?|\n?```/', '', $content);
+            return trim($cleanContent);
+        }
+        
+        return 'no graph detected';
+    }
+
     public function handleChat(Request $request)
     {   
         set_time_limit(300); // Set the maximum execution time to 300 seconds
@@ -105,15 +494,12 @@ class OPENAIController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
 
-
         \Log::info('OPENAI_API_KEY is ' . env('OPENAI_API_KEY'));
-
         
         $true = Reviewer::where(['topic_id' => $request->post('topic_id')])->get();
         if(!$true->isEmpty()){
             return response()->json(['success' => true, 'message' => "Reviewer Already Created"]);
         }else{
-
             try {
                 $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
@@ -140,8 +526,8 @@ class OPENAIController extends Controller
                                 Example format for the output:
                                 [
                                     {
-                                             Topic, 
-                                             Description of the topic.
+                                             \"Topic\": \"Example Topic\", 
+                                             \"Description\": \"Example description of the topic\"
                                     }
                                 ]
         
@@ -156,46 +542,103 @@ class OPENAIController extends Controller
                 $responseData = json_decode($responseBody, true);
                 
                 if ($response->failed()) {
+                    Log::error('Failed API response', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.', 'data' => $responseData]);
                 }
         
-        
                 if (!isset($responseData['choices'][0]['message']['content'])) {
+                    Log::error('Invalid response format', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.', 'data' => $responseData]);
                 }
         
-                $content = json_decode($responseData['choices'][0]['message']['content'], true);
+                $rawContent = $responseData['choices'][0]['message']['content'];
+                Log::info('Raw API response content', ['content' => $rawContent]);
                 
-    
+                $content = $this->parseJSONContent($rawContent);
+                
+                if (empty($content)) {
+                    Log::error('Failed to parse content', ['raw_content' => $rawContent]);
+                    return response()->json(['success' => false, 'message' => 'Failed to parse response content.', 'raw_content' => $rawContent]);
+                }
+
                 foreach($content as $item){
-                    $reviewer = new Reviewer;
-                    $reviewer->topic_id = $request->post('topic_id');
-                    $reviewer->reviewer_about = $item['Topic'];
-                    $reviewer->reviewer_text = $item['Description'];
-                    $reviewer->save();
+                    if (isset($item['Topic']) && isset($item['Description'])) {
+                        $reviewer = new Reviewer;
+                        $reviewer->topic_id = $request->post('topic_id');
+                        $reviewer->reviewer_about = $item['Topic'];
+                        $reviewer->reviewer_text = $item['Description'];
+                        $reviewer->save();
+                    } else {
+                        Log::warning('Skipped an item due to missing keys', ['item' => $item]);
+                    }
                 }
             
-                // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Reviewer');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
-                // Update the reviewer count in the subscription
-                $subscription = Subscription::where('user_id', $request->user()->user_id)->first();
+                $subscription = Subscription::where('user_id', $request->user()->user_id)
+                    ->where('status', 'Active')  // Only increment active subscription
+                    ->first();
                 if ($subscription) {
                     $subscription->increment('reviewer_created');
                 }
                 
+                
                 return response()->json(['success' => true, 'data' => $content, 'topic_id' => $request->post('topic_id')]);
             } catch (\Exception $e) {
+                Log::error('Exception in handleChat', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }
         }
-        
     }
+
+    private function parseJSONContent($rawContent)
+    {
+        $content = json_decode($rawContent, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($content)) {
+            return $content;
+        }
+        
+        if (preg_match('/```(?:json)?\s*([\s\S]*?)\s*```/', $rawContent, $matches)) {
+            $jsonContent = $matches[1];
+            $content = json_decode($jsonContent, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($content)) {
+                return $content;
+            }
+        }
+        
+        if (preg_match('/\[\s*{.*}\s*\]/s', $rawContent, $matches)) {
+            $jsonContent = $matches[0];
+            $content = json_decode($jsonContent, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($content)) {
+                return $content;
+            }
+        }
+        
+        Log::warning('Failed to parse JSON, attempting fallback parsing', ['raw_content' => $rawContent]);
+        
+        try {
+            $cleaned = preg_replace('/[\x00-\x1F\x7F]/', '', $rawContent);
+            $cleaned = preg_replace('/,\s*}/', '}', $cleaned);
+            $cleaned = preg_replace('/,\s*\]/', ']', $cleaned);
+            
+            if (preg_match('/\[.*\]/s', $cleaned, $matches)) {
+                $jsonContent = $matches[0];
+                $content = json_decode($jsonContent, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($content)) {
+                    return $content;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception during fallback parsing', ['error' => $e->getMessage()]);
+        }
+        
+        return [];
+    }
+
     public function generate_quiz($topic_id, Request $request)
     {   
-        // return response()->json(['success' => false, 'Request' => $request->post()]);
-            set_time_limit(300); // Set the maximum execution time to 300 seconds
+        set_time_limit(300); // Set the maximum execution time to 300 seconds
 
         Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
     
@@ -213,22 +656,17 @@ class OPENAIController extends Controller
         }
         
         
-        // Retrieve reviewer text and check if it exists
         $reviewer = Reviewer::where('topic_id', $topic_id)->get(['reviewer_about', 'reviewer_text']);
         if ($reviewer->isEmpty()) {
             Log::error('No reviewer found for this topic', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'No reviewer found for this topic.']);
         }
-        // Shuffle the collection to randomize the order
         $reviewer = $reviewer->shuffle();
-        // Combine the reviewer text into a single string
         $text = "";
         foreach($reviewer as $item){
             $text .= $item->reviewer_about . " " . $item->reviewer_text . " | ";
 
         }
-        // return response()->json(['success' => false, 'message' => $text ]);
-        
         
         $number = $request->post('number');
         $multiple = $request->post('multiple');
@@ -305,7 +743,6 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.', 'data' => $responseData]);
                 }
                 
-                // Strip the code block formatting
                 $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
 
                 $content = json_decode($jsonContent, true);
@@ -321,33 +758,28 @@ class OPENAIController extends Controller
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
-                    'number_of_question' => $request->post('number'), // Assuming each question is a single question
+                    'number_of_question' => $request->post('number'),
                 ]);
         
-                // Log the created question to check if the id is set
                 Log::info('Created Question:', ['question' => $question]);
         
-                // Use QuizController to store and balance the questions
                 $quizController = new QuizController();
                 $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
                 
-                // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Quiz Multiple Choice');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
-                // Update the Quiz count in the subscription
-                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
+                $quiz = Subscription::where('user_id', $request->user()->user_id)
+                    ->where('status', 'Active')  // Only increment active subscription
+                    ->first();
                 if ($quiz) {
                     $quiz->increment('quiz_created');
                 }
-        
-                return response()->json(['success' => true, 'data' => $content]);
         
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }
-//===============================================================================================================================
         }else if($request->post('type') == 'True or false'){
 
             try {
@@ -408,7 +840,6 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
                 
-                // Strip the code block formatting
                 $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
 
                 $content = json_decode($jsonContent, true);
@@ -423,13 +854,11 @@ class OPENAIController extends Controller
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
-                    'number_of_question' => $request->post('number'), // Assuming each question is a single question
+                    'number_of_question' => $request->post('number'),
                 ]);
         
-                // Log the created question to check if the id is set
                 Log::info('Created Question:', ['question' => $question]);
         
-                // Save the questions and multiple choices
                 foreach ($content['questions'] as $questionData) {
                     true_or_false::create([
                         'question_id' => $question->question_id,
@@ -439,15 +868,15 @@ class OPENAIController extends Controller
                     ]);
                 }
                 
-                // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Quiz True or false');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
-                // Update the Quiz count in the subscription
-                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
-                if ($quiz) {
-                    $quiz->increment('quiz_created');
-                }
+                $quiz = Subscription::where('user_id', $request->user()->user_id)
+                ->where('status', 'Active')  // Only increment active subscription
+                ->first();
+            if ($quiz) {
+                $quiz->increment('quiz_created');
+            }
 
                 return response()->json(['success' => true, 'data' => $content]);
         
@@ -455,7 +884,6 @@ class OPENAIController extends Controller
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }            
-//===============================================================================================================================
         }else if($request->post('type') == 'Identification'){
 
             try {
@@ -517,7 +945,6 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
         
-                // Strip the code block formatting
                 $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
 
                 $content = json_decode($jsonContent, true);
@@ -532,14 +959,12 @@ class OPENAIController extends Controller
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
-                    'number_of_question' => $request->post('number'), // Assuming each question is a single question
+                    'number_of_question' => $request->post('number'),
                 ]);
         
-                // Log the created question to check if the id is set
                 Log::info('Action : Generate Quiz Identification');
                 Log::info('Created Question:', ['question' => $question]);
         
-                // Save the questions and multiple choices
                 foreach ($content['questions'] as $questionData) {
                     Identification::create([
                         'question_id' => $question->question_id,
@@ -549,14 +974,14 @@ class OPENAIController extends Controller
                     ]);
                 }
                 
-                // Calculate and log the cost using the helper function
                 OpenAIHelper::calculateAndLogCost($responseData);
                 
-                // Update the Quiz count in the subscription
-                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
-                if ($quiz) {
-                    $quiz->increment('quiz_created');
-                }
+                $quiz = Subscription::where('user_id', $request->user()->user_id)
+                ->where('status', 'Active')  // Only increment active subscription
+                ->first();
+            if ($quiz) {
+                $quiz->increment('quiz_created');
+            }
 
                 return response()->json(['success' => true, 'data' => $content]);
                 
@@ -565,9 +990,7 @@ class OPENAIController extends Controller
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }            
-//===============================================================================================================================
         }else if($request->post('type') == 'Mixed'){
-            // Build the prompt dynamically
             $prompt = "Based on the following text, generate ";
             $quizTypes = [];
             $jsonFormat = "{\n";
@@ -635,7 +1058,6 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
 
-                // Strip the code block formatting
                 $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
 
                 $content = json_decode($jsonContent, true);
@@ -655,13 +1077,11 @@ class OPENAIController extends Controller
 
                 Log::info('Created Question:', ['question' => $question]);
 
-                // Use QuizController to store and balance the multiple choice questions
                 if (!empty($content['multiple_choice'])) {
                     $quizController = new QuizController();
                     $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
                 }
 
-                // Store true/false and identification questions directly
                 if (!empty($content['true_or_false'])) {
                     foreach ($content['true_or_false'] as $questionData) {
                         true_or_false::create([
@@ -684,14 +1104,15 @@ class OPENAIController extends Controller
                     }
                 }
 
-                // Calculate and log the cost using the helper function
                 Log::info('Action : Generate Quiz Mixed');
                 OpenAIHelper::calculateAndLogCost($responseData);
 
-                $quiz = Subscription::where('user_id', $request->user()->user_id)->first();
-                if ($quiz) {
-                    $quiz->increment('quiz_created');
-                }
+                $quiz = Subscription::where('user_id', $request->user()->user_id)
+                ->where('status', 'Active')  // Only increment active subscription
+                ->first();
+            if ($quiz) {
+                $quiz->increment('quiz_created');
+            }
                 
                 return response()->json(['success' => true, 'data' => $content]);
 
@@ -699,19 +1120,11 @@ class OPENAIController extends Controller
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }       
-            
-//===============================================================================================================================
         }else{
             return response()->json(['success' => false, 'message' => "Unidentified Question Type"]);
         }
     }
 
-    /**
-     * Map difficulty level to Bloom's taxonomy levels
-     * 
-     * @param string $difficulty The difficulty level (easy, medium, hard)
-     * @return string The corresponding Bloom's taxonomy levels
-     */
     private function mapDifficultyToBloomsLevels($difficulty)
     {
         switch(strtolower($difficulty)) {
@@ -722,40 +1135,28 @@ class OPENAIController extends Controller
             case 'hard':
                 return 'Synthesis and Evaluation';
             default:
-                return 'Knowledge and Comprehension'; // Default to easy
+                return 'Knowledge and Comprehension';
         }
     }
 
-    /**
-     * Generate additional questions to complete a quiz when initial generation was insufficient
-     * 
-     * @param int $topicId Topic ID for context
-     * @param int $count Number of additional questions needed
-     * @param string $type Type of questions ('Multiple Choice', 'True or false', 'Identification')
-     * @return array Array of question objects in the format expected by QuizController
-     */
     public function generateAdditionalQuestions($topicId, $count, $type)
     {
         Log::info("Generating {$count} additional {$type} questions for topic {$topicId}");
         
-        // Get reviewer content for the topic to provide context for questions
         $reviewer = Reviewer::where('topic_id', $topicId)->get(['reviewer_about', 'reviewer_text']);
         if ($reviewer->isEmpty()) {
             Log::error('No reviewer content found for this topic', ['topic_id' => $topicId]);
             return [];
         }
         
-        // Combine reviewer text into a string
         $text = "";
         foreach ($reviewer as $item) {
             $text .= $item->reviewer_about . " " . $item->reviewer_text . " | ";
         }
         
-        // Use medium difficulty for consistency
         $difficulty = 'medium';
         $bloomsLevels = $this->mapDifficultyToBloomsLevels($difficulty);
         
-        // Call appropriate method based on question type
         switch ($type) {
             case 'Multiple Choice':
                 return $this->generateAdditionalMultipleChoice($count, $bloomsLevels, $text);
@@ -769,14 +1170,6 @@ class OPENAIController extends Controller
         }
     }
     
-    /**
-     * Generate additional multiple-choice questions
-     * 
-     * @param int $count Number of questions to generate
-     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
-     * @param string $text Content to base questions on
-     * @return array Array of generated questions
-     */
     private function generateAdditionalMultipleChoice($count, $bloomsLevels, $text)
     {
         try {
@@ -836,13 +1229,11 @@ class OPENAIController extends Controller
                 return [];
             }
             
-            // Strip any code block formatting
             $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
             $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
             
             $content = json_decode($jsonContent, true);
             
-            // Log the cost
             OpenAIHelper::calculateAndLogCost($responseData);
             
             if (empty($content['questions'])) {
@@ -858,14 +1249,6 @@ class OPENAIController extends Controller
         }
     }
     
-    /**
-     * Generate additional true/false questions
-     * 
-     * @param int $count Number of questions to generate
-     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
-     * @param string $text Content to base questions on
-     * @return array Array of generated questions
-     */
     private function generateAdditionalTrueFalse($count, $bloomsLevels, $text)
     {
         try {
@@ -918,13 +1301,11 @@ class OPENAIController extends Controller
                 return [];
             }
             
-            // Strip any code block formatting
             $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
             $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
             
             $content = json_decode($jsonContent, true);
             
-            // Log the cost
             OpenAIHelper::calculateAndLogCost($responseData);
             
             if (empty($content['questions'])) {
@@ -940,14 +1321,6 @@ class OPENAIController extends Controller
         }
     }
     
-    /**
-     * Generate additional identification questions
-     * 
-     * @param int $count Number of questions to generate
-     * @param string $bloomsLevels Bloom's taxonomy levels to focus on
-     * @param string $text Content to base questions on
-     * @return array Array of generated questions
-     */
     private function generateAdditionalIdentification($count, $bloomsLevels, $text)
     {
         try {
@@ -1000,13 +1373,11 @@ class OPENAIController extends Controller
                 return [];
             }
             
-            // Strip any code block formatting
             $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
             $jsonContent = preg_replace('/^```json\s*|\s*```$/s', '', $jsonContent);
             
             $content = json_decode($jsonContent, true);
             
-            // Log the cost
             OpenAIHelper::calculateAndLogCost($responseData);
             
             if (empty($content['questions'])) {

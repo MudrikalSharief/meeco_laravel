@@ -24,7 +24,7 @@
             </div>
             <div class="w-full max-w-2xl">
                 <div id="ReviewersContainer" class="w-full max-w-2xl"></div>
-                <div id="SubjectsContainer" class="w-full max-w-2xl hidden"></div>
+                <div id="SubjectsContainer" class="w-full mb-20 max-w-2xl hidden"></div>
             </div>  
         </div>
     </div>
