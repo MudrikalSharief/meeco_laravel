@@ -1124,7 +1124,301 @@
     }
 
     
+    //==================================================
+    // Add this to your existing script in capture.blade.php where appropriate
+    // Fix for the tutorial highlight positioning
+const showStep = (step) => {
+    const tutorialContent = document.getElementById('tutorialContent');
+    const prevButton = document.getElementById('prevTutorial');
+    const nextButton = document.getElementById('nextTutorial');
+    updateProgressDots(step);
+    
+    // Show/hide previous button based on step
+    if (step > 0) {
+        prevButton.classList.remove('hidden');
+    } else {
+        prevButton.classList.add('hidden');
+    }
+    
+    // Update next button text on last step
+    if (step === tutorialSteps.length - 1) {
+        nextButton.innerHTML = `Finish 
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>`;
+    } else {
+        nextButton.innerHTML = `Next
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>`;
+    }
+    
+    const targetElement = document.querySelector(tutorialSteps[step].element);
+    if (!targetElement) {
+        console.error(`Tutorial target element not found: ${tutorialSteps[step].element}`);
+        return;
+    }
+    
+    // Fade out old content first
+    tutorialContent.style.opacity = '0';
+    tutorialContent.style.transform = 'translateY(10px)';
+    
+    // Remove any existing highlight elements to avoid duplicates
+    const existingHighlight = document.getElementById('highlightBox');
+    const existingPulse = document.getElementById('pulse');
+    if (existingHighlight) existingHighlight.remove();
+    if (existingPulse) existingPulse.remove();
+    
+    setTimeout(() => {
+        // Create content for this step
+        tutorialContent.innerHTML = `
+            <div class="mb-4 transform transition-all duration-500">
+                <div class="flex items-center mb-3">
+                    <span class="text-3xl mr-3">${tutorialSteps[step].icon}</span>
+                    <h3 class="text-lg font-semibold text-blue-700">${tutorialSteps[step].title}</h3>
+                </div>
+                <p class="text-gray-700 leading-relaxed">${tutorialSteps[step].message}</p>
+            </div>
+        `;
+        
+        // Create highlight elements directly in the body for better positioning
+        // We need to position them relative to the viewport to ensure correct placement
+        const highlightBox = document.createElement('div');
+        highlightBox.id = 'highlightBox';
+        highlightBox.className = 'border-2 border-blue-500 border-dashed rounded-md fixed pointer-events-none z-[65] transition-all duration-500 shadow-lg';
+        document.body.appendChild(highlightBox);
+        
+        const pulse = document.createElement('div');
+        pulse.id = 'pulse';
+        pulse.className = 'fixed rounded-md pointer-events-none z-[64] animate-pulse bg-blue-300 opacity-30';
+        document.body.appendChild(pulse);
+        
+        // Update highlight position with a function
+        const updateHighlightPosition = () => {
+            const rect = targetElement.getBoundingClientRect();
+            
+            highlightBox.style.top = `${rect.top - 4}px`;
+            highlightBox.style.left = `${rect.left - 4}px`;
+            highlightBox.style.width = `${rect.width + 8}px`;
+            highlightBox.style.height = `${rect.height + 8}px`;
+            
+            pulse.style.top = `${rect.top}px`;
+            pulse.style.left = `${rect.left}px`;
+            pulse.style.width = `${rect.width}px`;
+            pulse.style.height = `${rect.height}px`;
+        };
+        
+        // Initial position
+        updateHighlightPosition();
+        
+        // Make sure element is in view
+        const scrollIntoViewIfNeeded = () => {
+            const rect = targetElement.getBoundingClientRect();
+            const isInView = (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+            
+            if (!isInView) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                
+                // Update highlight position after scroll animation completes
+                setTimeout(updateHighlightPosition, 500);
+            }
+        };
+        
+        // Make sure element is in view
+        scrollIntoViewIfNeeded();
+        
+        // Fade in new content
+        tutorialContent.style.opacity = '1';
+        tutorialContent.style.transform = 'translateY(0)';
+        
+        // Listen for scroll and resize events to update highlight position
+        window.addEventListener('scroll', updateHighlightPosition, { passive: true });
+        window.addEventListener('resize', updateHighlightPosition, { passive: true });
+        
+        // Set a periodic check for position updates to handle dynamic content changes
+        const positionInterval = setInterval(updateHighlightPosition, 200);
+        
+        // Cleanup event listeners when moving to next step
+        return () => {
+            window.removeEventListener('scroll', updateHighlightPosition);
+            window.removeEventListener('resize', updateHighlightPosition);
+            clearInterval(positionInterval);
+            if (document.getElementById('highlightBox')) document.getElementById('highlightBox').remove();
+            if (document.getElementById('pulse')) document.getElementById('pulse').remove();
+        };
+    }, 300);
+};
+function showNewUserTutorial() {
+    // Check if the user has seen the tutorial before
+    if (localStorage.getItem('captureTutorialSeen') === 'true') {
+        return;
+    }
 
+    // Array of tutorial steps
+    const tutorialSteps = [
+        {
+            element: '#openModal',
+            title: 'Welcome to Image Capture!',
+            message: 'Click here to upload images from your device.',
+            position: 'bottom'
+        },
+        {
+            element: '#openCamera',
+            title: 'Use Your Camera',
+            message: 'Capture images directly using your device camera.',
+            position: 'bottom'
+        },
+        {
+            element: '#imageContainer',
+            title: 'Image Storage',
+            message: 'Your uploaded images will appear here.',
+            position: 'top'
+        },
+        {
+            element: '#analyzeGraph',
+            title: 'Analyze Your Images',
+            message: 'Move images here for analysis and extraction.',
+            position: 'top'
+        },
+        {
+            element: '#extractTextButton',
+            title: 'Extract Text',
+            message: 'Once you have images, click here to extract text for your reviewers.',
+            position: 'left'
+        }
+    ];
+
+    // Create tutorial overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center';
+    document.body.appendChild(overlay);
+
+    // Tutorial container
+    const tutorialContainer = document.createElement('div');
+    tutorialContainer.className = 'bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4';
+    tutorialContainer.innerHTML = `
+        <h2 class="text-xl font-bold text-blue-800 mb-4">How to Use Capture</h2>
+        <div id="tutorialContent" class="mb-4"></div>
+        <div class="flex items-center justify-between">
+            <button id="skipTutorial" class="text-gray-600 hover:text-gray-900">Skip Tutorial</button>
+            <div>
+                <button id="prevTutorial" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600 hidden">Previous</button>
+                <button id="nextTutorial" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Next</button>
+            </div>
+        </div>
+    `;
+    
+    overlay.appendChild(tutorialContainer);
+    
+    let currentStep = 0;
+    
+    const showStep = (step) => {
+        const tutorialContent = document.getElementById('tutorialContent');
+        const prevButton = document.getElementById('prevTutorial');
+        const nextButton = document.getElementById('nextTutorial');
+        
+        // Show/hide previous button based on step
+        if (step > 0) {
+            prevButton.classList.remove('hidden');
+        } else {
+            prevButton.classList.add('hidden');
+        }
+        
+        // Update next button text on last step
+        if (step === tutorialSteps.length - 1) {
+            nextButton.textContent = 'Finish';
+        } else {
+            nextButton.textContent = 'Next';
+        }
+        
+        const targetElement = document.querySelector(tutorialSteps[step].element);
+        if (!targetElement) {
+            console.error(`Tutorial target element not found: ${tutorialSteps[step].element}`);
+            return;
+        }
+        
+        // Position the highlight and content
+        const rect = targetElement.getBoundingClientRect();
+        
+        // Create content for this step
+        tutorialContent.innerHTML = `
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-blue-700">${tutorialSteps[step].title}</h3>
+                <p class="text-gray-700 mt-2">${tutorialSteps[step].message}</p>
+            </div>
+            <div class="border-2 border-blue-500 border-dashed absolute pointer-events-none" style="
+                top: ${rect.top - 4}px;
+                left: ${rect.left - 4}px;
+                width: ${rect.width + 8}px;
+                height: ${rect.height + 8}px;
+                z-index: 70;
+            "></div>
+        `;
+    };
+    
+    // Initialize first step
+    showStep(currentStep);
+    
+    // Event handlers for tutorial navigation
+    document.getElementById('nextTutorial').addEventListener('click', () => {
+        currentStep++;
+        
+        if (currentStep >= tutorialSteps.length) {
+            // End tutorial
+            localStorage.setItem('captureTutorialSeen', 'true');
+            overlay.remove();
+            return;
+        }
+        
+        showStep(currentStep);
+    });
+    
+    document.getElementById('prevTutorial').addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            showStep(currentStep);
+        }
+    });
+    
+    document.getElementById('skipTutorial').addEventListener('click', () => {
+        localStorage.setItem('captureTutorialSeen', 'true');
+        overlay.remove();
+    });
+}
+
+// Add this to your document.addEventListener('DOMContentLoaded', function() {...}) block
+// Call the function to show the tutorial
+showNewUserTutorial();
+
+// Add a button to reset tutorial (for testing or user preference)
+function addTutorialResetOption() {
+    const settingsContainer = document.createElement('div');
+    settingsContainer.className = 'fixed bottom-4 right-4 z-50';
+    settingsContainer.innerHTML = `
+        <button id="resetTutorial" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-medium p-2 rounded shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        </button>
+    `;
+    document.body.appendChild(settingsContainer);
+    
+    document.getElementById('resetTutorial').addEventListener('click', () => {
+        localStorage.removeItem('captureTutorialSeen');
+        showNewUserTutorial();
+    });
+}
+
+// Add the reset button option
+addTutorialResetOption();
     });
     </script>
 </x-layout>
