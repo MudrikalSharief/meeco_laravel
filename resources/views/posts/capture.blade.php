@@ -73,10 +73,48 @@
 
     <!-- Modal for Camera -->
     <div id="cameraModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
-            <video id="cameraFeed" class="w-full h-full" autoplay></video>
+        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 90%; max-width: 500px; min-width: 270px;">
+            <h2 class="text-lg font-semibold mb-4 text-center">Take a Photo</h2>
+            
+            <!-- Desktop camera interface -->
+            <div id="desktopCameraInterface" class="hidden">
+                <video id="cameraFeed" class="w-full h-64 bg-black object-cover" autoplay playsinline></video>
+                <div class="flex justify-center mt-4">
+                    <button id="captureDesktopImage" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Capture Photo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile camera interface -->
+            <div id="mobileCameraInterface" class="hidden">
+                <div class="text-center py-4">
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+                    <label for="cameraInput" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 cursor-pointer inline-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Open Camera
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Image preview (for both interfaces) -->
+            <div id="imagePreviewContainer" class="hidden mt-4">
+                <p class="mb-2 font-medium">Preview:</p>
+                <img id="imagePreview" src="#" alt="Preview" class="w-full h-48 object-contain border border-gray-300 rounded mb-4">
+                <div class="flex justify-between">
+                    <button id="retakePhoto" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Retake</button>
+                    <button id="uploadCapturedImage" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Upload</button>
+                </div>
+            </div>
+            
             <div class="flex justify-end mt-4">
-                <button id="captureImage" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600">Capture</button>
                 <button id="closeCamera" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
             </div>
         </div>
@@ -838,61 +876,188 @@
         });
 
         // Handle image capture from camera
-        const captureImage = document.getElementById('captureImage');
-        const cameraFeed = document.getElementById('cameraFeed');
+        const openCamera = document.getElementById('openCamera');
         const cameraModal = document.getElementById('cameraModal');
+        const desktopCameraInterface = document.getElementById('desktopCameraInterface');
+        const mobileCameraInterface = document.getElementById('mobileCameraInterface');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const captureDesktopImage = document.getElementById('captureDesktopImage');
+        const cameraInput = document.getElementById('cameraInput');
+        const closeCamera = document.getElementById('closeCamera');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const retakePhoto = document.getElementById('retakePhoto');
+        const uploadCapturedImage = document.getElementById('uploadCapturedImage');
         const captureConfirmModal = document.getElementById('captureConfirmModal');
         const captureConfirmMessage = document.getElementById('captureConfirmMessage');
         const closeCaptureConfirm = document.getElementById('closeCaptureConfirm');
 
-        if (captureImage) {
-            captureImage.addEventListener('click', () => {
+        // Check if device is mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        let capturedImage = null;
+        let stream = null;
+
+        // Function to stop any active camera stream
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                if (cameraFeed) cameraFeed.srcObject = null;
+            }
+        }
+
+        // Open camera modal
+        if (openCamera) {
+            openCamera.addEventListener('click', async function() {
+                cameraModal.classList.remove('hidden');
+                imagePreviewContainer.classList.add('hidden');
+                
+                console.log("Device detection: " + (isMobile ? "Mobile" : "Desktop"));
+                
+                if (isMobile) {
+                    // Mobile: Show the file input interface
+                    mobileCameraInterface.classList.remove('hidden');
+                    desktopCameraInterface.classList.add('hidden');
+                } else {
+                    // Desktop: Show the webcam interface
+                    desktopCameraInterface.classList.remove('hidden');
+                    mobileCameraInterface.classList.add('hidden');
+                    
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ 
+                            video: { facingMode: 'user' },
+                            audio: false
+                        });
+                        cameraFeed.srcObject = stream;
+                    } catch (err) {
+                        console.error('Error accessing camera:', err);
+                        captureConfirmMessage.textContent = 'Error accessing camera: ' + err.message;
+                        captureConfirmModal.classList.remove('hidden');
+                        
+                        // Fall back to mobile interface if webcam access fails
+                        desktopCameraInterface.classList.add('hidden');
+                        mobileCameraInterface.classList.remove('hidden');
+                    }
+                }
+            });
+        }
+        
+        // Handle desktop capture button
+        if (captureDesktopImage) {
+            captureDesktopImage.addEventListener('click', function() {
+                if (!cameraFeed.srcObject) {
+                    captureConfirmMessage.textContent = 'Camera is not active. Please try again.';
+                    captureConfirmModal.classList.remove('hidden');
+                    return;
+                }
+                
                 const canvas = document.createElement('canvas');
                 canvas.width = cameraFeed.videoWidth;
                 canvas.height = cameraFeed.videoHeight;
                 const context = canvas.getContext('2d');
                 context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-
-                canvas.toBlob(blob => {
-                    const formData = new FormData();
-                    formData.append('images[]', blob, 'captured-image.png');
-
-                    fetch('/capture/upload', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        cameraModal.classList.add('hidden');
-                        if (!data.success) {
-                            
-                            showModal('Error', data.message, 'text-red-500', 'OK');
-                            modalButton.classList.add('hidden');
-                        } 
-                        
-                        if (cameraFeed.srcObject) {
-                            const stream = cameraFeed.srcObject;
-                            const tracks = stream.getTracks();
-                            tracks.forEach(track => track.stop());
-                            cameraFeed.srcObject = null;
-                        }
-                        fetchImages(); // Using our updated fetchImages function will handle this correctly
-                    })
-                    .catch(error => {
-                        cameraModal.classList.add('hidden');
-                        captureConfirmMessage.textContent = 'Failed to upload captured image.';
-                        captureConfirmModal.classList.remove('hidden');
-                        console.error('Error:', error);
-                    });
+                
+                // Display preview
+                canvas.toBlob(function(blob) {
+                    capturedImage = new File([blob], "captured-image.png", { type: "image/png" });
+                    imagePreview.src = URL.createObjectURL(blob);
+                    imagePreviewContainer.classList.remove('hidden');
+                    desktopCameraInterface.classList.add('hidden');
+                    mobileCameraInterface.classList.add('hidden');
                 }, 'image/png');
             });
         }
-
+        
+        // Handle file selection from camera
+        if (cameraInput) {
+            cameraInput.addEventListener('change', function(event) {
+                if (this.files && this.files[0]) {
+                    capturedImage = this.files[0];
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.classList.remove('hidden');
+                        desktopCameraInterface.classList.add('hidden');
+                        mobileCameraInterface.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(capturedImage);
+                }
+            });
+        }
+        
+        // Retake photo
+        if (retakePhoto) {
+            retakePhoto.addEventListener('click', function() {
+                imagePreviewContainer.classList.add('hidden');
+                capturedImage = null;
+                
+                if (isMobile) {
+                    // Mobile: reset file input and show mobile interface
+                    cameraInput.value = '';
+                    mobileCameraInterface.classList.remove('hidden');
+                    // Trigger camera again
+                    setTimeout(() => cameraInput.click(), 100);
+                } else {
+                    // Desktop: show webcam interface again
+                    desktopCameraInterface.classList.remove('hidden');
+                }
+            });
+        }
+        
+        // Upload captured image
+        if (uploadCapturedImage) {
+            uploadCapturedImage.addEventListener('click', function() {
+                if (!capturedImage) {
+                    captureConfirmMessage.textContent = 'No image captured.';
+                    captureConfirmModal.classList.remove('hidden');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('images[]', capturedImage);
+                
+                fetch('/capture/upload', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    cameraModal.classList.add('hidden');
+                    capturedImage = null;
+                    stopCamera();
+                    
+                    if (data.success) {
+                        fetchImages();
+                    } else {
+                        showModal('Error', data.message || 'Failed to upload image.', 'text-red-500', 'OK');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    captureConfirmMessage.textContent = 'Failed to upload captured image.';
+                    captureConfirmModal.classList.remove('hidden');
+                });
+            });
+        }
+        
+        // Close camera modal
+        if (closeCamera) {
+            closeCamera.addEventListener('click', function() {
+                cameraModal.classList.add('hidden');
+                capturedImage = null;
+                if (cameraInput) cameraInput.value = '';
+                stopCamera();
+            });
+        }
+        
+        // Handle capture confirmation modal close
         if (closeCaptureConfirm) {
-            closeCaptureConfirm.addEventListener('click', () => {
+            closeCaptureConfirm.addEventListener('click', function() {
                 captureConfirmModal.classList.add('hidden');
             });
         }
