@@ -23,10 +23,14 @@
             // The $questions variable in the Blade template comes from the takeQuiz method in the QuizController
             const questions = @json($questions);
             let questionid = null;
-            const quizForm = document.getElementById('quizForm');
-            let quiztype = null;
-            let topicId = null;
-            
+
+            // Ensure questions is defined
+            if (typeof questions === 'undefined' || !questions) {
+                console.error('Error: questions is not defined. Please check the quiz data.');
+                alert('Error: Unable to load quiz data. Please refresh the page or contact support.');
+                return; // Stop further execution if questions is not defined
+            }
+
             // Determine the question ID based on the quiz type
             if (Array.isArray(questions) && questions.length > 0) {
                 questionid = questions[0].question_id;
@@ -41,8 +45,14 @@
             // Add a fallback to handle cases where questionid is still null
             if (!questionid) {
                 console.error('Error: questionid is not defined. Please check the quiz data.');
+                alert('Error: Unable to determine the question ID. Please refresh the page or contact support.');
+                return; // Stop further execution if questionid is not defined
             }
 
+            const quizForm = document.getElementById('quizForm');
+            let quiztype = null;
+            let topicId = null;
+            
             // Get the title of the question
             fetch(`/getquiz/${questionid}`)
             .then(response => response.json())
@@ -536,6 +546,33 @@
             const timerDisplay = document.getElementById('timerDisplay');
             let startTime = Date.now(); // Start the timer when the page loads
             let elapsedTime = 0; // Declare elapsedTime in a higher scope
+            let questionid = null; // Declare questionid in a higher scope
+
+            // Ensure questions is defined
+            const questions = @json($questions);
+            if (typeof questions === 'undefined' || !questions) {
+                console.error('Error: questions is not defined. Please check the quiz data.');
+                alert('Error: Unable to load quiz data. Please refresh the page or contact support.');
+                return; // Stop further execution if questions is not defined
+            }
+
+            // Determine the question ID based on the quiz type
+            if (Array.isArray(questions) && questions.length > 0) {
+                questionid = questions[0].question_id;
+            } else if (questions.multiple_choice && questions.multiple_choice.length > 0) {
+                questionid = questions.multiple_choice[0].question_id;
+            } else if (questions.true_or_false && questions.true_or_false.length > 0) {
+                questionid = questions.true_or_false[0].question_id;
+            } else if (questions.identification && questions.identification.length > 0) {
+                questionid = questions.identification[0].question_id;
+            }
+
+            // Add a fallback to handle cases where questionid is still null
+            if (!questionid) {
+                console.error('Error: questionid is not defined. Please check the quiz data.');
+                alert('Error: Unable to determine the question ID. Please refresh the page or contact support.');
+                return; // Stop further execution if questionid is not defined
+            }
 
             // Update the timer display every second
             const timerInterval = setInterval(() => {
@@ -557,7 +594,7 @@
 
                 // Collect form data
                 const formData = new FormData(quizForm);
-                formData.append('elapsed_time', elapsedTime); // Use the globally updated elapsedTime
+                formData.append('elapsed_time', elapsedTime);
 
                 // Prepare answers object
                 const answers = {
@@ -565,7 +602,7 @@
                     true_or_false: [],
                     identification: [],
                     questionId: questionid,
-                    elapsedTime: elapsedTime // Use the globally updated elapsedTime
+                    elapsedTime: elapsedTime 
                 };
 
                 console.log(answers);

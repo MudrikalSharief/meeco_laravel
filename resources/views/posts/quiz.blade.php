@@ -806,11 +806,11 @@
                     editQuizModal.classList.add('hidden');
                 });
 
-            }else if(button) {
+            } else if (button) {
                 // Event delegation for question buttons
                 console.log("question is clicked");
-                const questionId = button.id;
-                window.location.href = `/quizresult?questionId=${questionId}`;
+                const questionId = button.id; // Correctly use questionId
+                window.location.href = `/quizresult?questionId=${questionId}`; // Use questionId here
             }
 
 
