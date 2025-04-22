@@ -106,17 +106,19 @@ class OPENAIController extends Controller
         }
 
 
-        \Log::info('OPENAI_API_KEY: ' . env('OPENAI_API_KEY'));
+        \Log::info('OPENAI_API_KEY is ' . env('OPENAI_API_KEY'));
 
+        
         $true = Reviewer::where(['topic_id' => $request->post('topic_id')])->get();
         if(!$true->isEmpty()){
             return response()->json(['success' => true, 'message' => "Reviewer Already Created"]);
         }else{
 
             try {
+                $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
                     "Content-Type" => "application/json",
-                    "Authorization" => "Bearer " . env('OPENAI_API_KEY')
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -237,9 +239,10 @@ class OPENAIController extends Controller
         $total_quiz = intval($multiple) + intval($true_or_false) + intval($identification);
         if($request->post('type') == 'Multiple Choice'){
             try {
+                $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -348,9 +351,10 @@ class OPENAIController extends Controller
         }else if($request->post('type') == 'True or false'){
 
             try {
+                $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(120)
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -455,9 +459,10 @@ class OPENAIController extends Controller
         }else if($request->post('type') == 'Identification'){
 
             try {
+                $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(300)
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -601,9 +606,10 @@ class OPENAIController extends Controller
             $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}" . $bloomsInstructions . "\nText: " . $text;
             
             try {
+                $apiKey = OpenAIHelper::getApiKey();
                 $response = Http::withHeaders([
-                    'Authorization' => "Bearer " . env('OPENAI_API_KEY'),
                     'Content-Type'  => 'application/json',
+                    "Authorization" => "Bearer " . $apiKey
                 ])
                 ->timeout(120)
                 ->post('https://api.openai.com/v1/chat/completions', [
