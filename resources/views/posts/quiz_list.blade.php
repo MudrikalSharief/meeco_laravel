@@ -104,7 +104,7 @@
                             data.questions.forEach(reviewer => {
                                 let reviewerDiv = document.createElement('div');
                                 reviewerDiv.classList.add(
-                                    'curosor-pointer',
+                                    'cursor-pointer',
                                     'w-full',
                                     'text-start',
                                     'py-2',
@@ -124,10 +124,20 @@
                                     'transition',
                                     'duration-300'
                                 );
+                                
+                                // Create clickable container
                                 reviewerDiv.innerHTML = `
-                                    <p>${reviewer.question_title}</p>
-                                    <a href="/quizresult?questionId=${reviewer.question_id}" class="text-blue-500">View</a>
+                                    <a href="/quizresult?questionId=${reviewer.question_id}" class="w-full flex justify-between items-center">
+                                        <p>${reviewer.question_title}</p>
+                                        <span class="text-blue-500">View</span>
+                                    </a>
                                 `;
+                                
+                                // Make the entire div clickable
+                                reviewerDiv.addEventListener('click', function() {
+                                    window.location.href = `/quizresult?questionId=${reviewer.question_id}`;
+                                });
+                                
                                 reviewersContainer.appendChild(reviewerDiv);
                             });
                         } else {
@@ -224,12 +234,23 @@
                                     'transition',
                                     'duration-300',
                                     'border',
-                                    'border-gray-100'
+                                    'border-gray-100',
+                                    'cursor-pointer'
                                 );
+                                
+                                // Create clickable container
                                 quizDiv.innerHTML = `
-                                    <p>${quiz.question_title}</p>
-                                    <a href="/quizresult?questionId=${quiz.question_id}" class="text-blue-500 hover:text-blue-700 hover:underline">View</a>
+                                    <a href="/quizresult?questionId=${quiz.question_id}" class="w-full flex justify-between items-center">
+                                        <p>${quiz.question_title}</p>
+                                        <span class="text-blue-500">View</span>
+                                    </a>
                                 `;
+                                
+                                // Make the entire div clickable
+                                quizDiv.addEventListener('click', function() {
+                                    window.location.href = `/quizresult?questionId=${quiz.question_id}`;
+                                });
+                                
                                 quizzesContainer.appendChild(quizDiv);
                             });
                             
