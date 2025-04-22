@@ -719,6 +719,7 @@
                 deleteTopicConfirmModal.classList.remove('hidden');
                 event.stopPropagation(); // Prevent the event from propagating to the parent elements
                 event.preventDefault(); // Prevent the default action
+                
                 //check if confirm modal is deleted confirm the delete
                 confirmTopicDelete.addEventListener('click', function(){
                     const questionId = deleteButton.dataset.questionId;

@@ -106,6 +106,12 @@
                         const quizInfoDiv = document.createElement('div');
                         quizInfoDiv.id = 'quiz_info';
                         quizInfoDiv.classList.add('w-full', 'max-w-2xl');
+
+                        // Convert timer_result to minutes and seconds
+                        const totalSeconds = data.question.timer_result;
+                        const minutes = Math.floor(totalSeconds / 60);
+                        const seconds = totalSeconds % 60;
+
                         quizInfoDiv.innerHTML = `
                             <h1 id="backbutton" class="pt-2 cursor-pointer text-sm text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
                             <div class="flex justify-between mb-2">
@@ -115,6 +121,9 @@
                             <div class="flex justify-between">
                                 <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Question Count<br></span> ${data.question.number_of_question}</p>
                                 <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Score<br></span> ${data.question.score} / ${data.question.number_of_question}</p>
+                            </div>
+                            <div class="flex justify-between">
+                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Time Taken<br></span> ${minutes}m ${seconds}s</p>
                             </div>
                             <p class="mt-3 "><span class="text-sm text-blue-600">Start Quiz Now!</span></p>
                         `;
