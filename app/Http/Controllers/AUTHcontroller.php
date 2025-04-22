@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB; // Added missing import
+use Illuminate\Support\Str; // Added missing import
 
 class AUTHcontroller extends Controller
 {   
