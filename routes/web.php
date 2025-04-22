@@ -172,6 +172,13 @@ Route::middleware('auth')->group(function (){
 });
 
 
+ // UI only routes for password reset (no backend)
+ Route::view('/forgot-password', 'auth.forgot-password')->name('password.request');
+ Route::view('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
+
+ // Password reset routes
+ Route::post('/forgot-password', [AUTHcontroller::class, 'forgotPassword'])->name('password.email');
+ Route::post('/reset-password', [AUTHcontroller::class, 'resetPassword'])->name('password.update');
 
 Route::middleware('guest')->group(function (){
     
