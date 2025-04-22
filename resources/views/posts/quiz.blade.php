@@ -648,8 +648,9 @@
                         .then(response => response.json())
                         .then(data => {
                             // Hide the loader
-                            loader.classList.add('hidden');
+                           
                             if (data.success) {
+                                loader.classList.add('hidden');
                                 addQuizModal.classList.add('hidden');
                                 // Show the success modal
                                 successModal.classList.remove('hidden');
@@ -692,10 +693,12 @@
                                         // location.reload();
                                     } else {
                                         alert('Failed to get quizzes: ' + data.message);
+                                        loader.classList.add('hidden');
                                     }
                                 });       
                             } else {
                                 alert('Failed to create quiz: ' + data.message);
+                                loader.classList.add('hidden');
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -704,6 +707,7 @@
                     }
                 } else {
                     console.log(data);
+                    loader.classList.add('hidden');
                 }
             })
             .catch(error => console.error('Error checking subscription:', error));

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Verify Your Account</title>
+    <title>Reset Your Password</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,13 +23,13 @@
             padding-bottom: 20px;
             border-bottom: 1px solid #eee;
         }
-        .code {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            letter-spacing: 5px;
-            padding: 15px;
-            background-color: #eaeaea;
+        .button {
+            display: inline-block;
+            background-color: #3B82F6;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
             margin: 20px 0;
         }
         .footer {
@@ -45,15 +45,21 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Verify Your Account</h1>
+            <h1>Reset Your Password</h1>
         </div>
         
         <p>Hello {{ $name }},</p>
-        <p>Thank you for signing up. To complete your registration, please use the verification code below:</p>
+        <p>You are receiving this email because we received a password reset request for your account.</p>
         
-        <div class="code">{{ $code }}</div>
+        <div style="text-align: center;">
+            <a href="{{ $resetLink }}" style="background-color: #3B82F6; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block;">Reset Password</a>
+        </div>
         
-        <p>This code will expire in 30 minutes. If you did not request this verification, please ignore this email.</p>
+        <p>If you did not request a password reset, no further action is required.</p>
+        <p>This password reset link will expire in 60 minutes.</p>
+        
+        <p>If you're having trouble clicking the "Reset Password" button, copy and paste the URL below into your web browser:</p>
+        <p style="word-break: break-all;">{{ $resetLink }}</p>
         
         <div class="footer">
             <p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>

@@ -23,7 +23,7 @@
 <body class="bg-gray-100 px-5 flex items-center justify-center min-h-screen">
 
     <div class="fixed right-0 top-0 pt-3 pr-3">
-      <a href="{{ route('landing')}}"></a>
+      <a href="{{ route('landing')}}"><img class="w-5" src="{{ asset('logo_icons/x.svg')}}" alt=""></a>
     </div>
 
     <div class="bg-white p-6 rounded-lg shadow-md max-w-sm min-w-52 w-full">
