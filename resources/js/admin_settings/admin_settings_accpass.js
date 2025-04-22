@@ -22,15 +22,28 @@ function allowEditAPSettings(APforms, APtable){
 
 function renderPasswordConfigurations(){
 
-    const passwordConfigurations = APtable.querySelectorAll('.password_configurations');
-
     fetch('/admin/pass-configurations',{
         method:'GET',
     })
     .then(res => res.json())
-    .then(data =>{ console.log(data.configurations)
+    .then(data => assignPasswordConfigurations(data));
 
-    });
+}
+
+function assignPasswordConfigurations(data){
+
+    const passwordConfigurations = APtable.querySelectorAll('.password_configurations');
+    const configArray = Object.values(data.configurations[0]);
+
+    let i = 0;
+
+    passwordConfigurations.forEach(configurations =>{
+
+        configurations.textContent = configArray[i];
+
+        i++;
+
+    })
 
 }
 
