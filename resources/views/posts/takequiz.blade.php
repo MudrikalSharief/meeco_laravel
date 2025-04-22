@@ -616,17 +616,22 @@
                     },
                     body: JSON.stringify(answers)
                 })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            console.log(data);
+                            console.log('Quiz submitted successfully:', data);
                             const scoreModal = document.createElement('div');
                             scoreModal.id = 'scoreModal';
                             scoreModal.classList.add('z-50', 'fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
                             scoreModal.innerHTML = `
                                 <div class="bg-white p-6 rounded-lg shadow-lg">
                                     <h2 class="text-2xl mb-4">Congratulations!</h2>
-                                    <p id="scoreText" class="text-lg">The result of your quiz is ready.</p>
+                                    <p id="scoreText" class="text-lg">Your score is ${data.score}.</p>
                                     <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Result</button>
                                 </div>
                             `;

@@ -134,120 +134,71 @@ class QuizController extends Controller
 
     public function submitQuiz(Request $request)
     {
-        \Log::info('Submit Quiz Request:', $request->all());
+        try {
+            // Validate the incoming request
+            $validatedData = $request->validate([
+                'questionId' => 'required|integer',
+                'elapsedTime' => 'required|integer',
+                'multiple_choice' => 'array',
+                'true_or_false' => 'array',
+                'identification' => 'array',
+            ]);
 
-        $score = 0;
+            $questionId = $validatedData['questionId'];
+            $elapsedTime = $validatedData['elapsedTime'];
+            $multipleChoiceAnswers = $validatedData['multiple_choice'] ?? [];
+            $trueOrFalseAnswers = $validatedData['true_or_false'] ?? [];
+            $identificationAnswers = $validatedData['identification'] ?? [];
 
-        $validatedData = $request->validate([
-            'questionId' => 'required|integer',
-            'elapsed_time' => 'required|integer', // Validate elapsed time
-        ]);
+            $score = 0;
 
-        $questionId = $validatedData['questionId'];
-        $elapsedTime = $validatedData['elapsed_time'];
-
-        $question_type = Question::where('question_id', $questionId)->pluck('question_type')->first();
-
-        // Process answers (existing logic)
-        $answers = $request->except(['questionId', 'elapsed_time']);
-        $userAnswers = [];
-        
-        if ($question_type !== 'Mixed') {
-            foreach ($answers as $question => $answer) {
-                $choiceId = intval(explode('_', $question)[1]);
-                $userAnswers[$choiceId] = $answer;
+            // Process multiple-choice answers
+            $multipleChoiceQuestions = multiple_choice::where('question_id', $questionId)->get();
+            foreach ($multipleChoiceQuestions as $index => $question) {
+                if (isset($multipleChoiceAnswers[$index]) && $multipleChoiceAnswers[$index] === $question->answer) {
+                    $score++;
+                }
             }
+
+            // Process true/false answers
+            $trueOrFalseQuestions = true_or_false::where('question_id', $questionId)->get();
+            foreach ($trueOrFalseQuestions as $index => $question) {
+                if (isset($trueOrFalseAnswers[$index]) && $trueOrFalseAnswers[$index] === $question->answer) {
+                    $score++;
+                }
+            }
+
+            // Process identification answers
+            $identificationQuestions = Identification::where('question_id', $questionId)->get();
+            foreach ($identificationQuestions as $index => $question) {
+                if (isset($identificationAnswers[$index]) && strtolower(trim($identificationAnswers[$index])) === strtolower(trim($question->answer))) {
+                    $score++;
+                }
+            }
+
+            // Save the elapsed time and score (if applicable)
+            Question::where('question_id', $questionId)->update([
+                'timer_result' => $elapsedTime,
+                'score' => $score,
+            ]);
+
+            // Return a JSON response
+            return response()->json([
+                'success' => true,
+                'question_id' => $questionId,
+                'score' => $score,
+                'elapsed_time' => $elapsedTime,
+            ]);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Error in submitQuiz: ' . $e->getMessage());
+
+            // Return a JSON error response
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while submitting the quiz.',
+            ], 500);
         }
-
-        if ($question_type === 'Multiple Choice') {
-            $mcAnswers = $request->input('multiple_choice', []);
-            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
-            foreach ($multiple_choice_data as $index => $data) {
-                if (isset($mcAnswers[$index])) {
-                    multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
-                        ->update(['user_answer' => $mcAnswers[$index]]);
-
-                    if ($mcAnswers[$index] === $data->answer) {
-                        $score++;
-                    }
-                }
-            }
-        } elseif ($question_type == 'True or false') {
-            $tfAnswers = $request->input('true_or_false', []);
-            $tf_data = true_or_false::where('question_id', $questionId)->get();
-            foreach ($tf_data as $index => $data) {
-                if (isset($tfAnswers[$index])) {
-                    true_or_false::where('true_or_false_id', $data->true_or_false_id)
-                        ->update(['user_answer' => $tfAnswers[$index]]);
-
-                    if ($tfAnswers[$index] === $data->answer) {
-                        $score++;
-                    }
-                }
-            }
-        } elseif ($question_type == 'Identification') {
-            $idAnswers = $request->input('identification', []);
-            $identification_data = Identification::where('question_id', $questionId)->get();
-            foreach ($identification_data as $index => $data) {
-                if (isset($idAnswers[$index])) {
-                    Identification::where('Identification_id', $data->Identification_id)
-                        ->update(['user_answer' => $idAnswers[$index]]);
-
-                    if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
-                        $score++;
-                    }
-                }
-            }
-        } elseif ($question_type == 'Mixed') {
-            $mcAnswers = $request->input('multiple_choice', []);
-            $tfAnswers = $request->input('true_or_false', []);
-            $idAnswers = $request->input('identification', []);
-            
-            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
-            $tf_data = true_or_false::where('question_id', $questionId)->get();
-            $identification_data = Identification::where('question_id', $questionId)->get();
-            
-            foreach ($multiple_choice_data as $index => $data) {
-                if (isset($mcAnswers[$index])) {
-                    multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
-                        ->update(['user_answer' => $mcAnswers[$index]]);
-
-                    if ($mcAnswers[$index] === $data->answer) {
-                        $score++;
-                    }
-                }
-            }
-
-            foreach ($tf_data as $index => $data) {
-                if (isset($tfAnswers[$index])) {
-                    true_or_false::where('true_or_false_id', $data->true_or_false_id)
-                        ->update(['user_answer' => $tfAnswers[$index]]);
-
-                    if ($tfAnswers[$index] === $data->answer) {
-                        $score++;
-                    }
-                }
-            }
-
-            foreach ($identification_data as $index => $data) {
-                if (isset($idAnswers[$index])) {
-                    Identification::where('Identification_id', $data->Identification_id)
-                        ->update(['user_answer' => $idAnswers[$index]]);
-
-                    if (strtolower(trim($idAnswers[$index])) === strtolower(trim($data->answer))) {
-                        $score++;
-                    }
-                }
-            }
-        }
-
-        // Save the elapsed time in the database
-        Question::where('question_id', $questionId)->update([
-            'score' => $score,
-            'timer_result' => $elapsedTime,
-        ]);
-
-        return response()->json(['success' => true, 'question_id' => $questionId]);
     }
 
     public function resetQuiz($id)
