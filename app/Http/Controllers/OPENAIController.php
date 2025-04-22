@@ -775,7 +775,7 @@ class OPENAIController extends Controller
                 if ($quiz) {
                     $quiz->increment('quiz_created');
                 }
-        
+                return response()->json(['success' => true, 'data' => $content]);
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
