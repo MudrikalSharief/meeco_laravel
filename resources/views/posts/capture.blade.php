@@ -74,21 +74,8 @@
     <!-- Modal for Camera -->
     <div id="cameraModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
-            <div class="relative">
-                <video id="cameraFeed" class="w-full h-full" autoplay></video>
-                <div id="cameraTypeLabel" class="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded">
-                    Front Camera
-                </div>
-            </div>
+            <video id="cameraFeed" class="w-full h-full" autoplay></video>
             <div class="flex justify-end mt-4">
-                <button id="switchCamera" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7C8 5.93913 8.42143 4.92172 9.17157 4.17157C9.92172 3.42143 10.9391 3 12 3C13.0609 3 14.0783 3.42143 14.8284 4.17157C15.5786 4.92172 16 5.93913 16 7H18L19 9H5L6 7H8Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 9V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V9" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14L12 17M12 17L15 14M12 17V11" />
-                    </svg>
-                    Flip Camera
-                </button>
                 <button id="captureImage" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600">Capture</button>
                 <button id="closeCamera" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
             </div>
@@ -854,171 +841,9 @@
         const captureImage = document.getElementById('captureImage');
         const cameraFeed = document.getElementById('cameraFeed');
         const cameraModal = document.getElementById('cameraModal');
-        const closeCamera = document.getElementById('closeCamera');
-        const switchCamera = document.getElementById('switchCamera');
-        const cameraTypeLabel = document.getElementById('cameraTypeLabel');
         const captureConfirmModal = document.getElementById('captureConfirmModal');
         const captureConfirmMessage = document.getElementById('captureConfirmMessage');
         const closeCaptureConfirm = document.getElementById('closeCaptureConfirm');
-
-        // Variables to track camera devices
-        let currentStream = null;
-        let availableCameras = [];
-        let currentCameraIndex = 0;
-        let isFrontCamera = true; // Track if we're using front or back camera
-
-        // Check if device has multiple cameras
-        async function getAvailableCameras() {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                return devices.filter(device => device.kind === 'videoinput');
-            } catch (error) {
-                console.error('Error enumerating devices:', error);
-                return [];
-            }
-        }
-
-        // Helper function to determine if a camera is front-facing
-        // This isn't 100% reliable but works for most mobile devices
-        function isFrontFacingCamera(label) {
-            const frontLabels = ['front', 'user', 'selfie', 'face'];
-            label = label.toLowerCase();
-            return frontLabels.some(term => label.includes(term));
-        }
-
-        // Function to start camera with specific constraints
-        async function startCamera(deviceId = null, preferFront = true) {
-            try {
-                // Stop any existing stream first
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                }
-
-                // Get all video devices first if we don't have them yet
-                if (availableCameras.length === 0) {
-                    availableCameras = await getAvailableCameras();
-                }
-
-                // Set constraints based on available deviceId
-                let constraints = {
-                    video: true,
-                    audio: false
-                };
-
-                // If we have deviceId, use it
-                if (deviceId) {
-                    constraints.video = { deviceId: { exact: deviceId } };
-                } 
-                // If on mobile and we have multiple cameras, try to choose based on preference
-                else if (availableCameras.length > 1 && !deviceId) {
-                    // Look for likely front/back cameras
-                    let frontCamera = null;
-                    let backCamera = null;
-                    
-                    for (const camera of availableCameras) {
-                        if (camera.label) {
-                            if (isFrontFacingCamera(camera.label)) {
-                                frontCamera = camera;
-                            } else {
-                                backCamera = camera;
-                            }
-                        }
-                    }
-                    
-                    // Choose the appropriate camera based on preference
-                    if (preferFront && frontCamera) {
-                        constraints.video = { deviceId: { exact: frontCamera.deviceId } };
-                        isFrontCamera = true;
-                    } else if (!preferFront && backCamera) {
-                        constraints.video = { deviceId: { exact: backCamera.deviceId } };
-                        isFrontCamera = false;
-                    } else if (frontCamera) {
-                        constraints.video = { deviceId: { exact: frontCamera.deviceId } };
-                        isFrontCamera = true;
-                    } else if (backCamera) {
-                        constraints.video = { deviceId: { exact: backCamera.deviceId } };
-                        isFrontCamera = false;
-                    }
-                    // If no identified cameras, fall back to default
-                }
-
-                // For iOS/Safari specific handling
-                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    if (preferFront) {
-                        constraints.video = { facingMode: 'user' };
-                        isFrontCamera = true;
-                    } else {
-                        constraints.video = { facingMode: 'environment' };
-                        isFrontCamera = false;
-                    }
-                }
-
-                // Get the stream
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                cameraFeed.srcObject = stream;
-                currentStream = stream;
-
-                // Update camera label
-                updateCameraLabel();
-
-                // Check available cameras after permissions granted
-                availableCameras = await getAvailableCameras();
-                
-                // Show/hide switch camera button based on available cameras
-                if (availableCameras.length > 1) {
-                    switchCamera.classList.remove('hidden');
-                    
-                    // Find index of current camera
-                    const currentTrack = stream.getVideoTracks()[0];
-                    const currentDeviceId = currentTrack.getSettings().deviceId;
-                    currentCameraIndex = availableCameras.findIndex(device => device.deviceId === currentDeviceId);
-                    if (currentCameraIndex === -1) currentCameraIndex = 0;
-                } else {
-                    switchCamera.classList.add('hidden');
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error accessing camera:', error);
-                captureConfirmMessage.textContent = 'Unable to access camera. Please check permissions.';
-                captureConfirmModal.classList.remove('hidden');
-                return false;
-            }
-        }
-
-        // Update camera type label based on current camera
-        function updateCameraLabel() {
-            if (currentStream) {
-                const videoTrack = currentStream.getVideoTracks()[0];
-                if (videoTrack) {
-                    const settings = videoTrack.getSettings();
-                    const label = videoTrack.label || '';
-
-                    // Set label text based on camera detection
-                    if (isFrontCamera || isFrontFacingCamera(label) || label.toLowerCase().includes('front')) {
-                        cameraTypeLabel.textContent = 'Front Camera';
-                    } else {
-                        cameraTypeLabel.textContent = 'Back Camera';
-                    }
-                }
-            }
-        }
-
-        // Open camera modal and initialize camera
-        if (openCamera) {
-            openCamera.addEventListener('click', async () => {
-                cameraModal.classList.remove('hidden');
-                await startCamera(null, true); // Start with front camera by default
-            });
-        }
-
-        // Switch between front and back cameras
-        if (switchCamera) {
-            switchCamera.addEventListener('click', async () => {
-                isFrontCamera = !isFrontCamera; // Toggle front/back preference
-                await startCamera(null, isFrontCamera);
-            });
-        }
 
         if (captureImage) {
             captureImage.addEventListener('click', () => {
@@ -1048,13 +873,11 @@
                             modalButton.classList.add('hidden');
                         } 
                         
-                        // Stop camera stream when we're done
                         if (cameraFeed.srcObject) {
                             const stream = cameraFeed.srcObject;
                             const tracks = stream.getTracks();
                             tracks.forEach(track => track.stop());
                             cameraFeed.srcObject = null;
-                            currentStream = null;
                         }
                         fetchImages(); // Using our updated fetchImages function will handle this correctly
                     })
@@ -1063,30 +886,8 @@
                         captureConfirmMessage.textContent = 'Failed to upload captured image.';
                         captureConfirmModal.classList.remove('hidden');
                         console.error('Error:', error);
-                        
-                        // Also stop camera stream on error
-                        if (cameraFeed.srcObject) {
-                            const stream = cameraFeed.srcObject;
-                            const tracks = stream.getTracks();
-                            tracks.forEach(track => track.stop());
-                            cameraFeed.srcObject = null;
-                            currentStream = null;
-                        }
                     });
                 }, 'image/png');
-            });
-        }
-
-        if (closeCamera) {
-            closeCamera.addEventListener('click', () => {
-                cameraModal.classList.add('hidden');
-                if (cameraFeed.srcObject) {
-                    const stream = cameraFeed.srcObject;
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                    cameraFeed.srcObject = null;
-                    currentStream = null;
-                }
             });
         }
 
