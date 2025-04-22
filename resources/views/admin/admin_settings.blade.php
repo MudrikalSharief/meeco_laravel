@@ -23,28 +23,80 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Password Requirements Table -->
-                <div class="space-y-4">
-                    <h3 class="font-medium text-gray-700">Account Passwords</h3>
+                <div class="space-y-2">
+                    <div class = 'flex w-full justify-between'>
+                        <h3 class="font-medium text-gray-700">Password Configurations</h3>
+                            <button id = 'editAccountPasswordsBtn' class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
+                                Edit
+                            </button>
+                    </div>
+                   <!--  Account Passwords Modal -->
                     <table class="w-full border-collapse">
                         <thead>
                             <tr class="border-b border-gray-200">
                                 <th class="text-left py-3 text-gray-600 font-medium"></th>
                                 <th class="text-center py-3 text-gray-600 font-medium">Users</th>
-                                <th class="text-center py-3 text-gray-600 font-medium">Admin</th>
+                                <th class="text-center py-3 text-gray-600 font-medium">Admins</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Characters</td>
-                                <td class="text-center py-3">8</td>
-                                <td class="text-center py-3">8</td>
+                                <td class="text-center py-3">
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5  ">
+                                            <input 
+                                                id='UserMinChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'UserMinCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
+                                <td class="text-center py-3">
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5">
+                                            <input 
+                                                id='AdminMinChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
                             </tr>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Special Characters</td>
-                                <td class="text-center py-3">2</td>
-                                <td class="text-center py-3">1</td>
+                                <td class="text-center py-3">
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5">
+                                            <input 
+                                                id='UserSpecChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'UserMinSpCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
+                                <td class="text-center py-3">
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5 max-w-24">
+                                            <input 
+                                                id='AdminSpecChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinSpCharBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
+                                </td>
                             </tr>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Numbers</td>
@@ -54,14 +106,30 @@
                             <tr>
                                 <td class="py-3 text-gray-600">Mix of Upper and Lower Case</td>
                                 <td class="text-center py-3">
-                                    <svg class="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5">
+                                            <input 
+                                                id='UserMinChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>  
+                                        <button id = 'UserMinNumBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
                                 </td>
                                 <td class="text-center py-3">
-                                    <svg class="w-5 h-5 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <p class = 'password_configurations'></p>
+                                    <form class = 'flex justify-center account-passwords hidden'>
+                                        <div class="w-5">
+                                            <input 
+                                                id='AdminMinChar'
+                                                type="number" 
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+                                        </div>
+                                        <button id = 'AdminMinNumBtn' type = 'submit' class = 'hidden'></button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>
