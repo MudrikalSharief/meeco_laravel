@@ -32,31 +32,14 @@
         <div id="imageContainer" class="mt-2 px-3 flex flex-wrap bg-white min-h-32 rounded-md border-gray-200 border"></div>
         <div id="imageNamesContainer" class="mt-2 px-3 flex flex-wrap"></div>
         
+        <!-- Analyze Graph Container -->
+        <h2 class="py-2 mt-4 text-gray-700 text-base font-medium">Analyze Graph</h2>
+        <div id="analyzeGraph" class="mt-2 px-3 py-4 bg-white min-h-40 rounded-md border-gray-200 border flex flex-wrap items-center">
+            <p class="text-gray-500 text-sm">No graph analysis available yet.</p>
+        </div>
+        
         <button id="extractTextButton" type="button" class="hidden  bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600" data-bs-toggle="modal" data-bs-target="#extractTextModal">Extract Text</button>
         
-        {{-- <!-- Modal -->
-        <div id="uploadModal" class="min-w-72 fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex  items-center justify-center">
-            <div class="bg-white rounded-lg shadow-lg   ">
-                <div class="flex justify-between items-center border-b px-4 py-2">
-                    <h5 class="text-lg font-semibold">Upload Images</h5>
-                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
-                </div>
-                <div class="p-4">
-                    <form id="uploadForm" action="{{ route('capture') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-4">
-                            <label for="images" class="block text-sm font-medium text-gray-700 mb-1">Choose Images</label>
-                            <input id="imageInput" type="file" name="images[]" class="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" multiple>
-                        </div>
-                    </form>
-                </div>
-                <div class="flex justify-end border-t px-4 py-2">
-                    <button class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600" id="cancelUpload">Cancel</button>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:hover:bg-blue-500" id="uploadButton">Upload</button>
-                </div>
-        </div>
-    </div> --}}
-
     <!-- Modal for Zoomed Image -->
     <div id="zoomModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px;">
@@ -233,12 +216,34 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const imageContainer = document.getElementById('imageContainer');
+        const analyzeGraph = document.getElementById('analyzeGraph');
         const modal = document.getElementById('dynamicModal');
         const modalTitle = document.getElementById('dynamicModal-title');
         const modalMessage = document.getElementById('dynamicModal-message');
         const modalButton = document.getElementById('dynamicModalButton');
         const topicsContainer = document.getElementById('topicsDropdownContainer');
         let subjectDropdownListenerAdded = false;
+        
+        // Add localStorage functions to persist image positions
+        function getAnalyzedImages() {
+            const analyzedImages = localStorage.getItem('analyzedImages');
+            return analyzedImages ? JSON.parse(analyzedImages) : [];
+        }
+        
+        function saveAnalyzedImage(filePath) {
+            const analyzedImages = getAnalyzedImages();
+            if (!analyzedImages.includes(filePath)) {
+                analyzedImages.push(filePath);
+                localStorage.setItem('analyzedImages', JSON.stringify(analyzedImages));
+            }
+        }
+        
+        function removeAnalyzedImage(filePath) {
+            const analyzedImages = getAnalyzedImages();
+            const updatedImages = analyzedImages.filter(path => path !== filePath);
+            localStorage.setItem('analyzedImages', JSON.stringify(updatedImages));
+        }
+        
         // Function to show the dynamic modal
         function showModal(title = '', message = '', titleColor = '', buttonText = '') {
             modalTitle.textContent = title;
@@ -254,13 +259,193 @@
         });
 
         const extractTextButton = document.getElementById('extractTextButton');
-            // Toggle the visibility of the extract button
+        // Toggle the visibility of the extract button
         function toggleExtractButton() {
             if (imageContainer.children.length > 0 ) {
                 extractTextButton.classList.remove('hidden');
             } else {
                 extractTextButton.classList.add('hidden');
+            }
         }
+
+        // Function to move image to analyze graph container
+        function moveToAnalyzeGraph(imgWrapper) {
+            // First remove any placeholder text in the analyze graph container
+            if (analyzeGraph.querySelector('p.text-gray-500')) {
+                analyzeGraph.innerHTML = '';
+            }
+            
+            // Get file path
+            const img = imgWrapper.querySelector('img');
+            const filePath = img.getAttribute('data-file-path');
+            
+            // Make server request to move the file to graph folder
+            fetch('/capture/move-to-graph', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ filePath: filePath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the image path if it changed on server
+                    if (data.newPath) {
+                        img.setAttribute('data-file-path', data.newPath);
+                        img.src = `${window.location.origin}/storage/${data.newPath}`;
+                    }
+                    
+                    // Instead of trying to manually move the DOM elements,
+                    // refresh both containers using the API
+                    fetchImages();
+                } else {
+                    showModal('Error', data.message || 'Failed to move image to graph container.', 'text-red-500', 'OK');
+                    console.error('Error details:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error moving image:', error);
+                showModal('Error', 'An error occurred while moving the image.', 'text-red-500', 'OK');
+            });
+        }
+
+        // Function to return image from analyze graph to image container
+        function returnToImageContainer(imgWrapper) {
+            // Get file path
+            const img = imgWrapper.querySelector('img');
+            const filePath = img.getAttribute('data-file-path');
+            
+            // Make server request to move the file back to image container folder
+            fetch('/capture/move-to-container', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ filePath: filePath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the image path if it changed on server
+                    if (data.newPath) {
+                        img.setAttribute('data-file-path', data.newPath);
+                        img.src = `${window.location.origin}/storage/${data.newPath}`;
+                    }
+                    
+                    // Instead of trying to manually move the DOM elements,
+                    // refresh both containers using the API
+                    fetchImages();
+                } else {
+                    showModal('Error', data.message || 'Failed to move image back to container.', 'text-red-500', 'OK');
+                    console.error('Error details:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error moving image:', error);
+                showModal('Error', 'An error occurred while moving the image.', 'text-red-500', 'OK');
+            });
+        }
+
+        // Updated fetch and display images function
+        function fetchImages() {
+            // Fetch images from both container and graph folders
+            Promise.all([
+                fetch('/capture/container-images'),
+                fetch('/capture/graph-images')
+            ])
+            .then(responses => Promise.all(responses.map(response => response.json())))
+            .then(([containerData, graphData]) => {
+                // Handle container images
+                imageContainer.innerHTML = '';
+                if (containerData.images && containerData.images.length > 0) {
+                    containerData.images.forEach((url, index) => {
+                        // Extract clean file path - only the part after /storage/
+                        const filePath = url.split('/storage/')[1];
+                        
+                        const imgWrapper = document.createElement('div');
+                        imgWrapper.className = 'm-2 img-wrapper relative';
+                        
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'Image ' + (index + 1);
+                        img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                        img.setAttribute('data-file-path', filePath);
+                        
+                        const analyzeIcon = document.createElement('span');
+                        analyzeIcon.className = 'analyze-icon absolute py-1 px-2 top-0 left-0 bg-blue-500 hover:bg-blue-700 text-white cursor-pointer';
+                        analyzeIcon.textContent = '→';
+                        analyzeIcon.title = 'Move to Analyze Graph';
+                        
+                        const deleteIcon = document.createElement('span');
+                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer';
+                        deleteIcon.textContent = '×';
+                        
+                        const name = document.createElement('p');
+                        name.textContent = `Image ${index + 1}`;
+                        name.className = 'text-center';
+                        
+                        imgWrapper.appendChild(img);
+                        imgWrapper.appendChild(analyzeIcon);
+                        imgWrapper.appendChild(deleteIcon);
+                        imgWrapper.appendChild(name);
+                        imageContainer.appendChild(imgWrapper);
+                    });
+                } else {
+                    const message = document.createElement('p');
+                    message.classList.add('text-gray-500', 'text-sm', 'mt-2', 'text-center', 'w-full', 'p-4');
+                    message.textContent = 'No images uploaded yet.';
+                    imageContainer.appendChild(message);
+                }
+                
+                // Handle graph images
+                analyzeGraph.innerHTML = '';
+                if (graphData.images && graphData.images.length > 0) {
+                    graphData.images.forEach((url, index) => {
+                        // Extract clean file path - only the part after /storage/
+                        const filePath = url.split('/storage/')[1];
+                        
+                        const imgWrapper = document.createElement('div');
+                        imgWrapper.className = 'm-2 img-wrapper relative';
+                        
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'Graph Image ' + (index + 1);
+                        img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
+                        img.setAttribute('data-file-path', filePath);
+                        
+                        const returnIcon = document.createElement('span');
+                        returnIcon.className = 'return-icon absolute py-1 px-2 top-0 left-0 bg-green-500 hover:bg-green-700 text-white cursor-pointer';
+                        returnIcon.textContent = '←';
+                        returnIcon.title = 'Return to Images';
+                        
+                        const deleteIcon = document.createElement('span');
+                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer';
+                        deleteIcon.textContent = '×';
+                        
+                        const name = document.createElement('p');
+                        name.textContent = `Graph ${index + 1}`;
+                        name.className = 'text-center';
+                        
+                        imgWrapper.appendChild(img);
+                        imgWrapper.appendChild(returnIcon);
+                        imgWrapper.appendChild(deleteIcon);
+                        imgWrapper.appendChild(name);
+                        analyzeGraph.appendChild(imgWrapper);
+                    });
+                } else {
+                    const message = document.createElement('p');
+                    message.className = 'text-gray-500 text-sm text-center w-full';
+                    message.textContent = 'No graph analysis available yet.';
+                    analyzeGraph.appendChild(message);
+                }
+                
+                // Toggle the extract button based on whether there are images in the container
+                toggleExtractButton();
+            })
+            .catch(error => console.error('Error fetching images:', error));
         }
 
         if (extractTextButton) {
@@ -469,41 +654,7 @@
                         if (data.success) {
                             uploadConfirmModal.classList.remove('hidden'); // Show the upload confirmation modal
                             
-                            fetch('/capture/images')
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.images && data.images.length > 0) {
-                                    imageContainer.innerHTML = '';
-                                    data.images.forEach((url, index) => {
-                                        const imgWrapper = document.createElement('div');
-                                        imgWrapper.className = 'm-2 img-wrapper relative';
-                                        
-                                        const img = document.createElement('img');
-                                        img.src = url;
-                                        img.alt = 'Uploaded Image';
-                                        img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
-                                        img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
-                                        
-                                        const deleteIcon = document.createElement('span');
-                                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer';
-                                        deleteIcon.textContent = '×';
-                                        
-                                        const name = document.createElement('p');
-                                        name.textContent = `Image ${index + 1}`;
-                                        name.className = 'text-center';
-                                        
-                                        imgWrapper.appendChild(img);
-                                        imgWrapper.appendChild(deleteIcon);
-                                        imgWrapper.appendChild(name);
-                                        imageContainer.appendChild(imgWrapper);
-                                    });
-                                    toggleExtractButton();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error))
-                            .finally(() => {
-                                uploaded.disabled = false;
-                            });
+                            fetchImages(); // Updated function to fetch images from separate folders
                         } else {
                             if (data.route) {
                                 showModal('No Subscription', data.message, 'text-red-500', 'View Promos');
@@ -545,137 +696,146 @@
             });
         }
 
-        // Fetch and display previously uploaded images
-        function fetchImages() {
-            fetch('/capture/images')
-            .then(response => response.json())
-            .then(data => {
-                if (data.images && data.images.length > 0) {
-                    imageContainer.innerHTML = '';
-                    data.images.forEach((url, index) => {
-                        const imgWrapper = document.createElement('div');
-                        imgWrapper.className = 'm-2 img-wrapper relative';
+        fetchImages();
 
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = 'Uploaded Image';
-                        img.className = 'w-28 h-32 object-cover border border-gray-300 rounded cursor-pointer';
-                        img.setAttribute('data-file-path', url.replace(`${window.location.origin}/storage/uploads/`, ''));
-
-                        const deleteIcon = document.createElement('span');
-                        deleteIcon.className = 'delete-icon absolute py-1 px-2 top-0 right-0 bg-red-500 hover:bg-red-700 text-white cursor-pointer';
-                        deleteIcon.textContent = '×';
-
-                        const name = document.createElement('p');
-                        name.textContent = `Image ${index + 1}`;
-                        name.className = 'text-center';
-
-                        imgWrapper.appendChild(img);
-                        imgWrapper.appendChild(deleteIcon);
-                        imgWrapper.appendChild(name);
-                        imageContainer.appendChild(imgWrapper);
-                    });
-                    toggleExtractButton();
-                } else {
-                    const message = document.createElement('p');
-                    message.classList.add('text-gray-500', 'text-sm','mt-2');
-                    message.textContent = 'No images uploaded yet.';
-                    imageContainer.appendChild(message);
-                }
-            })
-            .catch(error => console.error('Error fetching uploaded images:', error));
-        }
-
-           fetchImages();
-
-
-        // Handle image deletion
+        // Handle image deletion and analyze button clicks
         const deleteConfirmModal = document.getElementById('deleteConfirmModal');
         const cancelDelete = document.getElementById('cancelDelete');
         const confirmDelete = document.getElementById('confirmDelete');
         let imgWrapperToDelete = null;
 
- // Handle image deletion
-if (imageContainer) {
-    imageContainer.addEventListener('click', function (event) {
-        if (event.target.classList.contains('delete-icon')) {
-            imgWrapperToDelete = event.target.closest('.img-wrapper');
-            if (imgWrapperToDelete) {
-                const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
-                fetch('/capture/delete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ filePath: 'uploads/' + filePath })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        
-                            
-                        if (imgWrapperToDelete && imgWrapperToDelete.parentNode === imageContainer) {
-                            imageContainer.removeChild(imgWrapperToDelete);
-                        }
-                        
-                        toggleExtractButton();
-
-                        // Check if the container is now empty
-                        if (imageContainer.querySelectorAll('.img-wrapper').length === 0) {
-                            // Clear the container first to avoid any issues
-                            imageContainer.innerHTML = '';
-                            
-                            const message = document.createElement('p');
-                            message.textContent = 'No images uploaded yet.';
-                            message.className = 'text-gray-500 mt-2 text-sm text-center w-full p-4';
-                            imageContainer.appendChild(message);
-                        }
-                    } else {
-                        alert('Failed to delete image.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                })
-                .finally(() => {
-                    deleteConfirmModal.classList.add('hidden');
-                    imgWrapperToDelete = null;
-                });
-            }
-        }
-    });
-}
-
-        // Handle zooming of images
-        const zoomModal = document.getElementById('zoomModal');
-        const zoomedImage = document.getElementById('zoomedImage');
-
-        // if (imageContainer) {
-        //     imageContainer.addEventListener('click', (event) => {
-        //         if (event.target.tagName === 'IMG') {
-        //             zoomedImage.src = event.target.src;
-        //             zoomModal.classList.remove('hidden');
-        //         }
-        //     });
-        // }
-
-        // Use this:
+        // Handle image deletion and analyze button clicks
         if (imageContainer) {
-            imageContainer.addEventListener('click', (event) => {
-                if (event.target.tagName === 'IMG') {
+            imageContainer.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-icon')) {
+                    imgWrapperToDelete = event.target.closest('.img-wrapper');
+                    if (imgWrapperToDelete) {
+                        const filePath = imgWrapperToDelete.querySelector('img').getAttribute('data-file-path');
+                        fetch('/capture/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                
+                                    
+                                if (imgWrapperToDelete && imgWrapperToDelete.parentNode === imageContainer) {
+                                    imageContainer.removeChild(imgWrapperToDelete);
+                                }
+                                
+                                toggleExtractButton();
+
+                                // Check if the container is now empty
+                                if (imageContainer.querySelectorAll('.img-wrapper').length === 0) {
+                                    // Clear the container first to avoid any issues
+                                    imageContainer.innerHTML = '';
+                                    
+                                    const message = document.createElement('p');
+                                    message.textContent = 'No images uploaded yet.';
+                                    message.className = 'text-gray-500 mt-2 text-sm text-center w-full p-4';
+                                    imageContainer.appendChild(message);
+                                }
+                            } else {
+                                alert('Failed to delete image.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        })
+                        .finally(() => {
+                            deleteConfirmModal.classList.add('hidden');
+                            imgWrapperToDelete = null;
+                        });
+                    }
+                } else if (event.target.classList.contains('analyze-icon')) {
+                    // New analyze functionality
+                    const imgWrapper = event.target.closest('.img-wrapper');
+                    if (imgWrapper) {
+                        moveToAnalyzeGraph(imgWrapper);
+                    }
+                } else if (event.target.tagName === 'IMG') {
                     window.open(event.target.src, '_blank');
                 }
             });
         }
 
-        // if (zoomModal) {
-        //     zoomModal.addEventListener('click', (event) => {
-        //         if (event.target === zoomModal) {
-        //             zoomModal.classList.add('hidden');
-        //         }
-        //     });
-        // }
+        // Handle return button clicks in analyze graph
+        if (analyzeGraph) {
+            analyzeGraph.addEventListener('click', function (event) {
+                if (event.target.classList.contains('return-icon')) {
+                    const imgWrapper = event.target.closest('.img-wrapper');
+                    if (imgWrapper) {
+                        returnToImageContainer(imgWrapper);
+                    }
+                } else if (event.target.classList.contains('delete-icon')) {
+                    // Allow deletion from analyze graph too
+                    const imgWrapper = event.target.closest('.img-wrapper');
+                    if (imgWrapper) {
+                        const filePath = imgWrapper.querySelector('img').getAttribute('data-file-path');
+                        fetch('/capture/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ filePath: 'uploads/' + filePath })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                analyzeGraph.removeChild(imgWrapper);
+                                
+                                // Check if the container is now empty
+                                if (analyzeGraph.querySelectorAll('.img-wrapper').length === 0) {
+                                    analyzeGraph.innerHTML = '<p class="text-gray-500 text-sm">No graph analysis available yet.</p>';
+                                }
+                            } else {
+                                alert('Failed to delete image.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }
+                } else if (event.target.tagName === 'IMG') {
+                    window.open(event.target.src, '_blank');
+                }
+            });
+        }
+
+        // When an image is deleted, we need to update localStorage too
+        const originalDeleteHandler = imageContainer.onclick;
+        imageContainer.onclick = function(event) {
+            if (event.target.classList.contains('delete-icon')) {
+                const imgWrapper = event.target.closest('.img-wrapper');
+                if (imgWrapper) {
+                    const filePath = imgWrapper.querySelector('img').getAttribute('data-file-path');
+                    // Remove from analyzed images if it exists
+                    removeAnalyzedImage(filePath);
+                }
+            }
+            // Let the original handler run
+            if (typeof originalDeleteHandler === 'function') {
+                originalDeleteHandler.apply(this, arguments);
+            }
+        };
+
+        // Also handle deletion from analyze graph container
+        analyzeGraph.addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-icon')) {
+                const imgWrapper = event.target.closest('.img-wrapper');
+                if (imgWrapper) {
+                    const filePath = imgWrapper.querySelector('img').getAttribute('data-file-path');
+                    // Remove from analyzed images if it exists
+                    removeAnalyzedImage(filePath);
+                }
+            }
+        });
 
         // Handle image capture from camera
         const captureImage = document.getElementById('captureImage');
@@ -719,7 +879,7 @@ if (imageContainer) {
                             tracks.forEach(track => track.stop());
                             cameraFeed.srcObject = null;
                         }
-                        fetchImages(); // Refresh the image list
+                        fetchImages(); // Using our updated fetchImages function will handle this correctly
                     })
                     .catch(error => {
                         cameraModal.classList.add('hidden');
@@ -744,7 +904,7 @@ if (imageContainer) {
                     noTopicsMessage.classList.add('hidden');
                 } else if (!topicDropdown.value) {
                     subjectReminder.classList.add('hidden');
-                    noTopicsMessage.classList.remove('hidden');
+                    noTopicsMessage.classList.add('hidden');
                 } else {
                     subjectReminder.classList.add('hidden');
                     noTopicsMessage.classList.add('hidden');

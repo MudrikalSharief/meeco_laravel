@@ -53,7 +53,10 @@ Route::middleware('auth')->group(function (){
     Route::get('/capture/images', [IMAGEcontroller::class, 'getUploadedImages'])->name('capture.images');
     Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
     Route::get('/capture/check', [IMAGEcontroller::class, 'checkimagesize'])->name('capture.image.check');
-
+    Route::post('/capture/move-to-graph', [App\Http\Controllers\CaptureController::class, 'moveToGraph']);
+    Route::post('/capture/move-to-container', [App\Http\Controllers\CaptureController::class, 'moveToContainer']);
+    Route::get('/capture/container-images', [App\Http\Controllers\CaptureController::class, 'getContainerImages']);
+    Route::get('/capture/graph-images', [App\Http\Controllers\CaptureController::class, 'getGraphImages']);
 
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
