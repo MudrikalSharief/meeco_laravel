@@ -53,7 +53,10 @@ Route::middleware('auth')->group(function (){
     Route::get('/capture/images', [IMAGEcontroller::class, 'getUploadedImages'])->name('capture.images');
     Route::post('/capture/delete', [IMAGEcontroller::class, 'deleteImage'])->name('capture.delete');
     Route::get('/capture/check', [IMAGEcontroller::class, 'checkimagesize'])->name('capture.image.check');
-
+    Route::post('/capture/move-to-graph', [App\Http\Controllers\CaptureController::class, 'moveToGraph']);
+    Route::post('/capture/move-to-container', [App\Http\Controllers\CaptureController::class, 'moveToContainer']);
+    Route::get('/capture/container-images', [App\Http\Controllers\CaptureController::class, 'getContainerImages']);
+    Route::get('/capture/graph-images', [App\Http\Controllers\CaptureController::class, 'getGraphImages']);
 
     Route::view('/subject', 'posts.subject')->name('subject');
     Route::get('/subjects', [SubjectController::class, 'getSubjects'])->name('subjects.list');
@@ -87,6 +90,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/quizzes', [ReviewerController::class, 'getQuizList'])->name('quizzes');
     Route::view('/quiz_list', 'posts.quiz_list')->name('quiz.list');
     Route::get('/quizzes-by-subject', [ReviewerController::class, 'getQuizzesGroupedBySubject'])->name('quizzes.by.subject');
+    Route::get('/quizzes-by-topic', [ReviewerController::class, 'getQuizzesGroupedByTopic'])->name('quizzes.by.topic');
 
     //contact us
     Route::view('/contact', 'Contact.contact')->name('contact');

@@ -17,11 +17,19 @@ class IMAGEcontroller extends Controller
         $imageLimit = 5;
         
         $currentImageCount = 0;
-        // Get the current number of uploaded images
-        $directory = storage_path('app/public/uploads/image' . $userid);
-        if (file_exists($directory)) {
-            $files = array_diff(scandir($directory), ['.', '..']);
-            $currentImageCount = count($files);
+
+        // Get the current number of uploaded images in the first directory
+        $directory1 = storage_path('app/public/uploads/user_' . $userid . '/imagecontainer');
+        if (file_exists($directory1)) {
+            $files1 = array_diff(scandir($directory1), ['.', '..']);
+            $currentImageCount += count($files1);
+        }
+
+        // Get the current number of uploaded images in the second directory
+        $directory2 = storage_path('app/public/uploads/user_' . $userid . '/graph');
+        if (file_exists($directory2)) {
+            $files2 = array_diff(scandir($directory2), ['.', '..']);
+            $currentImageCount += count($files2);
         }
         
         // Check if there are no images

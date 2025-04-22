@@ -10,7 +10,7 @@ class OpenAIHelper
     /**
      * Get the OpenAI API key with proper error handling
      * 
-     * @return string|null
+     * @return string
      * @throws Exception If API key is not set
      */
     public static function getApiKey()
