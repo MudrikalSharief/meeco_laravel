@@ -18,6 +18,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdminLogController;
 use App\Http\Controllers\AdminActionController;
+use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\ProfileController;
