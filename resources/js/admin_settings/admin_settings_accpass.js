@@ -20,4 +20,18 @@ function allowEditAPSettings(APforms, APtable){
     
 };
 
-export { allowEditAPSettings };
+function renderPasswordConfigurations(){
+
+    const passwordConfigurations = APtable.querySelectorAll('.password_configurations');
+
+    fetch('/admin/pass-configurations',{
+        method:'GET',
+    })
+    .then(res => res.json())
+    .then(data =>{ console.log(data.configurations)
+
+    });
+
+}
+
+export { allowEditAPSettings, renderPasswordConfigurations };

@@ -33,4 +33,12 @@ class Settings extends Model
            return $state;
 
     }
+
+    static function fetchPasswordConfigurations(){
+
+        $configurations = Settings::first();
+        
+        return $configurations;
+
+    }
 }

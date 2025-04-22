@@ -18,7 +18,7 @@
                 </div>
                 <div class="space-y-2">
                     <div class = 'flex w-full justify-between'>
-                        <h3 class="font-medium text-gray-700">Account Passwords</h3>
+                        <h3 class="font-medium text-gray-700">Password Configurations</h3>
                             <button id = 'editAccountPasswordsBtn' class="p-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
                                 Edit
                             </button>
@@ -29,17 +29,18 @@
                             <tr class="border-b border-gray-200">
                                 <th class="text-left py-3 text-gray-600 font-medium"></th>
                                 <th class="text-center py-3 text-gray-600 font-medium">Users</th>
-                                <th class="text-center py-3 text-gray-600 font-medium">Admin</th>
+                                <th class="text-center py-3 text-gray-600 font-medium">Admins</th>
                             </tr>
                         </thead>
                         <tbody id = 'APtable'>
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Characters</td>
                                 <td class="text-center py-3">
-                                    <p>8</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5  ">
                                             <input 
+                                                id='UserMinChar'
                                                 type="number" 
                                                 class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
@@ -48,12 +49,13 @@
                                     </form>
                                 </td>
                                 <td class="text-center py-3">
-                                    <p>8</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5">
                                             <input 
+                                                id='AdminMinChar'
                                                 type="number" 
-                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
                                         </div>
                                         <button id = 'AdminMinCharBtn' type = 'submit' class = 'hidden'></button>
@@ -63,24 +65,26 @@
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Special Characters</td>
                                 <td class="text-center py-3">
-                                    <p>2</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5">
                                             <input 
+                                                id='UserSpecChar'
                                                 type="number" 
-                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
                                         </div>
                                         <button id = 'UserMinSpCharBtn' type = 'submit' class = 'hidden'></button>
                                     </form>
                                 </td>
                                 <td class="text-center py-3">
-                                    <p>1</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5 max-w-24">
                                             <input 
+                                                id='AdminSpecChar'
                                                 type="number" 
-                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
                                         </div>
                                         <button id = 'AdminMinSpCharBtn' type = 'submit' class = 'hidden'></button>
@@ -90,24 +94,26 @@
                             <tr class="border-b border-gray-100">
                                 <td class="py-3 text-gray-600">Minimum Numbers</td>
                                 <td class="text-center py-3">
-                                    <p>2</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5">
                                             <input 
+                                                id='UserMinChar'
                                                 type="number" 
-                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
                                         </div>  
                                         <button id = 'UserMinNumBtn' type = 'submit' class = 'hidden'></button>
                                     </form>
                                 </td>
                                 <td class="text-center py-3">
-                                    <p>1</p>
+                                    <p class = 'password_configurations'></p>
                                     <form class = 'flex justify-center account-passwords hidden'>
-                                        <div class="w-auto max-w-24">
+                                        <div class="w-5">
                                             <input 
+                                                id='AdminMinChar'
                                                 type="number" 
-                                                class="text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                class="w-full text-center focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                             >
                                         </div>
                                         <button id = 'AdminMinNumBtn' type = 'submit' class = 'hidden'></button>

@@ -320,10 +320,14 @@ Route::middleware(['auth:admin'])->group(function () {
         ->name('admin.statistics.monthly-excel')
         ->middleware(['auth:admin']);
 });
+
    //Settings Route:
    Route::view('/admin/settings', 'admin.admin_settings')->name('admin.settings');
+
    Route::post('/admin/2f-auth-state', [SettingsController::class, 'toggle2FactorAuthState'])->name('admin.toggle-2f-auth-state');
    Route::get('/admin/2f-auth-state', [SettingsController::class, 'get2FactorAuthState'])->name('admin.get-2f-auth-state');
+
+   Route::get('/admin/pass-configurations', [SettingsController::class, 'getPasswordConfigurations'])->name('admin.get-pass-configurations');
 
 
 

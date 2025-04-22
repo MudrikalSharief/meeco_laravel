@@ -1,8 +1,9 @@
 import { render2FAuthToggleState, toggle2FAuthState } from './admin_settings_tfauth.js';
 import { openThemesModal, setTheme, closeThemesModal } from './admin_settings_theme.js';
-import { allowEditAPSettings } from './admin_settings_accpass.js';
+import { allowEditAPSettings, renderPasswordConfigurations } from './admin_settings_accpass.js';
 
 render2FAuthToggleState();
+renderPasswordConfigurations();
 
 const tfauthBtn = document.getElementById('authBtn');
 

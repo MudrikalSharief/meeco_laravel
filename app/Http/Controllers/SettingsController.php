@@ -25,6 +25,15 @@ class SettingsController extends Controller{
 
     }
 
+    function getPasswordConfigurations(){
+
+        $configurations = Settings::fetchPasswordConfigurations();
+
+        return response()->json([
+            'configurations'=>$configurations
+        ]);
+        
+    }
 }
 
 

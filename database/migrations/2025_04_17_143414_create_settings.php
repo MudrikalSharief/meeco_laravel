@@ -15,6 +15,12 @@ return new class extends Migration
         Schema::create('settings', function (Blueprint $table) {
             $table->id('id');
             $table->enum('tf_auth_state', ['on', 'off'])->default('off');
+            $table->integer('user_min_char')->default(0);
+            $table->integer('admin_min_char')->default(0);
+            $table->integer('user_spec_char')->default(0);
+            $table->integer('admin_spec_char')->default(0);
+            $table->integer('user_min_num')->default(0);
+            $table->integer('admin_min_num')->default(0);
             $table->timestamp('updated_at')->useCurrent();
         });
     }
