@@ -5,9 +5,8 @@ async function render2FAuthToggleState(){
         method: 'GET'
     })
     .then(res => res.json())
-    .then(data =>{
-        toggle2FAuthStateBtn(data);
-    });
+    .then(data => toggle2FAuthStateBtn(data)
+    );
 
 }
 

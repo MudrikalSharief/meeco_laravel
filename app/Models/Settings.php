@@ -36,7 +36,7 @@ class Settings extends Model
 
     static function fetchPasswordConfigurations(){
 
-        $configurations = Settings::first();
+        $configurations = Settings::select('user_min_char', 'admin_min_char', 'user_spec_char', 'admin_spec_char', 'user_min_num', 'admin_min_num')->get();
         
         return $configurations;
 
