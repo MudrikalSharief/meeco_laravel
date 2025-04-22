@@ -1,8 +1,5 @@
 function allowEditAPSettings(APforms, APtable){
 
-    console.log(APforms, APtable);
-
-
     const paragraphs = APtable.querySelectorAll('p');
     paragraphs.forEach(p => {
 
@@ -33,6 +30,7 @@ function renderPasswordConfigurations(){
 function assignPasswordConfigurations(data){
 
     const passwordConfigurations = APtable.querySelectorAll('.password_configurations');
+
     const configArray = Object.values(data.configurations[0]);
 
     let i = 0;
@@ -40,10 +38,11 @@ function assignPasswordConfigurations(data){
     passwordConfigurations.forEach(configurations =>{
 
         configurations.textContent = configArray[i];
-
+    
         i++;
 
     })
+
 
 }
 
