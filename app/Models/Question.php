@@ -28,6 +28,8 @@ class Question extends Model
         'question_title',
         'number_of_question',
         'score',
+        'high_score',
+        'timer_result',
     ];
 
     // Define the relationship with the User model

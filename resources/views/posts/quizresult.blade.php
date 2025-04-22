@@ -48,6 +48,24 @@
                 });
             }
             clearQuizData(); // Clear the quiz data
+
+            // Format timer_result into a more readable format (1m 3s)
+            function formatTime(timeString) {
+                if (!timeString) return "0s";
+                
+                // Parse the HH:MM:SS format
+                const parts = timeString.split(':');
+                const hours = parseInt(parts[0]);
+                const minutes = parseInt(parts[1]);
+                const seconds = parseInt(parts[2]);
+                
+                let result = '';
+                if (hours > 0) result += `${hours}h `;
+                if (minutes > 0 || hours > 0) result += `${minutes}m `;
+                result += `${seconds}s`;
+                
+                return result.trim();
+            }
             
             // this will go to the reviewer page
             const urlParams = new URLSearchParams(window.location.search);
@@ -107,23 +125,51 @@
                         quizInfoDiv.id = 'quiz_info';
                         quizInfoDiv.classList.add('w-full', 'max-w-2xl');
                         quizInfoDiv.innerHTML = `
-                            <h1 id="backbutton" class="pt-2 cursor-pointer text-sm text-blue-600 font pb-2 align-middle"><span>&#129120</span> Quiz Information</h1>
-                            <div class="flex justify-between mb-2">
-                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Quiz Name<br></span> ${data.question.question_title}</p>
-                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Quiz Type<br></span> ${data.question.question_type}</p>
+                            <div class="bg-white rounded-lg shadow-sm">
+                                <!-- Header with back button -->
+                                <div class="border-b border-gray-100 px-4 py-2">
+                                    <h1 id="backbutton" class="cursor-pointer text-blue-600 text-sm font-medium flex items-center">
+                                        <span class="mr-1">&#129120;</span> Back to Quizzes
+                                    </h1>
+                                </div>
+                                
+                                <!-- Quiz title and info -->
+                                <div class="px-4 py-3">
+                                    <div class="mb-2">
+                                        <h2 class="text-lg font-bold text-gray-800">${data.question.question_title}</h2>
+                                        <p class="text-xs text-gray-500">${data.question.question_type} Quiz</p>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500">Questions:</span>
+                                            <span class="font-medium">${data.question.number_of_question}</span>
+                                        </div>
+                                        
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500">High Score:</span>
+                                            <span class="font-medium text-green-600">${data.question.high_score} / ${data.question.number_of_question}</span>
+                                        </div>
+                                        
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500">Recent Score:</span>
+                                            <span class="font-medium text-blue-600">${data.question.score} / ${data.question.number_of_question}</span>
+                                        </div>
+                                        
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500">Time:</span>
+                                            <span class="font-medium text-orange-500">${formatTime(data.question.timer_result)}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex justify-between">
-                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Question Count<br></span> ${data.question.number_of_question}</p>
-                                <p class="text-sm w-full font-semibold "><span class=" text-gray-600 font-normal">Score<br></span> ${data.question.score} / ${data.question.number_of_question}</p>
-                            </div>
-                            <p class="mt-3 "><span class="text-sm text-blue-600">Start Quiz Now!</span></p>
                         `;
                         opened_quizz_holder.appendChild(quizInfoDiv);
 
                         // Create the start quiz button
                         const startQuizButton = document.createElement('button');
                         startQuizButton.id = data.question.question_id;
-                        startQuizButton.classList.add('startQuiz','bg-blue-500', 'mt-2', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'hover:bg-blue-600');
+                        startQuizButton.classList.add('startQuiz', 'bg-blue-500', 'w-full', 'text-white', 'font-medium', 'py-2', 'rounded', 'mt-2', 'hover:bg-blue-600', 'transition');
                         startQuizButton.textContent = 'Start Quiz';
                         opened_quizz_holder.appendChild(startQuizButton);
                     } else {

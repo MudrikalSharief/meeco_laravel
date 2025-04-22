@@ -170,6 +170,7 @@ class QuizController extends Controller
         
         $validatedData = $request->validate([
             'questionId' => 'required|integer',
+        
         ]);
         
         $questionId = $validatedData['questionId'];
@@ -274,8 +275,24 @@ class QuizController extends Controller
         }
 
         Question::where('question_id', $questionId)->update(['score' => $score]);
+        Question::where('question_id', $questionId)
+                ->where('high_score', '<', $score)
+                ->update(['high_score' => $score]);
+
+        // Update timer_result only if it exists in the request
+        if ($request->has('timeResult')) {
+            Question::where('question_id', $questionId)
+                ->update(['timer_result' => $request->timeResult]);
+        }
         
-        return response()->json(['success' => true, 'question_id' => $questionId, 'request' => $request->all()]);
+        $question = Question::find(id: $questionId);
+        if ($question) {
+            $question->score = $score;
+            $question->save();
+        } else {
+            return response()->json(['success' => false, 'message' => 'Question not found']);
+        }
+        return response()->json(['success' => true, 'question_id' => $questionId,'score' => $score, 'request' => $request->all()]);
     }
     
     /**

@@ -92,6 +92,8 @@ return new class extends Migration
             $table->string('question_title');
             $table->integer('number_of_question');
             $table->integer('score')->default(0);
+            $table->integer('high_score')->default(0);
+            $table->time('timer_result')->default('00:00:00');
             $table->timestamps();
         });
         

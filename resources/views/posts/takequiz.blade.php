@@ -2,6 +2,12 @@
 
     <div class=" z-50 sticky top-12 bg-white px-6 py-3 w-full shadow-lg flex items-center justify-center">
         <p id="title" class=" text-blue-500 w-full max-w-2xl items-center rounded-e-lg rounded-b-lg  py-1"></p>
+        <div class="timer-container bg-orange-50 border-l border-orange-200 px-3 py-1 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-orange-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-orange-500 text-sm">Timer: <span id="timer" class="font-semibold">00:00</span></p>
+        </div>
     </div>
     <div class="max-w-2xl h-full mx-auto bg-white rounded-lg">
         
@@ -9,6 +15,7 @@
 
                 <div class="quiz-container bg-white text-sm px-5 pt-5 pb-3 ">
                     <form id="quizForm" method="POST">
+                        @csrf
                         <!-- Questions will be dynamically inserted here -->
                     </form>
                     <button id="submitQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Quiz</button>
@@ -19,6 +26,79 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Timer variables
+            let seconds = 0;
+            let timerInterval;
+            const timerDisplay = document.getElementById('timer');
+            
+            // Generate a unique session ID for this page visit
+            const pageSessionId = Date.now().toString();
+            
+            // Start the timer
+            function startTimer(quizId) {
+                // Get the last page action (refresh or navigate)
+                const lastAction = sessionStorage.getItem('lastQuizPageAction');
+                const lastQuizId = localStorage.getItem('currentQuizId');
+                const quizStartTime = localStorage.getItem('quizStartTime');
+                const lastPageSession = sessionStorage.getItem('quizPageSession');
+                
+                // Clear the page action marker
+                sessionStorage.removeItem('lastQuizPageAction');
+                
+                // Set current session ID
+                sessionStorage.setItem('quizPageSession', pageSessionId);
+                
+                // Check if this is a refresh (same session) or navigation (new session)
+                const isRefresh = lastPageSession && lastAction === 'refresh';
+                const isNewQuiz = lastQuizId !== quizId.toString();
+                
+                // Reset timer if back button was used or if it's a different quiz
+                if ((!isRefresh || isNewQuiz) && lastAction !== 'refresh') {
+                    // This is a new session or new quiz, reset the timer
+                    localStorage.setItem('quizStartTime', Date.now().toString());
+                    localStorage.setItem('currentQuizId', quizId.toString());
+                    seconds = 0;
+                } else if (quizStartTime && lastQuizId === quizId.toString()) {
+                    // Continue from where we left off (refresh case)
+                    const startTime = parseInt(quizStartTime);
+                    const currentTime = Date.now();
+                    seconds = Math.floor((currentTime - startTime) / 1000);
+                } else {
+                    // Fallback - start a new timer
+                    localStorage.setItem('quizStartTime', Date.now().toString());
+                    localStorage.setItem('currentQuizId', quizId.toString());
+                    seconds = 0;
+                }
+                
+                // Update timer display immediately
+                updateTimerDisplay();
+                
+                // Start the interval to update the timer
+                timerInterval = setInterval(function() {
+                    seconds++;
+                    updateTimerDisplay();
+                }, 1000);
+            }
+            
+            // Update timer display with pulse animation when seconds change
+            function updateTimerDisplay() {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                
+                // Use the new format (1m 3s) for the timer display
+                if (minutes > 0) {
+                    timerDisplay.textContent = `${minutes}m ${remainingSeconds}s`;
+                } else {
+                    timerDisplay.textContent = `${remainingSeconds}s`;
+                }
+            }
+            
+            // Before page unload, mark the action type
+            window.addEventListener('beforeunload', function(event) {
+                // Mark this as a potential refresh
+                sessionStorage.setItem('lastQuizPageAction', 'refresh');
+            });
+
             // The $questions variable in the Blade template comes from the takeQuiz method in the QuizController
             const questions = @json($questions);
             let questionid = null;
@@ -36,6 +116,9 @@
             } else if (questions.identification && questions.identification.length > 0) {
                 questionid = questions.identification[0].question_id;
             }
+
+            // Start the timer with the quiz ID
+            startTimer(questionid);
 
             // Get the title of the question
             fetch(`/getquiz/${questionid}`)
@@ -323,7 +406,19 @@
                             return;
                         }
 
-
+                        // Clear the timer when the quiz is submitted
+                        if (timerInterval) {
+                            clearInterval(timerInterval);
+                        }
+                        
+                        // Get the final time result in seconds
+                        const timeResult = seconds;
+                        
+                        // Reset the stored start time when quiz is submitted
+                        localStorage.removeItem('quizStartTime');
+                        localStorage.removeItem('currentQuizId');
+                        sessionStorage.removeItem('quizPageSession');
+                        sessionStorage.removeItem('lastQuizPageAction');
 
                         //if validaten continue
                         const formData = new FormData(quizForm);
@@ -332,7 +427,9 @@
                         const answers = {
                             multiple_choice: [],
                             true_or_false: [],
-                            identification: []
+                            identification: [],
+                            questionId: questionid,
+                            timeResult: timeResult  // Include timeResult in the initial object
                         };
 
                         // For mixed quizzes, organize answers by question type
@@ -364,12 +461,9 @@
                             }
                         });
 
-                    
-                    
-                    // Add the questionId to the answers object
-                    answers.questionId = questionid;
-                    
-                        console.log(answers);
+                        console.log('Submitting quiz with data:', answers);
+
+                        // Submit with fetch using POST method and CSRF token
                         fetch('/submitquiz', {
                             method: 'POST',
                             headers: {
@@ -378,16 +472,41 @@
                             },
                             body: JSON.stringify(answers)
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                console.error('Server returned status:', response.status);
+                                return response.text().then(text => {
+                                    throw new Error(`Server error: ${text || response.statusText}`);
+                                });
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
-                                console.log(data);
+                                // Clear stored quiz data
+                                localStorage.removeItem('quizStartTime');
+                                
+                                // Display results in modal
                                 const scoreModal = document.createElement('div');
                                 scoreModal.id = 'scoreModal';
-                                scoreModal.classList.add('z-50','fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                                scoreModal.classList.add('z-50', 'fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'bg-black', 'bg-opacity-50');
+                                
+                                // Format time for display in the new format (1m 3s)
+                                const minutes = Math.floor(timeResult / 60);
+                                const seconds = timeResult % 60;
+                                const formattedTime = minutes > 0 
+                                    ? `${minutes}m ${seconds}s` 
+                                    : `${seconds}s`;
+                                
+                                // Check if this is a new high score
+                                const isNewHighScore = data.is_new_high_score;
+                                
                                 scoreModal.innerHTML = `
                                     <div class="bg-white p-6 rounded-lg shadow-lg">
                                         <h2 class="text-2xl mb-4">Congratulation!!</h2>
+                                        <p class="text-lg mb-2">Your score: <span class="font-bold">${data.score}</span></p>
+                                        <p class="text-lg mb-3">Time: <span class="font-semibold">${formattedTime}</span></p>
+                                        ${isNewHighScore ? '<p class="text-green-500 font-bold mb-3">🎉 New High Score! 🎉</p>' : ''}
                                         <p id="scoreText" class="text-lg">The result of your quiz is ready.</p>
                                         <button id="closeModalButton" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Result</button>
                                     </div>
@@ -405,7 +524,10 @@
                                 alert('Failed to submit quiz: ' + data.message);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => {
+                            console.error('Error submitting quiz:', error);
+                            alert('Error submitting quiz: ' + error.message);
+                        });
                     });
 
                 }
@@ -469,4 +591,15 @@
 
 });
     </script>
+    <style>
+        .timer-pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </x-layout>
