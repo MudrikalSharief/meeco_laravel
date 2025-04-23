@@ -27,6 +27,16 @@ return new class extends Migration
             $table->rememberToken();
         });
         
+        DB::table('users')->insert([
+            'firstname' => 'John',
+            'middlename' => 'M',
+            'lastname' => 'Doe',
+            'email' => 'user@example.com',
+            'password' => Hash::make('12345678'), // <- this is bcrypt
+            'role' => 'user',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         
         // Create Admin_Actions table
         Schema::dropIfExists('admin_actions');
