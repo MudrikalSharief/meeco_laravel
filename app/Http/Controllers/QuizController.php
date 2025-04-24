@@ -503,12 +503,13 @@ class QuizController extends Controller
      */
     public function storeMultipleChoiceQuestions($questionId, $content)
     {
-        // First balance the answers
-        $balancedContent = $this->balanceMultipleChoiceAnswers($content);
-        
-        // Now get the questions
-        $questions = isset($balancedContent['questions']) ? $balancedContent['questions'] : 
-                    (isset($balancedContent['multiple_choice']) ? $balancedContent['multiple_choice'] : []);
+        // First log what we received for debugging
+        Log::info('storeMultipleChoiceQuestions called with:', [
+            'questionId' => $questionId,
+            'contentKeys' => array_keys($content),
+            'contentSize' => isset($content['questions']) ? count($content['questions']) : 
+                          (isset($content['multiple_choice']) ? count($content['multiple_choice']) : 'unknown')
+        ]);
         
         // Get question record to determine how many questions we need
         $questionRecord = Question::find($questionId);
@@ -517,52 +518,55 @@ class QuizController extends Controller
             return;
         }
         
-        $requestedCount = $questionRecord->number_of_question;
+        // For Mixed type, we need to check if multiple_choice is specified in the question record
+        $requestedCount = ($questionRecord->question_type === 'Mixed') ? 
+            intval(json_decode($questionRecord->metadata ?? '{"multiple": 0}', true)['multiple'] ?? 0) : 
+            $questionRecord->number_of_question;
+            
+        // If we couldn't determine the count, log an error
+        if ($requestedCount <= 0) {
+            Log::warning('Could not determine requested count for multiple choice questions', [
+                'questionId' => $questionId,
+                'question_type' => $questionRecord->question_type,
+                'metadata' => $questionRecord->metadata ?? 'null'
+            ]);
+            // Default to 5 as a fallback
+            $requestedCount = 5;
+        }
+        
+        // First balance the answers
+        $balancedContent = $this->balanceMultipleChoiceAnswers($content);
+        
+        // Now get the questions, strictly preferring 'questions' key over 'multiple_choice'
+        $questions = [];
+        if (isset($balancedContent['questions'])) {
+            $questions = $balancedContent['questions'];
+        } elseif (isset($balancedContent['multiple_choice'])) {
+            $questions = $balancedContent['multiple_choice'];
+        }
+        
+        // If we have more questions than requested, trim the excess
         $actualCount = count($questions);
+        if ($actualCount > $requestedCount) {
+            Log::info("Trimming multiple choice questions from {$actualCount} to {$requestedCount}");
+            $questions = array_slice($questions, 0, $requestedCount);
+            $actualCount = $requestedCount;
+        }
         
-        // Loop until we have enough questions
-        $maxAttempts = 3; // Limit to prevent infinite loops
-        $attempts = 0;
+        // Only proceed if we have questions to store
+        if (empty($questions)) {
+            Log::error('No multiple choice questions to store', ['question_id' => $questionId]);
+            return;
+        }
+
+        // Log the final set of questions we'll be storing
+        Log::info("Storing {$actualCount} multiple choice questions for question ID {$questionId}");
         
-        while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
-            $attempts++;
-            $remaining = $requestedCount - $actualCount;
-            
-            Log::info("Multiple Choice: Need {$remaining} more questions (attempt {$attempts})");
-            
-            // Get the OpenAIController to generate more questions
-            $openaiController = new OPENAIController();
-            $additionalQuestions = $openaiController->generateAdditionalQuestions(
-                $questionRecord->topic_id,
-                $remaining,
-                'Multiple Choice'
-            );
-            
-            if (!empty($additionalQuestions)) {
-                Log::info("Generated " . count($additionalQuestions) . " additional multiple choice questions");
-                
-                // Add the new questions to our collection
-                $questions = array_merge($questions, $additionalQuestions);
-                $actualCount = count($questions);
-                
-                // Rebalance the answers after adding new questions
-                if (isset($balancedContent['questions'])) {
-                    $balancedContent['questions'] = $questions;
-                } else {
-                    $balancedContent['multiple_choice'] = $questions;
-                }
-                
-                $balancedContent = $this->balanceMultipleChoiceAnswers($balancedContent);
-                $questions = isset($balancedContent['questions']) ? $balancedContent['questions'] : $balancedContent['multiple_choice'];
-            } else {
-                Log::warning("Failed to generate additional multiple choice questions on attempt {$attempts}");
-                
-                // If we can't get more questions after max attempts, break out
-                if ($attempts >= $maxAttempts) {
-                    Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
-                    break;
-                }
-            }
+        // Delete any existing multiple choice questions for this question ID
+        // This ensures we don't have duplicates if this method is called multiple times
+        $deleted = multiple_choice::where('question_id', $questionId)->delete();
+        if ($deleted > 0) {
+            Log::info("Deleted {$deleted} existing multiple choice questions for question ID {$questionId}");
         }
         
         // Save the questions to database
@@ -579,8 +583,56 @@ class QuizController extends Controller
             ]);
         }
         
-        // Update the question count if we couldn't generate all questions
+        // Loop until we have enough questions only if we need more
         if ($actualCount < $requestedCount) {
+            $maxAttempts = 3; // Limit to prevent infinite loops
+            $attempts = 0;
+            
+            while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
+                $attempts++;
+                $remaining = $requestedCount - $actualCount;
+                
+                Log::info("Multiple Choice: Need {$remaining} more questions (attempt {$attempts})");
+                
+                // Get the OpenAIController to generate more questions
+                $openaiController = new OPENAIController();
+                $additionalQuestions = $openaiController->generateAdditionalQuestions(
+                    $questionRecord->topic_id,
+                    $remaining,
+                    'Multiple Choice'
+                );
+                
+                if (!empty($additionalQuestions)) {
+                    Log::info("Generated " . count($additionalQuestions) . " additional multiple choice questions");
+                    
+                    // Add the new questions to our collection
+                    foreach ($additionalQuestions as $questionData) {
+                        multiple_choice::create([
+                            'question_id' => $questionId,
+                            'question_text' => $questionData['question'],
+                            'answer' => $questionData['correct_answer'],
+                            'A' => $questionData['choices']['A'],
+                            'B' => $questionData['choices']['B'],
+                            'C' => $questionData['choices']['C'],
+                            'D' => $questionData['choices']['D'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
+                        ]);
+                        $actualCount++;
+                    }
+                } else {
+                    Log::warning("Failed to generate additional multiple choice questions on attempt {$attempts}");
+                    
+                    // If we can't get more questions after max attempts, break out
+                    if ($attempts >= $maxAttempts) {
+                        Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Update the question count if we couldn't generate all questions
+        if ($actualCount < $requestedCount && $questionRecord->question_type !== 'Mixed') {
             Log::warning("Updating question record with actual count: {$actualCount} (requested: {$requestedCount})");
             $questionRecord->number_of_question = $actualCount;
             $questionRecord->save();

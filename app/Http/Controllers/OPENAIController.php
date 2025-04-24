@@ -526,8 +526,8 @@ class OPENAIController extends Controller
                                 Example format for the output:
                                 [
                                     {
-                                             \"Topic\": \"Example Topic\", 
-                                             \"Description\": \"Example description of the topic\"
+                                            Topic, 
+                                            Description of the topic.
                                     }
                                 ]
         
@@ -687,7 +687,7 @@ class OPENAIController extends Controller
                     'model' => 'gpt-4o-mini-2024-07-18',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => "Based on the following text, generate " . $number . " multiple-choice quiz questions that cover the " . $bloomsLevels . " levels of Bloom's Taxonomy:
+                        ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY " . $number . " multiple-choice quiz questions that cover the " . $bloomsLevels . " levels of Bloom's Taxonomy. Return EXACTLY " . $number . " questions, no more, no less.
 
                         1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
                         2. COMPREHENSION: Questions that test understanding of the material.
@@ -705,6 +705,7 @@ class OPENAIController extends Controller
                         - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
                         - The order of the questions should be mixed to provide variety.
                         - Indicate which Bloom's level each question addresses in the JSON response.
+                        - IMPORTANT: Count your questions to ensure you provide EXACTLY " . $number . " questions.
                 
                         Format your response in JSON like this: 
                 
@@ -754,6 +755,12 @@ class OPENAIController extends Controller
                     return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text , 'response' => $responseData]);
                 }
                 
+                // Ensure we only use the exact number of questions requested
+                if (count($content['questions']) > $number) {
+                    $content['questions'] = array_slice($content['questions'], 0, $number);
+                    Log::info('Trimmed questions to match requested number', ['requested' => $number, 'received' => count($content['questions'])]);
+                }
+                
                 $question = Question::create([
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
@@ -764,7 +771,8 @@ class OPENAIController extends Controller
                 Log::info('Created Question:', ['question' => $question]);
         
                 $quizController = new QuizController();
-                $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
+                // Pass only the questions array, not the entire content
+                $quizController->storeMultipleChoiceQuestions($question->question_id, ['questions' => $content['questions']]);
                 
                 Log::info('Action : Generate Quiz Multiple Choice');
                 OpenAIHelper::calculateAndLogCost($responseData);
@@ -1073,16 +1081,42 @@ class OPENAIController extends Controller
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
                     'number_of_question' => $total_quiz,
+                    'metadata' => json_encode([
+                        'multiple' => intval($multiple),
+                        'true_or_false' => intval($true_or_false),
+                        'identification' => intval($identification)
+                    ])
                 ]);
 
-                Log::info('Created Question:', ['question' => $question]);
+                Log::info('Created Mixed Question with metadata:', [
+                    'question' => $question,
+                    'multiple' => $multiple,
+                    'true_or_false' => $true_or_false,
+                    'identification' => $identification
+                ]);
 
                 if (!empty($content['multiple_choice'])) {
+                    // Ensure we only use the exact number of questions requested
+                    if (count($content['multiple_choice']) > $multiple) {
+                        $content['multiple_choice'] = array_slice($content['multiple_choice'], 0, $multiple);
+                        Log::info('Trimmed multiple choice questions to match requested number', 
+                            ['requested' => $multiple, 'received' => count($content['multiple_choice'])]);
+                    }
+                    
                     $quizController = new QuizController();
-                    $quizController->storeMultipleChoiceQuestions($question->question_id, $content);
+                    // Pass only the multiple_choice part to avoid including other question types
+                    $quizController->storeMultipleChoiceQuestions($question->question_id, 
+                        ['questions' => $content['multiple_choice']]);
                 }
 
                 if (!empty($content['true_or_false'])) {
+                    // Ensure we only use the exact number of questions requested
+                    if (count($content['true_or_false']) > $true_or_false) {
+                        $content['true_or_false'] = array_slice($content['true_or_false'], 0, $true_or_false);
+                        Log::info('Trimmed true/false questions to match requested number',
+                            ['requested' => $true_or_false, 'received' => count($content['true_or_false'])]);
+                    }
+                    
                     foreach ($content['true_or_false'] as $questionData) {
                         true_or_false::create([
                             'question_id' => $question->question_id,
@@ -1094,6 +1128,13 @@ class OPENAIController extends Controller
                 }
 
                 if (!empty($content['identification'])) {
+                    // Ensure we only use the exact number of questions requested
+                    if (count($content['identification']) > $identification) {
+                        $content['identification'] = array_slice($content['identification'], 0, $identification);
+                        Log::info('Trimmed identification questions to match requested number',
+                            ['requested' => $identification, 'received' => count($content['identification'])]);
+                    }
+                    
                     foreach ($content['identification'] as $questionData) {
                         Identification::create([
                             'question_id' => $question->question_id,
