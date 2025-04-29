@@ -57,9 +57,13 @@
 
     {{-- Select quiz type Modal --}}
     <div id="addQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-4 max-h-[80vh] overflow-y-auto" style="width: 50%; min-width: 270px; max-width: 400px;">
-            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700 sticky top-0 bg-white p-2">Setup Quiz</h2>
-
+        <div class="bg-white rounded-lg shadow-lg p-0 max-h-[80vh] overflow-y-auto" style="width: 50%; min-width: 270px; max-width: 400px;">
+            
+            <div class="px-4">
+            <div class="sticky top-0 bg-white z-10 border-b w-full rounded-t-lg">
+                <h2 class="text-center text-lg font-semibold text-blue-700 px-4 py-4">Setup Quiz</h2>
+            </div>
+            <div class="px-4 overflow-y-auto">
             <div class="mb-4">
                 <label for="newQuizName" class="block text-xs text-gray-600 mb-1">Quiz Name</label>
                 <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="py-1 px-2 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -158,13 +162,14 @@
             </div>
 
             {{-- //ad quiztype button --}}
-            <button id="addQuizTypeButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">Add Quiz Type</button>
-
-            <div class="flex justify-end mt-4 sticky bottom-0 bg-white pt-2 pb-1">
+            <button id="addQuizTypeButton" class="bg-blue-500 text-white px-4 py-2 mb-4 rounded hover:bg-blue-600 hidden">Add Quiz Type</button>
+            </div>
+            <div class="flex justify-end mt-4 sticky bottom-0 bg-white px-4 pt-2 pb-3 z-10 border-t">
                 <button id="cancelQuizButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
                 <button id="saveQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
             </div>
         </div>
+    </div>
     </div>
     
 
@@ -241,7 +246,6 @@
             <button id="saveEditQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
         </div>
     </div>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
