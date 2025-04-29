@@ -176,6 +176,13 @@ class QuizController extends Controller
         $questionId = $validatedData['questionId'];
         $question_type = Question::where('question_id', $questionId)->pluck('question_type')->first();
         
+        // Log the submitted answers for debugging
+        Log::info('Quiz submission', [
+            'question_id' => $questionId,
+            'question_type' => $question_type,
+            'answers' => $request->except(['questionId', '_token'])
+        ]);
+        
         $answers = $request->except('questionId');
         $userAnswers = [];
         
@@ -230,15 +237,20 @@ class QuizController extends Controller
                 }
             }
         } elseif ($question_type == 'Mixed') {
-            
+            // For mixed quiz, handle each quiz type separately
             $mcAnswers = $request->input('multiple_choice', []);
             $tfAnswers = $request->input('true_or_false', []);
             $idAnswers = $request->input('identification', []);
             
-            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
-            $tf_data = true_or_false::where('question_id', $questionId)->get();
-            $identification_data = Identification::where('question_id', $questionId)->get();
+            // Log each type of answer for debugging
+            Log::info('Mixed quiz answers', [
+                'multiple_choice' => $mcAnswers,
+                'true_or_false' => $tfAnswers, 
+                'identification' => $idAnswers
+            ]);
             
+            // Process multiple choice questions
+            $multiple_choice_data = multiple_choice::where('question_id', $questionId)->get();
             foreach ($multiple_choice_data as $index => $data) {
                 if (isset($mcAnswers[$index])) {
                     multiple_choice::where('multiple_choice_id', $data->multiple_choice_id)
@@ -251,6 +263,8 @@ class QuizController extends Controller
                 }
             }
 
+            // Process true/false questions
+            $tf_data = true_or_false::where('question_id', $questionId)->get();
             foreach ($tf_data as $index => $data) {
                 if (isset($tfAnswers[$index])) {
                     true_or_false::where('true_or_false_id', $data->true_or_false_id)
@@ -262,6 +276,8 @@ class QuizController extends Controller
                 }
             }
 
+            // Process identification questions
+            $identification_data = Identification::where('question_id', $questionId)->get();
             foreach ($identification_data as $index => $data) {
                 if (isset($idAnswers[$index])) {
                     Identification::where('Identification_id', $data->Identification_id)
@@ -648,52 +664,66 @@ class QuizController extends Controller
      */
     public function storeTrueFalseQuestions($questionId, $content)
     {
-        // Get the questions
-        $questions = isset($content['questions']) ? $content['questions'] : [];
-        
+        // First log what we received for debugging
+        Log::info('storeTrueFalseQuestions called with:', [
+            'questionId' => $questionId,
+            'contentKeys' => array_keys($content),
+            'contentSize' => isset($content['questions']) ? count($content['questions']) : 
+                          (isset($content['true_or_false']) ? count($content['true_or_false']) : 'unknown')
+        ]);
+
         // Get question record to determine how many questions we need
         $questionRecord = Question::find($questionId);
         if (!$questionRecord) {
             Log::error('Question record not found', ['question_id' => $questionId]);
             return;
         }
+
+        // For Mixed type, we need to check if true_or_false is specified in the question record
+        $requestedCount = ($questionRecord->question_type === 'Mixed') ? 
+            intval(json_decode($questionRecord->metadata ?? '{"true_or_false": 0}', true)['true_or_false'] ?? 0) : 
+            $questionRecord->number_of_question;
+
+        // If we couldn't determine the count, log an error
+        if ($requestedCount <= 0) {
+            Log::warning('Could not determine requested count for true or false questions', [
+                'questionId' => $questionId,
+                'question_type' => $questionRecord->question_type,
+                'metadata' => $questionRecord->metadata ?? 'null'
+            ]);
+            // Default to 5 as a fallback
+            $requestedCount = 5;
+        }
         
-        $requestedCount = $questionRecord->number_of_question;
+        // Get the questions, try multiple possible keys based on API response format
+        $questions = [];
+        if (isset($content['questions'])) {
+            $questions = $content['questions'];
+        } elseif (isset($content['true_or_false'])) {
+            $questions = $content['true_or_false'];
+        }
+        
+        // If we have more questions than requested, trim the excess
         $actualCount = count($questions);
+        if ($actualCount > $requestedCount) {
+            Log::info("Trimming true or false questions from {$actualCount} to {$requestedCount}");
+            $questions = array_slice($questions, 0, $requestedCount);
+            $actualCount = $requestedCount;
+        }
         
-        // Loop until we have enough questions
-        $maxAttempts = 3; // Limit to prevent infinite loops
-        $attempts = 0;
+        // Only proceed if we have questions to store
+        if (empty($questions)) {
+            Log::error('No true or false questions to store', ['question_id' => $questionId]);
+            return;
+        }
         
-        while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
-            $attempts++;
-            $remaining = $requestedCount - $actualCount;
-            
-            Log::info("True/False: Need {$remaining} more questions (attempt {$attempts})");
-            
-            // Get the OpenAIController to generate more questions
-            $openaiController = new OPENAIController();
-            $additionalQuestions = $openaiController->generateAdditionalQuestions(
-                $questionRecord->topic_id,
-                $remaining,
-                'True or false'
-            );
-            
-            if (!empty($additionalQuestions)) {
-                Log::info("Generated " . count($additionalQuestions) . " additional true/false questions");
-                
-                // Add the new questions to our collection
-                $questions = array_merge($questions, $additionalQuestions);
-                $actualCount = count($questions);
-            } else {
-                Log::warning("Failed to generate additional true/false questions on attempt {$attempts}");
-                
-                // If we can't get more questions after max attempts, break out
-                if ($attempts >= $maxAttempts) {
-                    Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
-                    break;
-                }
-            }
+        // Log the final set of questions we'll be storing
+        Log::info("Storing {$actualCount} true or false questions for question ID {$questionId}");
+        
+        // Delete any existing true or false questions for this question ID
+        $deleted = true_or_false::where('question_id', $questionId)->delete();
+        if ($deleted > 0) {
+            Log::info("Deleted {$deleted} existing true or false questions for question ID {$questionId}");
         }
         
         // Save the questions to database
@@ -706,8 +736,52 @@ class QuizController extends Controller
             ]);
         }
         
-        // Update the question count if we couldn't generate all questions
+        // Loop until we have enough questions only if we need more
         if ($actualCount < $requestedCount) {
+            $maxAttempts = 3; // Limit to prevent infinite loops
+            $attempts = 0;
+            
+            while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
+                $attempts++;
+                $remaining = $requestedCount - $actualCount;
+                
+                Log::info("True/False: Need {$remaining} more questions (attempt {$attempts})");
+                
+                // Get the OpenAIController to generate more questions
+                $openaiController = new OPENAIController();
+                $additionalQuestions = $openaiController->generateAdditionalQuestions(
+                    $questionRecord->topic_id,
+                    $remaining,
+                    'True or false'
+                );
+                
+                if (!empty($additionalQuestions)) {
+                    Log::info("Generated " . count($additionalQuestions) . " additional true/false questions");
+                    
+                    // Add the new questions to our collection
+                    foreach ($additionalQuestions as $questionData) {
+                        true_or_false::create([
+                            'question_id' => $questionId,
+                            'question_text' => $questionData['question'],
+                            'answer' => $questionData['correct_answer'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
+                        ]);
+                        $actualCount++;
+                    }
+                } else {
+                    Log::warning("Failed to generate additional true/false questions on attempt {$attempts}");
+                    
+                    // If we can't get more questions after max attempts, break out
+                    if ($attempts >= $maxAttempts) {
+                        Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Update the question count if we couldn't generate all questions
+        if ($actualCount < $requestedCount && $questionRecord->question_type !== 'Mixed') {
             Log::warning("Updating question record with actual count: {$actualCount} (requested: {$requestedCount})");
             $questionRecord->number_of_question = $actualCount;
             $questionRecord->save();
@@ -723,52 +797,66 @@ class QuizController extends Controller
      */
     public function storeIdentificationQuestions($questionId, $content)
     {
-        // Get the questions
-        $questions = isset($content['questions']) ? $content['questions'] : [];
-        
+        // First log what we received for debugging
+        Log::info('storeIdentificationQuestions called with:', [
+            'questionId' => $questionId,
+            'contentKeys' => array_keys($content),
+            'contentSize' => isset($content['questions']) ? count($content['questions']) : 
+                          (isset($content['identification']) ? count($content['identification']) : 'unknown')
+        ]);
+
         // Get question record to determine how many questions we need
         $questionRecord = Question::find($questionId);
         if (!$questionRecord) {
             Log::error('Question record not found', ['question_id' => $questionId]);
             return;
         }
+
+        // For Mixed type, we need to check if identification is specified in the question record
+        $requestedCount = ($questionRecord->question_type === 'Mixed') ? 
+            intval(json_decode($questionRecord->metadata ?? '{"identification": 0}', true)['identification'] ?? 0) : 
+            $questionRecord->number_of_question;
+
+        // If we couldn't determine the count, log an error
+        if ($requestedCount <= 0) {
+            Log::warning('Could not determine requested count for identification questions', [
+                'questionId' => $questionId,
+                'question_type' => $questionRecord->question_type,
+                'metadata' => $questionRecord->metadata ?? 'null'
+            ]);
+            // Default to 5 as a fallback
+            $requestedCount = 5;
+        }
         
-        $requestedCount = $questionRecord->number_of_question;
+        // Get the questions, try multiple possible keys based on API response format
+        $questions = [];
+        if (isset($content['questions'])) {
+            $questions = $content['questions'];
+        } elseif (isset($content['identification'])) {
+            $questions = $content['identification'];
+        }
+        
+        // If we have more questions than requested, trim the excess
         $actualCount = count($questions);
+        if ($actualCount > $requestedCount) {
+            Log::info("Trimming identification questions from {$actualCount} to {$requestedCount}");
+            $questions = array_slice($questions, 0, $requestedCount);
+            $actualCount = $requestedCount;
+        }
         
-        // Loop until we have enough questions
-        $maxAttempts = 3; // Limit to prevent infinite loops
-        $attempts = 0;
+        // Only proceed if we have questions to store
+        if (empty($questions)) {
+            Log::error('No identification questions to store', ['question_id' => $questionId]);
+            return;
+        }
         
-        while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
-            $attempts++;
-            $remaining = $requestedCount - $actualCount;
-            
-            Log::info("Identification: Need {$remaining} more questions (attempt {$attempts})");
-            
-            // Get the OpenAIController to generate more questions
-            $openaiController = new OPENAIController();
-            $additionalQuestions = $openaiController->generateAdditionalQuestions(
-                $questionRecord->topic_id,
-                $remaining,
-                'Identification'
-            );
-            
-            if (!empty($additionalQuestions)) {
-                Log::info("Generated " . count($additionalQuestions) . " additional identification questions");
-                
-                // Add the new questions to our collection
-                $questions = array_merge($questions, $additionalQuestions);
-                $actualCount = count($questions);
-            } else {
-                Log::warning("Failed to generate additional identification questions on attempt {$attempts}");
-                
-                // If we can't get more questions after max attempts, break out
-                if ($attempts >= $maxAttempts) {
-                    Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
-                    break;
-                }
-            }
+        // Log the final set of questions we'll be storing
+        Log::info("Storing {$actualCount} identification questions for question ID {$questionId}");
+        
+        // Delete any existing identification questions for this question ID
+        $deleted = Identification::where('question_id', $questionId)->delete();
+        if ($deleted > 0) {
+            Log::info("Deleted {$deleted} existing identification questions for question ID {$questionId}");
         }
         
         // Save the questions to database
@@ -781,8 +869,52 @@ class QuizController extends Controller
             ]);
         }
         
-        // Update the question count if we couldn't generate all questions
+        // Loop until we have enough questions only if we need more
         if ($actualCount < $requestedCount) {
+            $maxAttempts = 3; // Limit to prevent infinite loops
+            $attempts = 0;
+            
+            while ($actualCount < $requestedCount && $attempts < $maxAttempts) {
+                $attempts++;
+                $remaining = $requestedCount - $actualCount;
+                
+                Log::info("Identification: Need {$remaining} more questions (attempt {$attempts})");
+                
+                // Get the OpenAIController to generate more questions
+                $openaiController = new OPENAIController();
+                $additionalQuestions = $openaiController->generateAdditionalQuestions(
+                    $questionRecord->topic_id,
+                    $remaining,
+                    'Identification'
+                );
+                
+                if (!empty($additionalQuestions)) {
+                    Log::info("Generated " . count($additionalQuestions) . " additional identification questions");
+                    
+                    // Add the new questions to our collection
+                    foreach ($additionalQuestions as $questionData) {
+                        Identification::create([
+                            'question_id' => $questionId,
+                            'question_text' => $questionData['question'],
+                            'answer' => $questionData['correct_answer'],
+                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
+                        ]);
+                        $actualCount++;
+                    }
+                } else {
+                    Log::warning("Failed to generate additional identification questions on attempt {$attempts}");
+                    
+                    // If we can't get more questions after max attempts, break out
+                    if ($attempts >= $maxAttempts) {
+                        Log::error("Maximum attempts reached. Could only generate {$actualCount} of {$requestedCount} requested questions");
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Update the question count if we couldn't generate all questions
+        if ($actualCount < $requestedCount && $questionRecord->question_type !== 'Mixed') {
             Log::warning("Updating question record with actual count: {$actualCount} (requested: {$requestedCount})");
             $questionRecord->number_of_question = $actualCount;
             $questionRecord->save();

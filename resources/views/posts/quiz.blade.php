@@ -56,12 +56,12 @@
         </div>
 
     {{-- Select quiz type Modal --}}
-    <div id="addQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center  ">
-        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px; max-width: 400px;">
-            <h2 class=" text-center text-lg font-semibold mb-4 text-blue-700">Setup Quiz</h2>
+    <div id="addQuizModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4 max-h-[80vh] overflow-y-auto" style="width: 50%; min-width: 270px; max-width: 400px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700 sticky top-0 bg-white p-2">Setup Quiz</h2>
 
             <div class="mb-4">
-                <label for="newQuizName" class="block text-xs  text-gray-600 mb-1">Quiz Name</label>
+                <label for="newQuizName" class="block text-xs text-gray-600 mb-1">Quiz Name</label>
                 <input id="newQuizName" type="text" placeholder="Enter the name of the Quiz" class="py-1 px-2 block w-full text-sm text-black-500 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
 
@@ -105,6 +105,14 @@
                     </select>
                     <button id="removeMultipleChoice" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
                 </div>
+                <div class="mt-1">
+                    <label for="difficulty_multiple" class="block text-xs text-gray-600 mb-1">Difficulty</label>
+                    <select name="difficulty_multiple" id="difficulty_multiple" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
             </div>
             
             <div id="quiznumber_true_or_false_holder" class="mb-4 hidden">
@@ -117,6 +125,14 @@
                         <option value="20">20 Questions</option>
                     </select>
                     <button id="removeTrueOrFalse" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+                </div>
+                <div class="mt-1">
+                    <label for="difficulty_true_or_false" class="block text-xs text-gray-600 mb-1">Difficulty</label>
+                    <select name="difficulty_true_or_false" id="difficulty_true_or_false" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
                 </div>
             </div>
             
@@ -131,12 +147,20 @@
                     </select>
                     <button id="removeIdentification" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
                 </div>    
+                <div class="mt-1">
+                    <label for="difficulty_identification" class="block text-xs text-gray-600 mb-1">Difficulty</label>
+                    <select name="difficulty_identification" id="difficulty_identification" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
             </div>
 
             {{-- //ad quiztype button --}}
             <button id="addQuizTypeButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 hidden">Add Quiz Type</button>
 
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mt-4 sticky bottom-0 bg-white pt-2 pb-1">
                 <button id="cancelQuizButton" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancel</button>
                 <button id="saveQuizButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
             </div>
@@ -144,16 +168,16 @@
     </div>
     
 
-    {{-- this is the modal when slecting a quiz type in --}}
-    <div id="selectQuizTypeModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center  ">
-        <div class="bg-white rounded-lg shadow-lg p-4" style="width: 50%; min-width: 270px; max-width: 400px;">
-            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700">Select Quiz Type</h2>
+    {{-- this is the modal when selecting a quiz type in --}}
+    <div id="selectQuizTypeModal" class="fixed hidden inset-0 z-50 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4 max-h-[80vh] overflow-y-auto" style="width: 50%; min-width: 270px; max-width: 400px;">
+            <h2 class="text-center text-lg font-semibold mb-4 text-blue-700 sticky top-0 bg-white p-2">Select Quiz Type</h2>
             <div class="flex flex-col space-y-2">
                 <button id="selectMultipleChoice" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Multiple Choice</button>
                 <button id="selectTrueOrFalse" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">True or False</button>
                 <button id="selectIdentification" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Identification</button>
             </div>
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mt-4 sticky bottom-0 bg-white pt-2 pb-1">
                 <button id="closeSelectQuizTypeModal" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
             </div>
         </div>
@@ -449,25 +473,25 @@
             if (quiztype.value == "Mixed") {
                 quiznumber.classList.add('hidden');
                 quiznumber.setAttribute('disabled', 'true');
-                // quiznumber_label.classList.remove('text-xs');
-                // quiznumber_label.classList.add('text-sm');
-                // quiznumber_label.classList.add('font-semibold');
                 quiznumber_label.classList.add('hidden');
                 addQuizTypeButton.classList.remove('hidden');
                 quiznumber_multiple_holder.classList.add('hidden');
                 quiznumber_true_or_false_holder.classList.add('hidden');
                 quiznumber_identification_holder.classList.add('hidden');
+                
+                // Hide the general difficulty selector for mixed quizzes
+                document.getElementById('difficulty').parentElement.classList.add('hidden');
             } else {
                 quiznumber.classList.remove('hidden');
                 quiznumber.removeAttribute('disabled');
-                // quiznumber_label.classList.remove('text-sm');
-                // quiznumber_label.classList.add('text-xs');
-                // quiznumber_label.classList.remove('font-semibold');
                 quiznumber_label.classList.remove('hidden');
                 addQuizTypeButton.classList.add('hidden');
                 quiznumber_multiple_holder.classList.add('hidden');
                 quiznumber_true_or_false_holder.classList.add('hidden');
                 quiznumber_identification_holder.classList.add('hidden');
+                
+                // Show the general difficulty selector for other quiz types
+                document.getElementById('difficulty').parentElement.classList.remove('hidden');
             }
         });
 
@@ -484,73 +508,226 @@
             const removeTrueOrFalse = document.getElementById('removeTrueOrFalse');
             const removeIdentification = document.getElementById('removeIdentification');
 
+            // Create counters for each quiz type
+            let mcInstanceCounter = 0;
+            let tfInstanceCounter = 0;
+            let idInstanceCounter = 0;
+            
+            // Arrays to store instances of each quiz type
+            const mcInstances = [];
+            const tfInstances = [];
+            const idInstances = [];
+            
             addQuizTypeButton.addEventListener('click', function() {
-                if (!addedQuizTypes.has('multiple')) {
-                    selectMultipleChoice.classList.remove('hidden');
-                }
-                if (!addedQuizTypes.has('true_or_false')) {
-                    selectTrueOrFalse.classList.remove('hidden');
-                }
-                if (!addedQuizTypes.has('identification')) {
-                    selectIdentification.classList.remove('hidden');
-                }
+                // Always show all quiz type options, even if they've been added before
+                selectMultipleChoice.classList.remove('hidden');
+                selectTrueOrFalse.classList.remove('hidden');
+                selectIdentification.classList.remove('hidden');
+                
                 selectQuizTypeModal.classList.remove('hidden');
             });
 
             closeSelectQuizTypeModal.addEventListener('click', function() {
                 selectQuizTypeModal.classList.add('hidden');
             });
+            
+            // Function to create a new instance of a quiz type
+            function createQuizTypeInstance(type, instanceId) {
+                const holder = document.createElement('div');
+                holder.id = `${type}_holder_${instanceId}`;
+                holder.className = 'mb-4';
+                
+                let typeName;
+                switch(type) {
+                    case 'multiple':
+                        typeName = 'Multiple Choice';
+                        break;
+                    case 'true_or_false':
+                        typeName = 'True or False';
+                        break;
+                    case 'identification':
+                        typeName = 'Identification';
+                        break;
+                }
+                
+                holder.innerHTML = `
+                    <label for="${type}_${instanceId}" class="block text-xs text-gray-600 mb-1">${typeName} #${instanceId + 1}</label>
+                    <div class="flex gap-2">
+                        <select name="${type}_${instanceId}" id="${type}_${instanceId}" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                            <option value="5">5 Questions</option>
+                            <option value="10">10 Questions</option>
+                            <option value="15">15 Questions</option>
+                            <option value="20">20 Questions</option>
+                        </select>
+                        <button id="remove_${type}_${instanceId}" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+                    </div>
+                    <div class="mt-1">
+                        <label for="difficulty_${type}_${instanceId}" class="block text-xs text-gray-600 mb-1">Difficulty</label>
+                        <select name="difficulty_${type}_${instanceId}" id="difficulty_${type}_${instanceId}" class="w-full border border-gray-300 shadow-sm p-1 rounded-lg">
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                `;
+                
+                // Add the new instance holder before the Add Quiz Type button
+                addQuizModal.querySelector('.flex.justify-end.mt-4').before(holder);
+                
+                // Disable already used difficulty options for this quiz type
+                const difficultySelect = document.getElementById(`difficulty_${type}_${instanceId}`);
+                if (difficultySelect) {
+                    // Get all used difficulties for this quiz type
+                    let usedDifficulties = [];
+                    if (type === 'multiple') {
+                        usedDifficulties = mcInstances
+                            .filter(instance => instance.id !== instanceId) // Don't include current instance
+                            .map(instance => {
+                                const select = document.getElementById(`difficulty_multiple_${instance.id}`);
+                                return select ? select.value : null;
+                            })
+                            .filter(Boolean);
+                    } else if (type === 'true_or_false') {
+                        usedDifficulties = tfInstances
+                            .filter(instance => instance.id !== instanceId)
+                            .map(instance => {
+                                const select = document.getElementById(`difficulty_true_or_false_${instance.id}`);
+                                return select ? select.value : null;
+                            })
+                            .filter(Boolean);
+                    } else if (type === 'identification') {
+                        usedDifficulties = idInstances
+                            .filter(instance => instance.id !== instanceId)
+                            .map(instance => {
+                                const select = document.getElementById(`difficulty_identification_${instance.id}`);
+                                return select ? select.value : null;
+                            })
+                            .filter(Boolean);
+                    }
+
+                    // Disable options that are already used
+                    Array.from(difficultySelect.options).forEach(option => {
+                        if (usedDifficulties.includes(option.value)) {
+                            option.disabled = true;
+                        }
+                    });
+                }
+                
+                // Add event listener to the remove button
+                document.getElementById(`remove_${type}_${instanceId}`).addEventListener('click', function() {
+                    holder.remove();
+                    
+                    // Remove the instance from the appropriate array
+                    if (type === 'multiple') {
+                        const index = mcInstances.findIndex(instance => instance.id === instanceId);
+                        if (index !== -1) mcInstances.splice(index, 1);
+                    } else if (type === 'true_or_false') {
+                        const index = tfInstances.findIndex(instance => instance.id === instanceId);
+                        if (index !== -1) tfInstances.splice(index, 1);
+                    } else if (type === 'identification') {
+                        const index = idInstances.findIndex(instance => instance.id === instanceId);
+                        if (index !== -1) idInstances.splice(index, 1);
+                    }
+                });
+                
+                return holder;
+            }
 
             selectMultipleChoice.addEventListener('click', function() {
-                quiznumber_multiple_holder.classList.remove('hidden');
-                selectQuizTypeModal.classList.add('hidden');
-                addedQuizTypes.add('multiple');
-                selectMultipleChoice.classList.add('hidden');
-                if (addedQuizTypes.size === totalQuizTypes) {
-                    addQuizTypeButton.classList.add('hidden');
+                // Check if we already have 3 instances of this type
+                if (mcInstances.length >= 3) {
+                    errorMessage.textContent = 'You can only add up to 3 Multiple Choice question sets (one for each difficulty level).';
+                    errorModal.classList.remove('hidden');
+                    return;
                 }
+                
+                // Check if we have used all available difficulty levels
+                const usedDifficulties = mcInstances.map(instance => {
+                    const difficultySelect = document.getElementById(`difficulty_multiple_${instance.id}`);
+                    return difficultySelect ? difficultySelect.value : null;
+                }).filter(Boolean);
+                
+                if (usedDifficulties.length >= 3) {
+                    errorMessage.textContent = 'You have already used all difficulty levels for Multiple Choice questions.';
+                    errorModal.classList.remove('hidden');
+                    return;
+                }
+                
+                const newInstance = {
+                    id: mcInstanceCounter,
+                    type: 'multiple'
+                };
+                mcInstances.push(newInstance);
+                createQuizTypeInstance('multiple', mcInstanceCounter);
+                mcInstanceCounter++;
+                
+                selectQuizTypeModal.classList.add('hidden');
             });
 
             selectTrueOrFalse.addEventListener('click', function() {
-                quiznumber_true_or_false_holder.classList.remove('hidden');
-                selectQuizTypeModal.classList.add('hidden');
-                addedQuizTypes.add('true_or_false');
-                selectTrueOrFalse.classList.add('hidden');
-                if (addedQuizTypes.size === totalQuizTypes) {
-                    addQuizTypeButton.classList.add('hidden');
+                // Check if we already have 3 instances of this type
+                if (tfInstances.length >= 3) {
+                    errorMessage.textContent = 'You can only add up to 3 True or False question sets (one for each difficulty level).';
+                    errorModal.classList.remove('hidden');
+                    return;
                 }
+                
+                // Check if we have used all available difficulty levels
+                const usedDifficulties = tfInstances.map(instance => {
+                    const difficultySelect = document.getElementById(`difficulty_true_or_false_${instance.id}`);
+                    return difficultySelect ? difficultySelect.value : null;
+                }).filter(Boolean);
+                
+                if (usedDifficulties.length >= 3) {
+                    errorMessage.textContent = 'You have already used all difficulty levels for True or False questions.';
+                    errorModal.classList.remove('hidden');
+                    return;
+                }
+                
+                const newInstance = {
+                    id: tfInstanceCounter,
+                    type: 'true_or_false'
+                };
+                tfInstances.push(newInstance);
+                createQuizTypeInstance('true_or_false', tfInstanceCounter);
+                tfInstanceCounter++;
+                
+                selectQuizTypeModal.classList.add('hidden');
             });
 
             selectIdentification.addEventListener('click', function() {
-                quiznumber_identification_holder.classList.remove('hidden');
-                selectQuizTypeModal.classList.add('hidden');
-                addedQuizTypes.add('identification');
-                selectIdentification.classList.add('hidden');
-                if (addedQuizTypes.size === totalQuizTypes) {
-                    addQuizTypeButton.classList.add('hidden');
+                // Check if we already have 3 instances of this type
+                if (idInstances.length >= 3) {
+                    errorMessage.textContent = 'You can only add up to 3 Identification question sets (one for each difficulty level).';
+                    errorModal.classList.remove('hidden');
+                    return;
                 }
+                
+                // Check if we have used all available difficulty levels
+                const usedDifficulties = idInstances.map(instance => {
+                    const difficultySelect = document.getElementById(`difficulty_identification_${instance.id}`);
+                    return difficultySelect ? difficultySelect.value : null;
+                }).filter(Boolean);
+                
+                if (usedDifficulties.length >= 3) {
+                    errorMessage.textContent = 'You have already used all difficulty levels for Identification questions.';
+                    errorModal.classList.remove('hidden');
+                    return;
+                }
+                
+                const newInstance = {
+                    id: idInstanceCounter,
+                    type: 'identification'
+                };
+                idInstances.push(newInstance);
+                createQuizTypeInstance('identification', idInstanceCounter);
+                idInstanceCounter++;
+                
+                selectQuizTypeModal.classList.add('hidden');
             });
 
-            removeMultipleChoice.addEventListener('click', function() {
-                quiznumber_multiple_holder.classList.add('hidden');
-                addedQuizTypes.delete('multiple');
-                selectMultipleChoice.classList.remove('hidden');
-                addQuizTypeButton.classList.remove('hidden');
-            });
-
-            removeTrueOrFalse.addEventListener('click', function() {
-                quiznumber_true_or_false_holder.classList.add('hidden');
-                addedQuizTypes.delete('true_or_false');
-                selectTrueOrFalse.classList.remove('hidden');
-                addQuizTypeButton.classList.remove('hidden');
-            });
-
-            removeIdentification.addEventListener('click', function() {
-                quiznumber_identification_holder.classList.add('hidden');
-                addedQuizTypes.delete('identification');
-                selectIdentification.classList.remove('hidden');
-                addQuizTypeButton.classList.remove('hidden');
-            });
+            // Remove the old event listeners and UI handling for single instances
+            // as we're replacing them with the multiple instance support above
 
             
         //remove the error button
@@ -564,9 +741,6 @@
             const QuizType = quiztype.value;
             const QuizNumber = quiznumber.value;
             const difficultyLevel = difficulty.value;
-            let quiznumber_multiple_value = 0;
-            let quiznumber_true_or_false_value = 0;
-            let quiznumber_identification_value = 0;
 
             if (!QuizName) {
                 errorMessage.textContent = 'Please enter a name for the quiz.';
@@ -574,94 +748,234 @@
                 return;
             }
 
-            if(QuizType !== 'Mixed'){
-                console.log("Hallloooo");
-                quiznumber_multiple_value = 0;
-                quiznumber_true_or_false_value = 0 ;
-                quiznumber_identification_value = 0 ;
-            }else{
-                let selectedQuizTypes = 0;
-                if (!quiznumber_multiple_holder.classList.contains('hidden')) {
-                    quiznumber_multiple_value = quiznumber_multiple.value;
-                    selectedQuizTypes++;
-                }
-                if (!quiznumber_true_or_false_holder.classList.contains('hidden')) {
-                    quiznumber_true_or_false_value = quiznumber_true_or_false.value;
-                    selectedQuizTypes++;
-                }
-                if (!quiznumber_identification_holder.classList.contains('hidden')) {
-                    quiznumber_identification_value = quiznumber_identification.value;
-                    selectedQuizTypes++;
-                }
+            // Prepare submission data
+            let submissionData = {
+                name: QuizName,
+                type: QuizType,
+                difficulty: difficultyLevel,
+                number: QuizNumber,
+                multiple: 0,
+                true_or_false: 0,
+                identification: 0
+            };
 
-                //show an error if the quiz type is less than two quizzes
-                if (selectedQuizTypes < 2) {
-                    errorMessage.textContent = 'Please select at least two quiz types for a mixed quiz.';
+            if (QuizType === 'Mixed') {
+                // Count total questions for each type from all instances
+                let totalMultipleChoice = 0;
+                let totalTrueOrFalse = 0;
+                let totalIdentification = 0;
+
+                // Prepare arrays to hold details of each instance
+                let multipleChoiceInstances = [];
+                let trueOrFalseInstances = [];
+                let identificationInstances = [];
+
+                // Process Multiple Choice instances
+                mcInstances.forEach(instance => {
+                    const countSelect = document.getElementById(`multiple_${instance.id}`);
+                    const difficultySelect = document.getElementById(`difficulty_multiple_${instance.id}`);
+                    
+                    if (countSelect && difficultySelect) {
+                        const count = parseInt(countSelect.value);
+                        const difficulty = difficultySelect.value;
+                        
+                        totalMultipleChoice += count;
+                        
+                        multipleChoiceInstances.push({
+                            count: count,
+                            difficulty: difficulty
+                        });
+                    }
+                });
+
+                // Process True/False instances
+                tfInstances.forEach(instance => {
+                    const countSelect = document.getElementById(`true_or_false_${instance.id}`);
+                    const difficultySelect = document.getElementById(`difficulty_true_or_false_${instance.id}`);
+                    
+                    if (countSelect && difficultySelect) {
+                        const count = parseInt(countSelect.value);
+                        const difficulty = difficultySelect.value;
+                        
+                        totalTrueOrFalse += count;
+                        
+                        trueOrFalseInstances.push({
+                            count: count,
+                            difficulty: difficulty
+                        });
+                    }
+                });
+
+                // Process Identification instances
+                idInstances.forEach(instance => {
+                    const countSelect = document.getElementById(`identification_${instance.id}`);
+                    const difficultySelect = document.getElementById(`difficulty_identification_${instance.id}`);
+                    
+                    if (countSelect && difficultySelect) {
+                        const count = parseInt(countSelect.value);
+                        const difficulty = difficultySelect.value;
+                        
+                        totalIdentification += count;
+                        
+                        identificationInstances.push({
+                            count: count,
+                            difficulty: difficulty
+                        });
+                    }
+                });
+
+                // Add count totals and instance details to submission data
+                submissionData.multiple = totalMultipleChoice;
+                submissionData.true_or_false = totalTrueOrFalse;
+                submissionData.identification = totalIdentification;
+                submissionData.multipleChoiceInstances = multipleChoiceInstances;
+                submissionData.trueOrFalseInstances = trueOrFalseInstances;
+                submissionData.identificationInstances = identificationInstances;
+
+                // Check if we have at least two quiz instances in total
+                let totalInstances = mcInstances.length + tfInstances.length + idInstances.length;
+                
+                if (totalInstances < 2) {
+                    errorMessage.textContent = 'Please add at least two quiz instances for a mixed quiz.';
                     errorModal.classList.remove('hidden');
                     return;
                 }
+                
+                // Count how many different quiz types have been selected
+                let quizTypesSelected = 0;
+                if (mcInstances.length > 0) quizTypesSelected++;
+                if (tfInstances.length > 0) quizTypesSelected++;
+                if (idInstances.length > 0) quizTypesSelected++;
+                
+                // Check for duplicate difficulty levels within each quiz type
+                let hasDuplicateDifficulties = false;
+                
+                // Check Multiple Choice instances
+                if (mcInstances.length > 1) {
+                    const mcDifficulties = mcInstances.map(instance => {
+                        const select = document.getElementById(`difficulty_multiple_${instance.id}`);
+                        return select ? select.value : null;
+                    }).filter(Boolean);
+                    
+                    if (new Set(mcDifficulties).size !== mcDifficulties.length) {
+                        hasDuplicateDifficulties = true;
+                    }
+                }
+                
+                // Check True/False instances
+                if (!hasDuplicateDifficulties && tfInstances.length > 1) {
+                    const tfDifficulties = tfInstances.map(instance => {
+                        const select = document.getElementById(`difficulty_true_or_false_${instance.id}`);
+                        return select ? select.value : null;
+                    }).filter(Boolean);
+                    
+                    if (new Set(tfDifficulties).size !== tfDifficulties.length) {
+                        hasDuplicateDifficulties = true;
+                    }
+                }
+                
+                // Check Identification instances
+                if (!hasDuplicateDifficulties && idInstances.length > 1) {
+                    const idDifficulties = idInstances.map(instance => {
+                        const select = document.getElementById(`difficulty_identification_${instance.id}`);
+                        return select ? select.value : null;
+                    }).filter(Boolean);
+                    
+                    if (new Set(idDifficulties).size !== idDifficulties.length) {
+                        hasDuplicateDifficulties = true;
+                    }
+                }
+                
+                // Show error if duplicate difficulties are found
+                if (hasDuplicateDifficulties) {
+                    errorMessage.textContent = 'You cannot use the same difficulty level twice for the same quiz type.';
+                    errorModal.classList.remove('hidden');
+                    return;
+                }
+                
+                // For a single quiz type, check if there are different difficulties
+                if (quizTypesSelected === 1) {
+                    let difficulties = new Set();
+                    
+                    // Check whichever quiz type has instances
+                    if (mcInstances.length > 0) {
+                        mcInstances.forEach(instance => {
+                            const difficultySelect = document.getElementById(`difficulty_multiple_${instance.id}`);
+                            if (difficultySelect) {
+                                difficulties.add(difficultySelect.value);
+                            }
+                        });
+                    } else if (tfInstances.length > 0) {
+                        tfInstances.forEach(instance => {
+                            const difficultySelect = document.getElementById(`difficulty_true_or_false_${instance.id}`);
+                            if (difficultySelect) {
+                                difficulties.add(difficultySelect.value);
+                            }
+                        });
+                    } else if (idInstances.length > 0) {
+                        idInstances.forEach(instance => {
+                            const difficultySelect = document.getElementById(`difficulty_identification_${instance.id}`);
+                            if (difficultySelect) {
+                                difficulties.add(difficultySelect.value);
+                            }
+                        });
+                    }
+                    
+                    // If there's only one difficulty level across all instances
+                    if (difficulties.size < 2) {
+                        errorMessage.textContent = 'Please use at least two different difficulty levels for your quiz instances.';
+                        errorModal.classList.remove('hidden');
+                        return;
+                    }
+                }
             }
 
-
-            //check if the user exceeded the reviewer generation yet
+            // Check if the user exceeded the reviewer generation limit
             fetch('/subscription/check', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: JSON.stringify({})
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log(data);
-                    if(data.quizLimitReached){
+                    if (data.quizLimitReached) {
                         showModal('Error', 'Please upgrade your subscription to add more reviewers.', 'text-red-500', 'OK');
                         modalButton.classList.add('hidden');
-                    }else if(data.notSubscribed){
-                        showModal('Error', 'Your are not subscribed to any promo yet.', 'text-red-500', 'OK');
+                    } else if (data.notSubscribed) {
+                        showModal('Error', 'You are not subscribed to any promo yet.', 'text-red-500', 'OK');
                         modalButton.classList.add('hidden');
-                    }
-                    else{
-                        //================================================================================================
-
-                         // Show the loader
+                    } else {
+                        // Show the loader
                         loader.classList.remove('hidden');
 
+                        // Generate the quiz
                         fetch(`/generate-quiz/${topicId}`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({
-                                name: QuizName,
-                                type: QuizType,
-                                difficulty: difficultyLevel,
-                                number: QuizNumber,
-                                multiple: quiznumber_multiple_value,
-                                true_or_false: quiznumber_true_or_false_value,  
-                                identification: quiznumber_identification_value
-                            }),
+                            body: JSON.stringify(submissionData),
                         })
                         .then(response => response.json())
                         .then(data => {
                             // Hide the loader
-                           
                             if (data.success) {
                                 loader.classList.add('hidden');
                                 addQuizModal.classList.add('hidden');
                                 // Show the success modal
                                 successModal.classList.remove('hidden');
 
-                                //generate the quiz card again
+                                // Refresh quiz list
                                 fetch(`/getquizzes/${topicId}`)
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.success) {
-                                        
-                                        quizContainer.innerHTML="";
+                                        quizContainer.innerHTML = "";
                                         data.questions.forEach(quiz => {
                                             const button = document.createElement('button');
                                             button.classList.add('question_button','gap-1','w-full','bg-white', 'text-start', 'text-xs', 'sm:text-sm', 'py-2', 'px-3', 'my-2', 'shadow-md', 'rounded-md', 'flex', 'justify-between', 'items-center', 'hover:bg-blue-50', 'delay-75',  'hover:shadow-lg', 'transition', 'duration-300');
@@ -681,29 +995,55 @@
                                             `;
                                             quizContainer.appendChild(button);
                                         });
+                                        
                                         // Reset form values
                                         newQuizName.value = '';
                                         quiztype.value = 'Multiple Choice';
                                         quiznumber.value = '10';
-                                        quiznumber_multiple_holder.classList.add('hidden');
-                                        quiznumber_true_or_false_holder.classList.add('hidden');
-                                        quiznumber_identification_holder.classList.add('hidden');
-                                        addedQuizTypes.clear();
+                                        
+                                        // Remove all dynamically created instance elements
+                                        mcInstances.forEach(instance => {
+                                            const element = document.getElementById(`multiple_holder_${instance.id}`);
+                                            if (element) element.remove();
+                                        });
+                                        
+                                        tfInstances.forEach(instance => {
+                                            const element = document.getElementById(`true_or_false_holder_${instance.id}`);
+                                            if (element) element.remove();
+                                        });
+                                        
+                                        idInstances.forEach(instance => {
+                                            const element = document.getElementById(`identification_holder_${instance.id}`);
+                                            if (element) element.remove();
+                                        });
+                                        
+                                        // Reset the instance arrays
+                                        mcInstances.length = 0;
+                                        tfInstances.length = 0;
+                                        idInstances.length = 0;
+                                        
+                                        // Reset instance counters
+                                        mcInstanceCounter = 0;
+                                        tfInstanceCounter = 0;
+                                        idInstanceCounter = 0;
+                                        
+                                        // Show general difficulty selector again
+                                        document.getElementById('difficulty').parentElement.classList.remove('hidden');
+                                        
+                                        // Hide add quiz type button
                                         addQuizTypeButton.classList.add('hidden');
-                                        // location.reload();
+                                        
                                     } else {
                                         alert('Failed to get quizzes: ' + data.message);
                                         loader.classList.add('hidden');
                                     }
-                                });       
+                                });
                             } else {
                                 alert('Failed to create quiz: ' + data.message);
                                 loader.classList.add('hidden');
                             }
                         })
                         .catch(error => console.error('Error:', error));
-
-                        //=============================================================================================== 
                     }
                 } else {
                     console.log(data);
@@ -711,8 +1051,6 @@
                 }
             })
             .catch(error => console.error('Error checking subscription:', error));
-
-           
         });
 
 

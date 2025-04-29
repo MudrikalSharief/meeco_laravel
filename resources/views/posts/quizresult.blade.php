@@ -289,8 +289,8 @@
                                                     <p class="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}</p>
                                                     <p class="text-green-500">Correct Answer : ${question.answer}</p>
                                                     <ul>
-                                                        <li><label class="choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="True">True </label></li>
-                                                        <li><label class="choices${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="False"> False </label></li>
+                                                        <li><label class="choicesTF${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="True">True </label></li>
+                                                        <li><label class="choicesTF${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="False"> False </label></li>
                                                     </ul>
                                                 `;
                                             } else if (type === 'identification') {
@@ -298,7 +298,7 @@
                                                     <p class="text-gray-700 font-semibold">${questionCounter}) ${question.question_text}</p>
                                                     <p class="text-green-500">Correct Answer : ${question.answer} </p>
                                                     <ul>
-                                                        <li><label class="choices w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input class="w-full px-1" type="text" disabled name="question_${index}" value="${question.user_answer}"> </label></li>
+                                                        <li><label class="choicesID${index} w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input class="w-full px-1" type="text" disabled name="question_${index}" value="${question.user_answer || ''}"> </label></li>
                                                     </ul>
                                                 `;
                                             }
@@ -317,31 +317,63 @@
                                                     if (type === 'identification') {
                                                         const correctanswer = correctAnswer.toLowerCase();
                                                         const useranswer = userAnswer ? userAnswer.toLowerCase() : '';
-                                                        const choices = questionDiv.querySelector(`.choices`);
+                                                        const choices = questionDiv.querySelector(`.choicesID${index}`);
                                                         if (correctanswer === useranswer) {
                                                             choices.classList.remove('bg-blue-50');
-                                                            choices.classList.remove('bg-red-200');
                                                             choices.classList.add('bg-green-200');
                                                         } else {
                                                             choices.classList.remove('bg-blue-50');
-                                                            choices.classList.remove('bg-green-200');
                                                             choices.classList.add('bg-red-200');
                                                         }
-                                                    } else {
+                                                    } else if (type === 'true_or_false') {
+                                                        if (label.value === userAnswer) {
+                                                            const tfLabel = label.value === 'True' ? 
+                                                                questionDiv.querySelector(`.choicesTF${index}True`) : 
+                                                                questionDiv.querySelector(`.choicesTF${index}False`);
+                                                            
+                                                            if (tfLabel) {
+                                                                tfLabel.classList.remove('bg-blue-50');
+                                                                if (userAnswer === correctAnswer) {
+                                                                    tfLabel.classList.add('bg-green-200');
+                                                                } else {
+                                                                    tfLabel.classList.add('bg-red-200');
+                                                                }
+                                                                label.checked = true;
+                                                            }
+                                                        }
+                                                        
+                                                        // Also highlight the correct answer if user got it wrong
+                                                        if (userAnswer !== correctAnswer) {
+                                                            const correctTfLabel = correctAnswer === 'True' ?
+                                                                questionDiv.querySelector(`.choicesTF${index}True`) :
+                                                                questionDiv.querySelector(`.choicesTF${index}False`);
+                                                                
+                                                            if (correctTfLabel) {
+                                                                correctTfLabel.classList.remove('bg-blue-50');
+                                                                correctTfLabel.classList.add('bg-green-100');
+                                                                correctTfLabel.classList.add('border');
+                                                                correctTfLabel.classList.add('border-green-500');
+                                                            }
+                                                        }
+                                                    } else { // multiple_choice
                                                         if (label.value === userAnswer) {
                                                             let letter = label.value;
-                                                            const choices = questionDiv.querySelectorAll(`.choices${index}${letter}`);
-                                                            choices.forEach(choice => {
-                                                                if (choice.classList.contains('choices' + index + userAnswer)) {
-                                                                    choice.classList.remove('bg-blue-50');
-                                                                    choice.classList.add('bg-red-200');
-                                                                    if (correctAnswer == userAnswer) {
-                                                                        choice.classList.remove('bg-red-200');
-                                                                        choice.classList.add('bg-green-200');
-                                                                    }
-                                                                    label.checked = true;
-                                                                }
-                                                            });
+                                                            const choice = questionDiv.querySelector(`.choices${index}${letter}`);
+                                                            if (choice) {
+                                                                choice.classList.remove('bg-blue-50');
+                                                                choice.classList.add(correctAnswer === userAnswer ? 'bg-green-200' : 'bg-red-200');
+                                                                label.checked = true;
+                                                            }
+                                                        }
+                                                        
+                                                        // Highlight the correct answer if user selected wrong
+                                                        if (userAnswer && userAnswer !== correctAnswer) {
+                                                            const correctChoice = questionDiv.querySelector(`.choices${index}${correctAnswer}`);
+                                                            if (correctChoice) {
+                                                                correctChoice.classList.add('border');
+                                                                correctChoice.classList.add('border-green-500');
+                                                                correctChoice.classList.add('bg-green-100');
+                                                            }
                                                         }
                                                     }
                                                 });
@@ -374,8 +406,8 @@
                                             <p class="text-gray-700 font-semibold">${index + 1}) ${question.question_text}</p>
                                             <p class="text-green-500">Correct Answer : ${question.answer}</p>
                                             <ul>
-                                                <li><label class="choices${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="True">True </label></li>
-                                                <li><label class="choices${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="False"> False </label></li>
+                                                <li><label class="choicesTF${index}True w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="True">True </label></li>
+                                                <li><label class="choicesTF${index}False w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input type="radio" disabled name="question_${index}" value="False"> False </label></li>
                                             </ul>
                                         `;
                                     }
@@ -386,7 +418,7 @@
                                             <p class="text-gray-700 font-semibold">${index + 1}) ${question.question_text}</p>
                                             <p class="text-green-500">Correct Answer : ${question.answer} </p>
                                             <ul>
-                                                <li><label class="choices w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input class="w-full px-1" type="text" disabled name="question_${index}" value="${question.user_answer}"> </label></li>
+                                                <li><label class="choicesID${index} w-full text-start py-2 px-3 my-2 bg-blue-50 shadow-sm rounded-md flex justify-start gap-2 items-center"><input class="w-full px-1" type="text" disabled name="question_${index}" value="${question.user_answer || ''}"> </label></li>
                                             </ul>
                                         `;
                                     }
@@ -424,7 +456,6 @@
                                                             choice.classList.remove('bg-blue-50');
                                                             choice.classList.add('bg-red-200');
                                                             if(correctAnswer == userAnswer){
-                                                                choice.classList.remove('bg-blue-50');
                                                                 choice.classList.remove('bg-red-200');
                                                                 choice.classList.add('bg-green-200');
                                                             }

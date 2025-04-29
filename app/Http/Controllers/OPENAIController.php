@@ -526,8 +526,8 @@ class OPENAIController extends Controller
                                 Example format for the output:
                                 [
                                     {
-                                            Topic, 
-                                            Description of the topic.
+                                             \"Topic\": \"Example Topic\", 
+                                             \"Description\": \"Example description of the topic\"
                                     }
                                 ]
         
@@ -641,20 +641,19 @@ class OPENAIController extends Controller
         set_time_limit(300); // Set the maximum execution time to 300 seconds
 
         Log::info('generate_quiz called', ['topic_id' => $topic_id, 'request' => $request->all()]);
-    
+
         $topic = Topic::find($topic_id);
         if (!$topic) {
             Log::error('Topic not found', ['topic_id' => $topic_id]);
             return response()->json(['success' => false, 'message' => 'Topic not found.']);
         }
-         
+        
         $quizname = Question::where('topic_id', $topic['topic_id'])->pluck('question_title');
         if(!$quizname->isEmpty()){
             if($quizname[0] === $request->post('name')){
-                return response()->json(['success' => false, 'message' => 'Quiz Name Already Take']);
+                return response()->json(['success' => false, 'message' => 'Quiz Name Already Taken']);
             }
         }
-        
         
         $reviewer = Reviewer::where('topic_id', $topic_id)->get(['reviewer_about', 'reviewer_text']);
         if ($reviewer->isEmpty()) {
@@ -665,16 +664,12 @@ class OPENAIController extends Controller
         $text = "";
         foreach($reviewer as $item){
             $text .= $item->reviewer_about . " " . $item->reviewer_text . " | ";
-
         }
         
         $number = $request->post('number');
-        $multiple = $request->post('multiple');
-        $true_or_false = $request->post('true_or_false');
-        $identification = $request->post('identification');
         $difficulty = $request->post('difficulty', 'easy'); // Default to easy if not specified
         $bloomsLevels = $this->mapDifficultyToBloomsLevels($difficulty);
-        $total_quiz = intval($multiple) + intval($true_or_false) + intval($identification);
+        
         if($request->post('type') == 'Multiple Choice'){
             try {
                 $apiKey = OpenAIHelper::getApiKey();
@@ -730,15 +725,15 @@ class OPENAIController extends Controller
                     'temperature' => 0.7,
                     'max_tokens' => 4096
                 ]);
-        
+    
                 if ($response->failed()) {
                     Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
                     return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
                 }
-        
+    
                 $responseData = json_decode($response->body(), true);
                 Log::info('OpenAI API Response:', ['response' => $responseData]);
-        
+    
                 if (!isset($responseData['choices'][0]['message']['content'])) {
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.', 'data' => $responseData]);
@@ -749,7 +744,7 @@ class OPENAIController extends Controller
                 $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
                 Log::info('Json to be Decoded:', ['json' => $responseData['choices'][0]['message']['content']]);
-        
+    
                 if (empty($content['questions'])) {
                     Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
                     return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text , 'response' => $responseData]);
@@ -766,10 +761,13 @@ class OPENAIController extends Controller
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
                     'number_of_question' => $request->post('number'),
+                    'metadata' => json_encode([
+                        'difficulty' => $difficulty
+                    ])
                 ]);
-        
+    
                 Log::info('Created Question:', ['question' => $question]);
-        
+    
                 $quizController = new QuizController();
                 // Pass only the questions array, not the entire content
                 $quizController->storeMultipleChoiceQuestions($question->question_id, ['questions' => $content['questions']]);
@@ -834,15 +832,15 @@ class OPENAIController extends Controller
                     'temperature' => 0.7,
                     'max_tokens' => 4096
                 ]);
-        
+    
                 if ($response->failed()) {
                     Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
                     return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
                 }
-        
+    
                 $responseData = json_decode($response->body(), true);
                 Log::info('OpenAI API Response:', ['response' => $responseData]);
-        
+    
                 if (!isset($responseData['choices'][0]['message']['content'])) {
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
@@ -852,7 +850,7 @@ class OPENAIController extends Controller
 
                 $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
-        
+    
                 if (empty($content['questions'])) {
                     Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
                     return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
@@ -863,18 +861,15 @@ class OPENAIController extends Controller
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
                     'number_of_question' => $request->post('number'),
+                    'metadata' => json_encode([
+                        'difficulty' => $difficulty
+                    ])
                 ]);
-        
+    
                 Log::info('Created Question:', ['question' => $question]);
-        
-                foreach ($content['questions'] as $questionData) {
-                    true_or_false::create([
-                        'question_id' => $question->question_id,
-                        'question_text' => $questionData['question'],
-                        'answer' => $questionData['correct_answer'],
-                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                    ]);
-                }
+    
+                $quizController = new QuizController();
+                $quizController->storeTrueFalseQuestions($question->question_id, $content);
                 
                 Log::info('Action : Generate Quiz True or false');
                 OpenAIHelper::calculateAndLogCost($responseData);
@@ -887,7 +882,7 @@ class OPENAIController extends Controller
             }
 
                 return response()->json(['success' => true, 'data' => $content]);
-        
+    
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
@@ -939,25 +934,25 @@ class OPENAIController extends Controller
                     'temperature' => 0.7,
                     'max_tokens' => 4096
                 ]);
-        
+    
                 if ($response->failed()) {
                     Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
                     return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
                 }
-        
+    
                 $responseData = json_decode($response->body(), true);
                 Log::info('OpenAI API Response:', ['response' => $responseData]);
-        
+    
                 if (!isset($responseData['choices'][0]['message']['content'])) {
                     Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
                     return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
                 }
-        
+    
                 $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
 
                 $content = json_decode($jsonContent, true);
                 Log::info('Parsed Content:', ['content' => $content]);
-        
+    
                 if (empty($content['questions'])) {
                     Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
                     return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
@@ -969,18 +964,12 @@ class OPENAIController extends Controller
                     'question_title' => $request->post('name'),
                     'number_of_question' => $request->post('number'),
                 ]);
-        
+    
                 Log::info('Action : Generate Quiz Identification');
                 Log::info('Created Question:', ['question' => $question]);
-        
-                foreach ($content['questions'] as $questionData) {
-                    Identification::create([
-                        'question_id' => $question->question_id,
-                        'question_text' => $questionData['question'],
-                        'answer' => $questionData['correct_answer'],
-                        'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                    ]);
-                }
+    
+                $quizController = new QuizController();
+                $quizController->storeIdentificationQuestions($question->question_id, $content);
                 
                 OpenAIHelper::calculateAndLogCost($responseData);
                 
@@ -993,172 +982,294 @@ class OPENAIController extends Controller
 
                 return response()->json(['success' => true, 'data' => $content]);
                 
-        
+    
             } catch (\Exception $e) {
                 Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }            
         }else if($request->post('type') == 'Mixed'){
-            $prompt = "Based on the following text, generate ";
-            $quizTypes = [];
-            $jsonFormat = "{\n";
+            $multipleChoiceInstances = $request->post('multipleChoiceInstances', []);
+            $trueOrFalseInstances = $request->post('trueOrFalseInstances', []);
+            $identificationInstances = $request->post('identificationInstances', []);
             
-            if ($multiple > 0) {
-                $quizTypes[] = "$multiple multiple-choice quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
-                $jsonFormat .= "    \"multiple_choice\": [\n        {\n            \"blooms_level\": \"Analysis\",\n            \"question\": \"Which of the following best explains the relationship between X and Y?\",\n            \"choices\": {\n                \"A\": \"Choice 1\",\n                \"B\": \"Choice 2\",\n                \"C\": \"Choice 3\",\n                \"D\": \"Choice 4\"\n            },\n            \"correct_answer\": \"B\"\n        }\n    ],\n";
-            }
+            // Calculate total questions for each type
+            $multiple = $request->post('multiple', 0);
+            $true_or_false = $request->post('true_or_false', 0);
+            $identification = $request->post('identification', 0);
             
-            if ($true_or_false > 0) {
-                $quizTypes[] = "$true_or_false true or false quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
-                $jsonFormat .= "    \"true_or_false\": [\n        {\n            \"blooms_level\": \"Evaluation\",\n            \"question\": \"Given the evidence presented, the conclusion that X leads to Y is valid. True or False?\",\n            \"correct_answer\": \"True\"\n        }\n    ],\n";
-            }
+            // Structure all instances data for storage in metadata
+            $metadata = [
+                'multiple' => intval($multiple),
+                'true_or_false' => intval($true_or_false),
+                'identification' => intval($identification),
+                'multipleChoiceInstances' => $multipleChoiceInstances,
+                'trueOrFalseInstances' => $trueOrFalseInstances,
+                'identificationInstances' => $identificationInstances
+            ];
             
-            if ($identification > 0) {
-                $quizTypes[] = "$identification identification quiz questions that focus on the " . $bloomsLevels . " levels of Bloom's Taxonomy";
-                $jsonFormat .= "    \"identification\": [\n        {\n            \"blooms_level\": \"Synthesis\",\n            \"question\": \"What term describes the process of combining concepts A and B to create a new solution?\",\n            \"correct_answer\": \"Correct Answer\"\n        }\n    ],\n";
-            }
-            
-            $bloomsInstructions = "\n\nInclude questions from these cognitive levels of Bloom's Taxonomy:\n
-            1. KNOWLEDGE: Questions that assess recall of facts, terms, concepts, or basic information.
-            2. COMPREHENSION: Questions that test understanding of the material.
-            3. APPLICATION: Questions that require applying knowledge to new situations.
-            4. ANALYSIS: Questions that ask students to break down information and show relationships.
-            5. SYNTHESIS: Questions that require combining ideas to create something new.
-            6. EVALUATION: Questions that ask for judgments based on criteria.\n
-            
-            Guidelines:
-            - The difficulty level requested is '" . $difficulty . "', so focus on creating questions at the " . $bloomsLevels . " levels.
-            - Ensure each question type includes questions appropriate for the requested difficulty.
-            - For multiple-choice questions, distribute the correct answers evenly across options A, B, C, and D. Do not bias toward any particular option.
-            - Aim for approximately 25% of answers being A, 25% B, 25% C, and 25% D.
-            - For higher levels (Analysis, Synthesis, Evaluation), the questions should require critical thinking rather than simple recall.
-            - The order of the questions must be mixed to provide variety in cognitive challenge.\n";
-            
-            $prompt .= implode(", ", $quizTypes) . ". Format your response in JSON like this: \n\n" . rtrim($jsonFormat, ",\n") . "\n}" . $bloomsInstructions . "\nText: " . $text;
+            $total_quiz = intval($multiple) + intval($true_or_false) + intval($identification);
             
             try {
-                $apiKey = OpenAIHelper::getApiKey();
-                $response = Http::withHeaders([
-                    'Content-Type'  => 'application/json',
-                    "Authorization" => "Bearer " . $apiKey
-                ])
-                ->timeout(120)
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini-2024-07-18',
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'You are an AI that generates quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
-                        ['role' => 'user', 'content' => $prompt]
-                    ],
-                    'temperature' => 0.7,
-                    'max_tokens' => 4096
-                ]);
-
-                if ($response->failed()) {
-                    Log::error('Failed to communicate with OpenAI API', ['response' => $response->body()]);
-                    return response()->json(['success' => false, 'message' => 'Failed to communicate with OpenAI API.']);
-                }
-
-                $responseData = json_decode($response->body(), true);
-                Log::info('OpenAI API Response:', ['response' => $responseData]);
-
-                if (!isset($responseData['choices'][0]['message']['content'])) {
-                    Log::error('Invalid response format from OpenAI API', ['response' => $responseData]);
-                    return response()->json(['success' => false, 'message' => 'Invalid response format from OpenAI API.']);
-                }
-
-                $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
-
-                $content = json_decode($jsonContent, true);
-                Log::info('Parsed Content:', ['content' => $content]);
-
-                if (empty($content['multiple_choice']) && empty($content['true_or_false']) && empty($content['identification'])) {
-                    Log::error('No questions generated', ['content' => $content, 'reviewerText' => $text]);
-                    return response()->json(['success' => false, 'message' => 'No questions generated.', 'data' => $content, 'raw' => $text]);
-                }
-
+                // Create a question record first
                 $question = Question::create([
                     'topic_id' => $topic_id,
                     'question_type' => $request->post('type'),
                     'question_title' => $request->post('name'),
                     'number_of_question' => $total_quiz,
-                    'metadata' => json_encode([
-                        'multiple' => intval($multiple),
-                        'true_or_false' => intval($true_or_false),
-                        'identification' => intval($identification)
-                    ])
+                    'metadata' => json_encode($metadata)
                 ]);
 
                 Log::info('Created Mixed Question with metadata:', [
                     'question' => $question,
-                    'multiple' => $multiple,
-                    'true_or_false' => $true_or_false,
-                    'identification' => $identification
+                    'metadata' => $metadata
                 ]);
 
-                if (!empty($content['multiple_choice'])) {
-                    // Ensure we only use the exact number of questions requested
-                    if (count($content['multiple_choice']) > $multiple) {
-                        $content['multiple_choice'] = array_slice($content['multiple_choice'], 0, $multiple);
-                        Log::info('Trimmed multiple choice questions to match requested number', 
-                            ['requested' => $multiple, 'received' => count($content['multiple_choice'])]);
+                $apiKey = OpenAIHelper::getApiKey();
+                $allContent = [
+                    'multiple_choice' => [],
+                    'true_or_false' => [],
+                    'identification' => []
+                ];
+
+                // Generate Multiple Choice Questions - separate API calls for each difficulty
+                if (!empty($multipleChoiceInstances)) {
+                    foreach ($multipleChoiceInstances as $instance) {
+                        $count = intval($instance['count']);
+                        $diff = $instance['difficulty'];
+                        $bloomsLevels = $this->mapDifficultyToBloomsLevels($diff);
+                        
+                        if ($count > 0) {
+                            $response = Http::withHeaders([
+                                'Content-Type'  => 'application/json',
+                                "Authorization" => "Bearer " . $apiKey
+                            ])
+                            ->timeout(120)
+                            ->post('https://api.openai.com/v1/chat/completions', [
+                                'model' => 'gpt-4o-mini-2024-07-18',
+                                'messages' => [
+                                    ['role' => 'system', 'content' => 'You are an AI that generates multiple-choice quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} multiple-choice quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. The difficulty level requested is '{$diff}'.
+
+                                    Guidelines:
+                                    - Each question must have four options labeled A, B, C, and D.
+                                    - Only one option should be correct.
+                                    - IMPORTANT: Distribute the correct answers evenly across options A, B, C, and D.
+                                    - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
+                                    - Indicate which Bloom's level each question addresses in the JSON response.
+
+                                    Format your response in JSON like this: 
+                                    {
+                                    \"questions\": [
+                                        {
+                                        \"blooms_level\": \"Knowledge\",
+                                        \"question\": \"What is the definition of X?\",
+                                        \"choices\": {
+                                            \"A\": \"choice\",
+                                            \"B\": \"choice\",
+                                            \"C\": \"choice\",
+                                            \"D\": \"choice\"
+                                        },
+                                        \"correct_answer\": \"C\"
+                                        }
+                                    ]
+                                    } 
+
+                                    Text: {$text}" ]
+                                ],
+                                'temperature' => 0.7,
+                                'max_tokens' => 4096
+                            ]);
+                            
+                            if (!$response->failed()) {
+                                $responseData = json_decode($response->body(), true);
+                                if (isset($responseData['choices'][0]['message']['content'])) {
+                                    $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+                                    $content = json_decode($jsonContent, true);
+                                    
+                                    if (isset($content['questions']) && is_array($content['questions'])) {
+                                        // Add difficulty metadata to each question
+                                        foreach ($content['questions'] as &$q) {
+                                            $q['difficulty'] = $diff;
+                                        }
+                                        
+                                        $allContent['multiple_choice'] = array_merge(
+                                            $allContent['multiple_choice'], 
+                                            $content['questions']
+                                        );
+                                    }
+                                }
+                                
+                                OpenAIHelper::calculateAndLogCost($responseData);
+                            }
+                        }
                     }
-                    
-                    $quizController = new QuizController();
-                    // Pass only the multiple_choice part to avoid including other question types
+                }
+                
+                // Generate True or False Questions - separate API calls for each difficulty
+                if (!empty($trueOrFalseInstances)) {
+                    foreach ($trueOrFalseInstances as $instance) {
+                        $count = intval($instance['count']);
+                        $diff = $instance['difficulty'];
+                        $bloomsLevels = $this->mapDifficultyToBloomsLevels($diff);
+                        
+                        if ($count > 0) {
+                            $response = Http::withHeaders([
+                                'Content-Type'  => 'application/json',
+                                "Authorization" => "Bearer " . $apiKey
+                            ])
+                            ->timeout(120)
+                            ->post('https://api.openai.com/v1/chat/completions', [
+                                'model' => 'gpt-4o-mini-2024-07-18',
+                                'messages' => [
+                                    ['role' => 'system', 'content' => 'You are an AI that generates true or false quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} true or false quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. The difficulty level requested is '{$diff}'.
+
+                                    Guidelines:
+                                    - Ensure statements align with the appropriate cognitive level in Bloom's Taxonomy.
+                                    - The order of the questions must be mixed to provide variety in cognitive challenge.
+                                    - Indicate which Bloom's level each question addresses in the JSON response.
+
+                                    Format your response in JSON like this: 
+                                    {
+                                    \"questions\": [
+                                        {
+                                        \"blooms_level\": \"Analysis\",
+                                        \"question\": \"Based on the principles discussed, X can be classified as a direct cause of Y. True or False?\",
+                                        \"correct_answer\": \"True\"
+                                        }
+                                    ]
+                                    } 
+
+                                    Text: {$text}" ]
+                                ],
+                                'temperature' => 0.7,
+                                'max_tokens' => 4096
+                            ]);
+                            
+                            if (!$response->failed()) {
+                                $responseData = json_decode($response->body(), true);
+                                if (isset($responseData['choices'][0]['message']['content'])) {
+                                    $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+                                    $content = json_decode($jsonContent, true);
+                                    
+                                    if (isset($content['questions']) && is_array($content['questions'])) {
+                                        // Add difficulty metadata to each question
+                                        foreach ($content['questions'] as &$q) {
+                                            $q['difficulty'] = $diff;
+                                        }
+                                        
+                                        $allContent['true_or_false'] = array_merge(
+                                            $allContent['true_or_false'], 
+                                            $content['questions']
+                                        );
+                                    }
+                                }
+                                
+                                OpenAIHelper::calculateAndLogCost($responseData);
+                            }
+                        }
+                    }
+                }
+                
+                // Generate Identification Questions - separate API calls for each difficulty
+                if (!empty($identificationInstances)) {
+                    foreach ($identificationInstances as $instance) {
+                        $count = intval($instance['count']);
+                        $diff = $instance['difficulty'];
+                        $bloomsLevels = $this->mapDifficultyToBloomsLevels($diff);
+                        
+                        if ($count > 0) {
+                            $response = Http::withHeaders([
+                                'Content-Type'  => 'application/json',
+                                "Authorization" => "Bearer " . $apiKey
+                            ])
+                            ->timeout(120)
+                            ->post('https://api.openai.com/v1/chat/completions', [
+                                'model' => 'gpt-4o-mini-2024-07-18',
+                                'messages' => [
+                                    ['role' => 'system', 'content' => 'You are an AI that generates identification quiz questions based on Bloom\'s Taxonomy to assess various cognitive levels. Return the response in JSON format.'],
+                                    ['role' => 'user', 'content' => "Based on the following text, generate EXACTLY {$count} identification quiz questions that cover the {$bloomsLevels} levels of Bloom's Taxonomy. The difficulty level requested is '{$diff}'.
+
+                                    Guidelines:
+                                    - Ensure questions reflect the appropriate cognitive level in Bloom's Taxonomy.
+                                    - The answer must be a **single word or a short phrase**.
+                                    - Include questions that match the requested difficulty level.
+                                    - The order of the questions must be mixed to provide variety in cognitive challenge.
+                                    - Indicate which Bloom's level each question addresses in the JSON response.
+
+                                    Format your response in JSON like this: 
+                                    {
+                                    \"questions\": [
+                                        {
+                                        \"blooms_level\": \"Application\",
+                                        \"question\": \"What process would you use to solve this specific problem based on the principles discussed?\",
+                                        \"correct_answer\": \"Correct Answer\"
+                                        }
+                                    ]
+                                    } 
+
+                                    Text: {$text}" ]
+                                ],
+                                'temperature' => 0.7,
+                                'max_tokens' => 4096
+                            ]);
+                            
+                            if (!$response->failed()) {
+                                $responseData = json_decode($response->body(), true);
+                                if (isset($responseData['choices'][0]['message']['content'])) {
+                                    $jsonContent = trim($responseData['choices'][0]['message']['content'], "```json\n");
+                                    $content = json_decode($jsonContent, true);
+                                    
+                                    if (isset($content['questions']) && is_array($content['questions'])) {
+                                        // Add difficulty metadata to each question
+                                        foreach ($content['questions'] as &$q) {
+                                            $q['difficulty'] = $diff;
+                                        }
+                                        
+                                        $allContent['identification'] = array_merge(
+                                            $allContent['identification'], 
+                                            $content['questions']
+                                        );
+                                    }
+                                }
+                                
+                                OpenAIHelper::calculateAndLogCost($responseData);
+                            }
+                        }
+                    }
+                }
+
+                // Process and store all questions
+                $quizController = new QuizController();
+
+                if (!empty($allContent['multiple_choice'])) {
                     $quizController->storeMultipleChoiceQuestions($question->question_id, 
-                        ['questions' => $content['multiple_choice']]);
+                        ['multiple_choice' => $allContent['multiple_choice']]);
                 }
 
-                if (!empty($content['true_or_false'])) {
-                    // Ensure we only use the exact number of questions requested
-                    if (count($content['true_or_false']) > $true_or_false) {
-                        $content['true_or_false'] = array_slice($content['true_or_false'], 0, $true_or_false);
-                        Log::info('Trimmed true/false questions to match requested number',
-                            ['requested' => $true_or_false, 'received' => count($content['true_or_false'])]);
-                    }
-                    
-                    foreach ($content['true_or_false'] as $questionData) {
-                        true_or_false::create([
-                            'question_id' => $question->question_id,
-                            'question_text' => $questionData['question'],
-                            'answer' => $questionData['correct_answer'],
-                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                        ]);
-                    }
+                if (!empty($allContent['true_or_false'])) {
+                    $quizController->storeTrueFalseQuestions($question->question_id, 
+                        ['questions' => $allContent['true_or_false']]);
                 }
 
-                if (!empty($content['identification'])) {
-                    // Ensure we only use the exact number of questions requested
-                    if (count($content['identification']) > $identification) {
-                        $content['identification'] = array_slice($content['identification'], 0, $identification);
-                        Log::info('Trimmed identification questions to match requested number',
-                            ['requested' => $identification, 'received' => count($content['identification'])]);
-                    }
-                    
-                    foreach ($content['identification'] as $questionData) {
-                        Identification::create([
-                            'question_id' => $question->question_id,
-                            'question_text' => $questionData['question'],
-                            'answer' => $questionData['correct_answer'],
-                            'blooms_level' => $questionData['blooms_level'] ?? 'Knowledge',
-                        ]);
-                    }
+                if (!empty($allContent['identification'])) {
+                    $quizController->storeIdentificationQuestions($question->question_id, 
+                        ['questions' => $allContent['identification']]);
                 }
 
                 Log::info('Action : Generate Quiz Mixed');
-                OpenAIHelper::calculateAndLogCost($responseData);
-
-                $quiz = Subscription::where('user_id', $request->user()->user_id)
-                ->where('status', 'Active')  // Only increment active subscription
-                ->first();
-            if ($quiz) {
-                $quiz->increment('quiz_created');
-            }
                 
-                return response()->json(['success' => true, 'data' => $content]);
+                $quiz = Subscription::where('user_id', $request->user()->user_id)
+                    ->where('status', 'Active')  // Only increment active subscription
+                    ->first();
+                if ($quiz) {
+                    $quiz->increment('quiz_created');
+                }
+                
+                return response()->json(['success' => true, 'data' => $allContent]);
 
             } catch (\Exception $e) {
-                Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage()]);
+                Log::error('Exception occurred in generate_quiz', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
                 return response()->json(['success' => false, 'message' => $e->getMessage()]);
             }       
         }else{
@@ -1232,10 +1343,8 @@ class OPENAIController extends Controller
                     - Distribute the correct answers evenly across options A, B, C, and D.
                     - For higher cognitive levels (Analysis, Synthesis, Evaluation), ensure questions require critical thinking.
                     - Indicate which Bloom's level each question addresses.
-                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
-            
+
                     Format your response in JSON like this: 
-            
                     {
                     \"questions\": [
                         {
@@ -1307,13 +1416,12 @@ class OPENAIController extends Controller
 
                     Guidelines:
                     - Ensure statements align with the appropriate cognitive level in Bloom's Taxonomy.
-                    - Some statements should be straightforward while others should require deeper thinking.
-                    - Balance the number of true and false statements.
-                    - Indicate which Bloom's level each question addresses.
-                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
-            
+                    - Some statements should be straightforward (Knowledge, Comprehension) while others should require deeper thinking (Analysis, Synthesis, Evaluation) based on the requested difficulty.
+                    - The order of the questions must be mixed to provide variety in cognitive challenge.
+                    - Indicate which Bloom's level each question addresses in the JSON response.
+
                     Format your response in JSON like this: 
-            
+
                     {
                     \"questions\": [
                         {
@@ -1323,7 +1431,7 @@ class OPENAIController extends Controller
                         }
                     ]
                     } 
-            
+
                     Text: {$text}"]
                 ],
                 'temperature' => 0.7,
@@ -1379,13 +1487,12 @@ class OPENAIController extends Controller
 
                     Guidelines:
                     - Ensure questions reflect the appropriate cognitive level in Bloom's Taxonomy.
-                    - The answer must be a single word or a short phrase.
-                    - Include questions that match the medium difficulty level.
-                    - Indicate which Bloom's level each question addresses.
-                    - IMPORTANT: Count your questions before returning to ensure there are EXACTLY {$count} questions.
-            
+                    - The answer must be a **single word or a short phrase**.
+                    - Include questions that match the requested difficulty level.
+                    - The order of the questions must be mixed to provide variety in cognitive challenge.
+                    - Indicate which Bloom's level each question addresses in the JSON response.
+
                     Format your response in JSON like this: 
-            
                     {
                     \"questions\": [
                         {
@@ -1395,7 +1502,7 @@ class OPENAIController extends Controller
                         }
                     ]
                     } 
-            
+
                     Text: {$text}"]
                 ],
                 'temperature' => 0.7,

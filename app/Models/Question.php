@@ -30,6 +30,12 @@ class Question extends Model
         'score',
         'high_score',
         'timer_result',
+        'metadata', // Added metadata field to store different difficulty levels
+    ];
+
+    // Use JSON casting for the metadata field
+    protected $casts = [
+        'metadata' => 'array',
     ];
 
     // Define the relationship with the User model
